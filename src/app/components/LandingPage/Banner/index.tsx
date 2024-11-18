@@ -16,17 +16,17 @@ const Banner: React.FC = () => {
             From weddings to corporate events, we simplify your planning
             process.{" "}
             <Link
-              href={"#"}
+              href={"/login"}
               className="duration-300 ease-linear hover:text-orange-600 font-bold"
             >
-              Sign Up Now
+              Sign In Now
             </Link>{" "}
             and start planning today!
           </p>
 
           <div className="mt-auto lg:mt-0">
             <Link
-              href="#"
+              href="/register"
               className="flex justify-center items-center w-full sm:w-max px-6 h-12 rounded-md outline-none relative overflow-hidden border duration-300 ease-linear after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-orange-600 hover:after:opacity-100 hover:after:scale-[2.5] bg-orange-500 border-transparent hover:border-orange-500"
             >
               <span className="relative z-10 text-white">Get Started</span>

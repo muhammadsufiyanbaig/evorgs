@@ -3,7 +3,7 @@ import { ContactFormData } from "@/utils/interfaces/LandingPage";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Call, Email } from "@/utils/Icons/LandingPage";
+import { Call, Email } from "@/utils/Icons/icons";
 
 
 const Contact = () => {

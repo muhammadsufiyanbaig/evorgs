@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter } from "@/utils/Icons/LandingPage";
+import { Facebook, Instagram, Twitter } from "@/utils/Icons/icons";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";

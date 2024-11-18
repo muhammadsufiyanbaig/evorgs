@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useState, useEffect } from "react";
-import { Quotes } from "@/utils/Icons/LandingPage";
+import { Quotes } from "@/utils/Icons/icons";
 interface Testimonial {
   quote: string;
   author: string;

@@ -15,11 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Evorgs - Your Event Organizer",
-  description: "Evorgs helps you organize and manage your events seamlessly. Discover the best tools and tips for event planning.",
-  keywords: "event organizer, event planning, event management, Evorgs",
-  viewport: "width=device-width, initial-scale=1.0",
-  robots: "index, follow",
+  title: "Evorgs",
+  description: "",
 };
 
 export default function RootLayout({
