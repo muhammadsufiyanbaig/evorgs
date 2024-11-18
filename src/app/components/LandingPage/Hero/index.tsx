@@ -1,35 +1,43 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useEffect, useState } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Hero() {
-  const today = new Date().toISOString().split('T')[0]
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
 
-  const [checkIn, setCheckIn] = useState(today)
-  const [checkOut, setCheckOut] = useState(tomorrow)
-  const [isLoading, setIsLoading] = useState(true)
+  const [checkIn, setCheckIn] = useState(today);
+  const [checkOut, setCheckOut] = useState(tomorrow);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [])
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Ensure the server and client render the same structure
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-2xl">Loading....</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4">
       <Image
         src="/hero-bg.jpg"
         alt="Luxurious hotel exterior"
-        layout="fill"
-        objectFit="cover"
+        fill
         priority
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-br from-orange-100/70 to-gray-200/70 z-10"></div>
       <div className="relative z-20 text-center text-orange-500 px-4 sm:px-6 lg:px-8 w-full max-w-6xl">
@@ -42,10 +50,10 @@ export default function Hero() {
         <div className="bg-white/90 p-4 sm:p-6 rounded-lg shadow-lg">
           <form className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div className="flex-1 min-w-[120px]">
-              <Input 
-                id="destination" 
-                placeholder="Destination" 
-                className="w-full rounded-full" 
+              <Input
+                id="destination"
+                placeholder="Destination"
+                className="w-full rounded-full"
                 aria-label="Destination"
               />
             </div>
@@ -73,7 +81,11 @@ export default function Hero() {
             </div>
             <div className="flex-1 min-w-[120px]">
               <Select>
-                <SelectTrigger id="category" className="w-full text-gray-600 rounded-full" aria-label="Category">
+                <SelectTrigger
+                  id="category"
+                  className="w-full text-gray-600 rounded-full"
+                  aria-label="Category"
+                >
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -85,8 +97,8 @@ export default function Hero() {
               </Select>
             </div>
             <div className="flex-none w-full sm:w-auto">
-              <Button 
-                type="submit"  
+              <Button
+                type="submit"
                 className="flex justify-center items-center w-full sm:w-max px-6 rounded-md outline-none relative overflow-hidden border duration-300 ease-linear after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-orange-600 hover:after:opacity-100 hover:after:scale-[2.5] bg-orange-500 border-transparent hover:border-orange-500"
               >
                 <span className="relative z-10 text-white">Search</span>
@@ -96,5 +108,5 @@ export default function Hero() {
         </div>
       </div>
     </div>
-  )
+  );
 }
