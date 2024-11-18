@@ -1,19 +1,17 @@
 'use client'
+
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { CalendarIcon } from "lucide-react"
 import { useEffect, useState } from "react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-
 export default function Hero() {
-  const [checkIn, setCheckIn] = useState<Date>()
-  const [checkOut, setCheckOut] = useState<Date>()
+  const today = new Date().toISOString().split('T')[0]
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+
+  const [checkIn, setCheckIn] = useState(today)
+  const [checkOut, setCheckOut] = useState(tomorrow)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -23,7 +21,6 @@ export default function Hero() {
     return () => clearTimeout(timer)
   }, [])
 
-  
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4">
       <Image
@@ -53,56 +50,26 @@ export default function Hero() {
               />
             </div>
             <div className="flex-1 min-w-[120px]">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="check-in"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal rounded-full",
-                      !checkIn && "text-muted-foreground"
-                    )}
-                    aria-label="Check-in date"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {checkIn ? format(checkIn, "PP") : <span>Check-in</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={checkIn}
-                    onSelect={setCheckIn}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                type="date"
+                id="check-in"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                min={today}
+                className="w-full rounded-full"
+                aria-label="Check-in date"
+              />
             </div>
             <div className="flex-1 min-w-[120px]">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="check-out"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal rounded-full",
-                      !checkOut && "text-muted-foreground"
-                    )}
-                    aria-label="Check-out date"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {checkOut ? format(checkOut, "PP") : <span>Check-out</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={checkOut}
-                    onSelect={setCheckOut}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                type="date"
+                id="check-out"
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+                min={checkIn}
+                className="w-full rounded-full"
+                aria-label="Check-out date"
+              />
             </div>
             <div className="flex-1 min-w-[120px]">
               <Select>
@@ -118,9 +85,11 @@ export default function Hero() {
               </Select>
             </div>
             <div className="flex-none w-full sm:w-auto">
-              <Button type="submit"  className="flex justify-center items-center w-full sm:w-max px-6 rounded-md outline-none relative overflow-hidden border duration-300 ease-linear after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-orange-600 hover:after:opacity-100 hover:after:scale-[2.5] bg-orange-500 border-transparent hover:border-orange-500"
-           >
-              <span className="relative z-10 text-white">Search</span>
+              <Button 
+                type="submit"  
+                className="flex justify-center items-center w-full sm:w-max px-6 rounded-md outline-none relative overflow-hidden border duration-300 ease-linear after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-orange-600 hover:after:opacity-100 hover:after:scale-[2.5] bg-orange-500 border-transparent hover:border-orange-500"
+              >
+                <span className="relative z-10 text-white">Search</span>
               </Button>
             </div>
           </form>
