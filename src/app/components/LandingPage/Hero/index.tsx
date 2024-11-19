@@ -45,7 +45,7 @@ export default function Hero() {
           Welcome to EvOrgs
         </h1>
         <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8">
-          Discover comfort and luxury at its finest
+          Plan and organize your perfect event with ease
         </p>
         <div className="bg-white/90 p-4 sm:p-6 rounded-lg shadow-lg">
           <form className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
