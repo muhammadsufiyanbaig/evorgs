@@ -1,5 +1,6 @@
 import { Heart, LocationIcon } from "@/utils/Icons/icons";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const hotels = [
@@ -76,35 +77,11 @@ const HotelList = () => (
             <button className="border border-orange-600 rounded-md p-3">
               <Heart height={20} width={20} color="#000000" />
             </button>
-            <button className="px-6 py-3 w-full bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors duration-300 mt-6">
+            <Link href={"/details"} className="px-6 py-3 w-full bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 mt-6">
               View Place
-            </button>
+            </Link>
           </div>
         </div>
-
-        {/* <div className="flex space-x-6">
-          <div className="w-36 h-36 bg-gray-200 rounded-lg overflow-hidden shadow-md">
-            <img
-              src={hotel.imageUrl}
-              alt={hotel.name}
-              className="object-cover w-full h-full transform scale-110 hover:scale-100 transition-all duration-500"
-            />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-3xl font-semibold text-gray-800 hover:text-orange-600 transition-colors duration-300">{hotel.name}</h3>
-            <p className="text-gray-600">{hotel.location}</p>
-            <div className="flex items-center space-x-2 mt-2">
-              <span className="text-yellow-500 text-xl">⭐ {hotel.rating}</span>
-              <span className="text-gray-500 text-sm">({Math.floor(Math.random() * 500) + 100} reviews)</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col justify-between items-end">
-          <p className="text-3xl font-bold text-gray-800">${hotel.price}/night</p>
-          <button className="px-6 py-3 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors duration-300 mt-6">
-            View Place
-          </button>
-        </div> */}
       </div>
     ))}
   </div>

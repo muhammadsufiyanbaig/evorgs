@@ -368,3 +368,88 @@ export const FilterIcon = ({
     <path d="M10 15H6V13H10V15Z" fill="#000000" />
   </svg>
 );
+
+export const StarFill = ({
+  width = 50,
+  height = 50,
+  color = "#FFFF00",
+}: HeartIconProps) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 32 32"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g
+      id="Page-1"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fill-rule="evenodd"
+    >
+      <g
+        id="Icon-Set-Filled"
+        transform="translate(-154.000000, -881.000000)"
+        fill={color}
+      >
+        <path
+          d="M186,893.244 L174.962,891.56 L170,881 L165.038,891.56 L154,893.244 L161.985,901.42 L160.095,913 L170,907.53 L179.905,913 L178.015,901.42 L186,893.244"
+          id="start-favorite"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const HalfStarFill = ({
+  width = 50,
+  height = 50,
+  color = "#FFFF00",
+}: HeartIconProps) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 36 36"
+    version="1.1"
+    preserveAspectRatio="xMidYMid meet"
+    xmlns="http://www.w3.org/2000/svg"
+    fill={color}
+  >
+    <path d="M34,16.78a2.22,2.22,0,0,0-1.29-4l-9-.34a.23.23,0,0,1-.2-.15L20.4,3.89a2.22,2.22,0,0,0-4.17,0l-3.1,8.43a.23.23,0,0,1-.2.15l-9,.34a2.22,2.22,0,0,0-1.29,4l7.06,5.55a.23.23,0,0,1,.08.24L7.35,31.21a2.22,2.22,0,0,0,3.38,2.45l7.46-5a.22.22,0,0,1,.25,0l7.46,5a2.2,2.2,0,0,0,2.55,0,2.2,2.2,0,0,0,.83-2.4l-2.45-8.64a.22.22,0,0,1,.08-.24ZM24.9,23.11l2.45,8.64A.22.22,0,0,1,27,32l-7.46-5a2.21,2.21,0,0,0-1.24-.38h0V4.44h0a.2.2,0,0,1,.21.15L21.62,13a2.22,2.22,0,0,0,2,1.46l9,.34a.22.22,0,0,1,.13.4l-7.06,5.55A2.21,2.21,0,0,0,24.9,23.11Z"></path>
+    <rect x="0" y="0" width="36" height="36" fill-opacity="0" />
+  </svg>
+);
+
+export const Star = ({
+  width = 50,
+  height = 50,
+  color = "#FFFF00",
+}: HeartIconProps) => (
+  <svg
+  width={width}
+  height={height}
+    viewBox="0 0 32 32"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g
+      id="Page-1"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fill-rule="evenodd"
+    >
+      <g
+        id="Icon-Set"
+        transform="translate(-152.000000, -879.000000)"
+        fill={color}
+      >
+        <path
+          d="M168,903.21 L160.571,907.375 L161.989,898.971 L155.594,892.442 L164.245,891.317 L168,883.313 L171.722,891.317 L180.344,892.54 L174.011,899.002 L175.335,907.406 L168,903.21 L168,903.21 Z M184,891.244 L172.962,889.56 L168,879 L163.038,889.56 L152,891.244 L159.985,899.42 L158.095,911 L168,905.53 L177.905,911 L176.015,899.42 L184,891.244 L184,891.244 Z"
+          id="start-favorite"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
