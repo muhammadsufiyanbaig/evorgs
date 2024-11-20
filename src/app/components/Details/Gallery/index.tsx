@@ -10,6 +10,7 @@ import {
   HalfStarFill,
   Heart,
   LocationIcon,
+  Share,
   Star,
   StarFill,
 } from "@/utils/Icons/icons";
@@ -67,7 +68,7 @@ const Gallery = () => {
   return (
     <section className="mt-32">
       <div className="container">
-        <div className="flex justify-between items-end">
+        <div className="flex flex-col md:flex-row justify-between md:items-end">
           <div className="space-y-3">
             <div className="breadcrumb">
               <Breadcrumb>
@@ -89,7 +90,7 @@ const Gallery = () => {
               </Breadcrumb>
             </div>
 
-            <div className="title flex gap-4">
+            <div className="title flex flex-wrap gap-4">
               <h2 className="text-2xl font-bold">{hotels[0].name}</h2>
               <div className="flex items-center justify-center sm:justify-start space-x-2">
                 <span className="text-yellow-500 text-xl flex items-center">
@@ -124,7 +125,7 @@ const Gallery = () => {
                 <Heart height={20} width={20} color="#000000" />
               </button>
               <button className="border border-orange-600 rounded-md p-3">
-                <Heart height={20} width={20} color="#000000" />
+                <Share height={20} width={20} color="#000000" />
               </button>
               <button className="px-6 py-3 w-full bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 mt-0">
                 View Place
@@ -134,7 +135,7 @@ const Gallery = () => {
         </div>
 
         <div className="gallery pt-6 relative">
-          <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
+          <div className="grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-2 gap-2 rounded-xl overflow-hidden">
             <div>
               <Image
                 src={"https://via.placeholder.com/400x300"}
@@ -179,7 +180,7 @@ const Gallery = () => {
             </div>
           </div>
 
-          <button className="px-6 py-3 w-fit bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 absolute bottom-2 right-2">
+          <button className="px-4 py-2 text-sm w-fit bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 absolute bottom-2 right-2">
             View Place
           </button>
         </div>

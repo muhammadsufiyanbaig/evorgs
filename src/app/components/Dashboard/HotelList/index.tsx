@@ -28,7 +28,7 @@ const hotels = [
 ];
 
 const HotelList = () => (
-  <div className="flex flex-col space-y-8 container px-6 py-0">
+  <div className="flex flex-col space-y-8 container lg:px-6 py-0">
     {hotels.map((hotel, idx) => (
       <div
         key={idx}
