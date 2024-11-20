@@ -169,6 +169,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.container {
+  max-width: 1400px;
+  width:100%;
+  margin: 0 auto;
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }

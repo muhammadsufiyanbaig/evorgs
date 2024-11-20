@@ -16,3 +16,11 @@ export interface FooterIconProps {
   height?: string; // Optional prop for height
   width?: string;  // Optional prop for width
 }
+
+export interface HeartIconProps {
+  color?: string;
+  height?: number; // Optional prop for height
+  width?: number;  // Optional prop for width
+}
+
+
