@@ -3,7 +3,7 @@ import Hero from "./Hero";
 import Category from "./Category";
 import Contact from "./contact";
 import Footer from "./Footer";
-import Banner from "./Banner";
+import LatestListing from "./LatestListing";
 import Testimonial from "./Testimonials";
 import RecentWork from "./RecentWork";
 
@@ -11,7 +11,7 @@ const LandingPage = () => {
   return (
     <div>
       <Hero />
-      <Banner/>
+      <LatestListing/>
       <Category />
       <RecentWork/>
       <Testimonial/>

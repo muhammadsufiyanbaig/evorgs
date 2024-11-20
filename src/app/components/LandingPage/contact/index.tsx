@@ -1,9 +1,9 @@
 'use client'
-import { ContactFormData } from "@/utils/interfaces/LandingPage";
+import { ContactFormData } from "@/utils/interfaces";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Call, Email } from "@/utils/Icons/icons";
+import { Call, Email } from "@/utils/Icons";
 
 
 const Contact = () => {

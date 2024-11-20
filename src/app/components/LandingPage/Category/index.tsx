@@ -1,116 +1,111 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { RightArrow } from "@/utils/Icons";
+import { Check } from "lucide-react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
-export default function CategoryCarousel() {
-  const categories = [
-    {
-      name: "Venue",
-      image: "/venue-category.jpg",
-      description: "Explore top venues for your events.",
-      details:
-        "Find the perfect location with amazing facilities and beautiful surroundings.",
-    },
-    {
-      name: "Farm House",
-      image: "/farmHouse-category.jpg",
-      description: "A perfect getaway for relaxation and family time.",
-      details:
-        "Choose from a variety of farmhouses with lush greenery and peaceful environments.",
-    },
-    {
-      name: "Catering",
-      image: "/catering-category.jpg",
-      description: "Taste the best food with our catering services.",
-      details:
-        "Browse through different catering options to suit every occasion and budget.",
-    },
-    {
-      name: "Photography",
-      image: "/photography-category.jpg",
-      description:
-        "Capture your precious moments with professional photographers.",
-      details:
-        "Select photographers with specialized expertise in various event types.",
-    },
-  ];
-  const [api, setApi] = useState<any>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
+export default function Component() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[40vh] bg-gray-100 px-4 sm:px-6 md:px-8">
-      <h2 className="text-4xl sm:text-5xl font-medium text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 drop-shadow-lg">
-        Category
-      </h2>
-      <Carousel setApi={setApi} className="w-full max-w-6xl">
-        <CarouselContent>
-          {categories.map((category, index) => (
-            <CarouselItem key={index}>
-              <div className="p-1">
-                <div className="overflow-hidden shadow-lg md:shadow-none rounded-lg md:rounded-none">
-                  <CardContent className="p-0 flex flex-col sm:flex-row">
-                    {/* Image Section */}
-                    <div className="relative w-full sm:w-1/2 cursor-grab h-[250px] sm:h-[400px] md:h-[600px]">
-                      <Image
-                        src={category.image}
-                        alt={`${category.name} image`}
-                        fill
-                        className="object-cover transition-transform duration-300 ease-in-out rounded-xl transform hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t rounded-xl from-gray-800 to-transparent opacity-0 hover:opacity-50 transition-opacity duration-300 flex justify-center items-center">
-                        <p className="text-white font-semibold text-lg sm:text-2xl md:text-4xl text-center">
-                          {category.name}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Details Section */}
-                    <div className="w-full sm:w-1/2 flex flex-col justify-center p-6">
-                      <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">
-                        {category.name}
-                      </h3>
-                      <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-4">
-                        {category.description}
-                      </p>
-                      <p className="text-xs sm:text-sm md:text-base text-gray-600">
-                        {category.details}
-                      </p>
-                    </div>
-                  </CardContent>
-                </div>
+    <section className="w-full flex justify-center items-center py-16 md:py-28 lg:py-36 bg--gray-100">
+      <div className="container px-4 md:px-8 xl:max-w-[1420px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-16 xl:gap-20">
+          {/* Text Section */}
+          <div className="flex flex-col gap-6">
+            <div className="space-y-4">
+              <div className="uppercase text-sm font-semibold text-orange-600 tracking-wide">
+                What we do
               </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <div className="hidden sm:block">
-          <CarouselPrevious />
-          <CarouselNext />
+              <h2 className="text-2xl font-medium tracking-tight text-gray-900">
+                Explore Listings on Evorgs
+              </h2>
+              <p className="text-gray-600 md:text-lg leading-relaxed dark:text-gray-400">
+                Discover top-notch properties and opportunities curated for you. 
+                Dive into an organized theme for seamless navigation.
+              </p>
+            </div>
+
+            {/* Features */}
+            <div className="grid gap-3 py-6">
+              {[
+                "Stay connected",
+                "Modern Listings",
+                "Verified Properties",
+                "Well Organized Theme",
+              ].map((feature) => (
+                <div key={feature} className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 shadow-md">
+                    <Check className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-800 font-medium">{feature}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Join thousands of users worldwide who trust us to find their dream properties.
+            </p>
+
+            {/* Call to Action */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Button className="bg-orange-500 hover:bg-orange-600 hover:opacity-90 shadow-lg text-white">
+                Get started with us
+                <RightArrow color="#ffffff"/>
+              </Button>
+              <Card className="flex items-center gap-3 p-4 shadow-lg">
+                <div className="flex -space-x-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-10 w-10 rounded-full border-2 border-white overflow-hidden shadow-md"
+                    >
+                      <Image
+                        alt={`User ${i + 1}`}
+                        className="aspect-square h-full w-full object-cover"
+                        height="40"
+                        src={`/banner.jpg`}
+                        width="40"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="text-xl font-bold text-gray-900">35K+</div>
+                  <div className="text-sm text-gray-600">Positive Reviews</div>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Image Section */}
+          <div className="grid gap-6 md:gap-8">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                <Image
+                  alt="Person working on laptop"
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  fill
+                  src="/farmHouse-category.jpg"
+                />
+              </div>
+              <div className="relative aspect-square overflow-hidden rounded-xl shadow-lg">
+                <Image
+                  alt="People at a counter"
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  fill
+                  src="/photography-category.jpg"
+                />
+              </div>
+            </div>
+            <div className="relative aspect-[2/1] overflow-hidden rounded-xl shadow-lg">
+              <Image
+                alt="DJ performing"
+                className="object-cover transition-transform duration-300 hover:scale-105"
+                fill
+                src="/venue-category.jpg"
+              />
+            </div>
+          </div>
         </div>
-        <div className="py-2 text-center text-sm text-muted-foreground">
-          Testimonial {current} of {count}
-        </div>
-      </Carousel>
-    </div>
+      </div>
+    </section>
   );
 }

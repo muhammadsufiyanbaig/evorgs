@@ -1,112 +1,119 @@
-'use client';
-
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search, MapPin, Grid3X3, Building2, ShoppingBag, Hotel, LibraryIcon as Museum, Utensils } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card } from "@/components/ui/card"
 
 export default function Hero() {
-  const today = new Date().toISOString().split('T')[0];
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
-
-  const [checkIn, setCheckIn] = useState(today);
-  const [checkOut, setCheckOut] = useState(tomorrow);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Ensure the server and client render the same structure
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-2xl">Loading....</div>
-      </div>
-    );
-  }
+  const categories = [
+    { name: "Restaurant", icon: Utensils, count: 10 },
+    { name: "Shopping", icon: ShoppingBag, count: 3 },
+    { name: "Hotel", icon: Hotel, count: 4 },
+    { name: "Museum", icon: Museum, count: 3 },
+  ]
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4">
-      <Image
-        src="/hero-bg.jpg"
-        alt="Luxurious hotel exterior"
-        fill
-        priority
-        className="absolute inset-0 z-0 object-cover"
+    <div className="relative min-h-[50vh] pt-16">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url('/hero-bg.jpg')`,
+          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backgroundBlendMode: 'overlay'
+        }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-100/70 to-gray-200/70 z-10"></div>
-      <div className="relative z-20 text-center text-orange-500 px-4 sm:px-6 lg:px-8 w-full max-w-6xl">
-        <h1 className="text-5xl md:text-6xl font-medium text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 drop-shadow-lg">
-          Welcome to EvOrgs
-        </h1>
-        <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8">
-          Plan and organize your perfect event with ease
-        </p>
-        <div className="bg-white/90 p-4 sm:p-6 rounded-lg shadow-lg">
-          <form className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="flex-1 min-w-[120px]">
-              <Input
-                id="destination"
-                placeholder="Destination"
-                className="w-full rounded-full"
-                aria-label="Destination"
-              />
-            </div>
-            <div className="flex-1 min-w-[120px]">
-              <Input
-                type="date"
-                id="check-in"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                min={today}
-                className="w-full rounded-full"
-                aria-label="Check-in date"
-              />
-            </div>
-            <div className="flex-1 min-w-[120px]">
-              <Input
-                type="date"
-                id="check-out"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                min={checkIn}
-                className="w-full rounded-full"
-                aria-label="Check-out date"
-              />
-            </div>
-            <div className="flex-1 min-w-[120px]">
-              <Select>
-                <SelectTrigger
-                  id="category"
-                  className="w-full text-gray-600 rounded-full"
-                  aria-label="Category"
-                >
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hotel">Hotel</SelectItem>
-                  <SelectItem value="apartment">Apartment</SelectItem>
-                  <SelectItem value="villa">Villa</SelectItem>
-                  <SelectItem value="resort">Resort</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-none w-full sm:w-auto">
+      
+      {/* Content */}
+      <div className="relative px-4 pt-20 pb-32 space-y-12">
+        {/* Hero Text */}
+        <div className="flex justify-center items-center ">
+          <div className='text-center space-y-4'>
+          <p className="text-orange-500">Discover & Connect With Great Places Around The World</p>
+          <h1 className=" text-4xl md:text-5xl lg:text-6xl font-bold w-fit text-orange-500">
+            Let's Discover This City
+          </h1>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-5xl mx-auto bg-white rounded-lg sm:rounded-full p-2 flex flex-col md:flex-row gap-2">
+          <div className="flex-1 flex items-center px-4">
+            <Input 
+              type="text" 
+              placeholder="What are you looking for" 
+              className="border-0 focus-visible:ring-0"
+            />
+          </div>
+          <Select >
+            <SelectTrigger className="w-full flex-1  md:w-[200px] border-0 focus:ring-0">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-orange-500" />
+                <SelectValue placeholder="Select Location" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tokyo">Tokyo</SelectItem>
+              <SelectItem value="osaka">Osaka</SelectItem>
+              <SelectItem value="kyoto">Kyoto</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select>
+            <SelectTrigger className="w-full flex-1  md:w-[200px] border-0 focus:ring-0">
+              <div className="flex items-center gap-2">
+                <Grid3X3 className="w-4 h-4  text-orange-500" />
+                <SelectValue placeholder="Select Category" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(category => (
+                <SelectItem key={category.name} value={category.name.toLowerCase()}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button className="w-full md:w-auto px-8 rounded-full bg-orange-500 hover:bg-orange-600">
+            <Search className="w-4 h-4 mr-2" />
+            Search
+          </Button>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="flex justify-center gap-2 flex-wrap">
+          {categories.map((category) => {
+            const Icon = category.icon
+            return (
               <Button
-                type="submit"
-                className="flex justify-center items-center w-full sm:w-max px-6 rounded-md outline-none relative overflow-hidden border duration-300 ease-linear after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-orange-600 hover:after:opacity-100 hover:after:scale-[2.5] bg-orange-500 border-transparent hover:border-orange-500"
+                key={category.name}
+                variant="ghost"
+                className="text-orange-500 bg-white/100 backdrop-blur-sm  hover:bg-muted/50 transition-colors"
               >
-                <span className="relative z-10 text-white">Search</span>
+                <Icon className="w-4 h-4 mr-2" />
+                {category.name}
               </Button>
-            </div>
-          </form>
+            )
+          })}
+        </div>
+
+        {/* Category Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {categories.map((category) => {
+            const Icon = category.icon
+            return (
+              <Card key={category.name} className="p-6 text-center hover:bg-muted/50 transition-colors cursor-pointer bg-white/90 backdrop-blur-sm">
+                <div className="flex justify-center mb-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-orange-500" />
+                  </div>
+                </div>
+                <h3 className="font-medium mb-1">{category.name}</h3>
+                <p className="text-muted-foreground text-sm">({category.count})</p>
+              </Card>
+            )
+          })}
         </div>
       </div>
     </div>
-  );
+  )
 }
