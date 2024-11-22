@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Flag } from "@/utils/Icons/icons";
+import { Flag } from "@/utils/Icons";
 import Link from "next/link";
 
 interface Review {

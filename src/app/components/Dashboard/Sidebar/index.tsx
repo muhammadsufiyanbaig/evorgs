@@ -1,5 +1,5 @@
 "use client";
-import { CloseIcon } from "@/utils/Icons/icons";
+import { CloseIcon } from "@/utils/Icons";
 import { FilterIcon } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 

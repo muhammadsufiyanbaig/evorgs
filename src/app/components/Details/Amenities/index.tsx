@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Fitness, Glass, Pool, Restaurant, RoomServices, Span, TEA, Wifi } from "@/utils/Icons/icons";
+import { Fitness, Glass, Pool, Restaurant, RoomServices, Span, TEA, Wifi } from "@/utils/Icons";
 
 export default function Amenities() {
   const amenities = [

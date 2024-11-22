@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Stars } from "@/utils/Icons/icons";
+import { Stars } from "@/utils/Icons";
 import React from "react";
 
 const hotels = [

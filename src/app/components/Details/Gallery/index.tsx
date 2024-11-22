@@ -13,7 +13,7 @@ import {
   Share,
   Star,
   StarFill,
-} from "@/utils/Icons/icons";
+} from "@/utils/Icons";
 import Image from "next/image";
 import Link from "next/link";
 

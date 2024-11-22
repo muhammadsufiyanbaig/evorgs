@@ -1,4 +1,4 @@
-import { Heart, LocationIcon } from "@/utils/Icons/icons";
+import { Heart, LocationIcon } from "@/utils/Icons";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";

@@ -1,4 +1,4 @@
-import { LocationIcon } from "@/utils/Icons/icons";
+import { LocationIcon } from "@/utils/Icons";
 import Link from "next/link";
 
 export default function Map() {
