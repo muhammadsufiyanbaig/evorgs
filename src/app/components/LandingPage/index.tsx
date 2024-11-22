@@ -22,8 +22,6 @@ const LandingPage = () => {
       <CTABanner/>
       <HIWBanner/>
       <DownloadBanner/>
-      {/* <Contact /> */}
-      <Footer/>
     </div>
   );
 };
