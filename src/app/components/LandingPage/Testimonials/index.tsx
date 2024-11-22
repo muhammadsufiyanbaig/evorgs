@@ -80,7 +80,7 @@ export default function TestimonialCarousel() {
   }, [api])
 
   return (
-    <div className="relative min-h-[60vh] max-w-screen w-full bg-orange-50 px-4 py-12">
+    <div className="relative min-h-[60vh] max-w-screen w-full px-4 py-12">
       {/* Decorative avatars */}
       <div className="absolute left-4 top-4 -rotate-12 transform">
         <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
