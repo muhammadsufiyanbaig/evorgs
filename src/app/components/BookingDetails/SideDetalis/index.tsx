@@ -8,7 +8,7 @@ import {
   Facebook,
   Google,
   LocationIcon,
-} from "@/utils/Icons/icons";
+} from "@/utils/Icons";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
