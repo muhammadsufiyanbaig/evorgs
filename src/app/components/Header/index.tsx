@@ -5,7 +5,7 @@ import { links } from "@/lib/data";
 import Link from "next/link";
 import clsx from "clsx";
 import { useActiveSectionContext } from "@/app/context/active-section-context";
-import { CloseIcon, MenuIcon } from "@/utils/Icons/icons";
+import { CloseIcon, MenuIcon } from "@/utils/Icons";
 
 export default function Header() {
   const { activeSection, setActiveSection, setTimeOfLastClick } =

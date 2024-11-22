@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Facebook, Google } from "@/utils/Icons/icons";
+import { Facebook, Google } from "@/utils/Icons";
 import { Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff icons
 import Link from "next/link"; // Import Link for navigation
 
