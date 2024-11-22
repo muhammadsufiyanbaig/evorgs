@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +31,9 @@ export default function LoginForm() {
       </div>
     );
   }
-
+const handleClick = () => {
+  router.push("/dashboard");
+}
   return (
     <div className="flex h-screen bg-white">
       {/* Left Section */}
@@ -39,8 +43,8 @@ export default function LoginForm() {
             height={40}
             width={40}
             alt="EvOrgs Logo"
-            src="https://tailwindui.com/plus/img/logos/mark.svg?color=orange&shade=600"
-            className="mx-auto h-10 w-auto rounded-lg"
+            src="/hero-bg.jpg"
+            className="mx-auto h-10 w-auto rounded-full"
           />
           <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
             Sign in to your account
@@ -48,14 +52,14 @@ export default function LoginForm() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form action={handleClick} method="POST" className="space-y-6">
             <div>
               <Label htmlFor="email">Email address</Label>
               <div className="mt-2">
                 <Input
                   id="email"
                   name="email"
-                  type="email"
+                  // type="email"
                   placeholder="Enter your email"
                   required
                 />
@@ -92,7 +96,7 @@ export default function LoginForm() {
             </div>
 
             <div>
-              <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-500">
+              <Button type="submit"  className="w-full bg-orange-600 hover:bg-orange-500">
                 Sign in
               </Button>
             </div>
