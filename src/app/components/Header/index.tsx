@@ -1,10 +1,24 @@
+'use client';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, Plus, UserCircle } from "lucide-react";
+import { Menu, Plus, UserCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Header() {
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleClick = () => {
+    router.push("/login");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/20 backdrop-blur-sm border-b-2 border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/30 backdrop-blur-md border-b-2 border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -14,43 +28,64 @@ export default function Header() {
             </span>
           </Link>
 
+          {/* Hamburger Menu (Mobile) */}
+          <div className="md:hidden flex items-center">
+            <Button
+              onClick={toggleMenu}
+              className="p-2 border bg-transparent hover:bg-gray-100 rounded-full"
+            >
+              {menuOpen ? (
+                <X className="h-6 w-6 text-orange-500" />
+              ) : (
+                <Menu className="h-6 w-6 text-orange-500" />
+              )}
+            </Button>
+          </div>
+
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav
+            className={`${
+              menuOpen ? "block" : "hidden"
+            } absolute top-16 left-0 right-0 bg-white shadow-lg md:static md:flex md:items-center md:space-y-0 md:space-x-8 md:bg-transparent md:shadow-none p-4 md:p-0 space-y-4`}
+          >
             <Link
               href="/"
-              className="text-sm font-medium hover:scale-105 text-orange-500"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Home
             </Link>
             <Link
               href="/listings"
-              className="text-sm font-medium hover:scale-105 text-orange-500"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Listings
             </Link>
             <Link
               href="/pages"
-              className="text-sm font-medium hover:scale-105 text-orange-500"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Pages
             </Link>
             <Link
               href="/blog"
-              className="text-sm font-medium hover:scale-105 text-orange-500"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Blog
             </Link>
             <Link
               href="/contact"
-              className="text-sm font-medium hover:scale-105 text-orange-500"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Contact Us
             </Link>
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
-            <Button  className="border bg-transparent hover:bg-transparent hover:scale-105  hover:border-orange-500 rounded-full">
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              onClick={handleClick}
+              className="border bg-transparent hover:bg-transparent hover:scale-105 hover:border-orange-500 rounded-full"
+            >
               <UserCircle className="h-10 w-10 text-orange-500" />
               <span className="sr-only">User profile</span>
             </Button>
@@ -58,7 +93,6 @@ export default function Header() {
               <Plus className="h-4 w-4 mr-2" />
               Add Listing
             </Button>
-           
           </div>
         </div>
       </div>

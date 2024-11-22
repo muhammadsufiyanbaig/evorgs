@@ -8,18 +8,20 @@ import Testimonial from "./Testimonials";
 import StatsBanner from "./StatsBanner";
 import CTABanner from "./CTABanner";
 import DownloadBanner from "./DownloadBanner";
+import HIWBanner from "./HIWBanner";
 
 const LandingPage = () => {
   return (
-    <div>
+    <div className="bg-gray-100">
       <Hero />
       <LatestListing/>
       <ExploreListing />
       <StatsBanner/>
       <Testimonial/>
       <CTABanner/>
+      <HIWBanner/>
       <DownloadBanner/>
-      <Contact />
+      {/* <Contact /> */}
       <Footer/>
     </div>
   );

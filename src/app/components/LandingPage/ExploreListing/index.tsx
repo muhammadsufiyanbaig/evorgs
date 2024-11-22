@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Circle, Shape, CheckIcon, RightArrow } from "@/utils/Icons";
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import Image from "next/image";
 import React from "react";
 
@@ -32,7 +33,7 @@ const ExploreListing = () => {
                   </div>
                   <div className="overflow-hidden">
                     <Image
-                      src={"/venue-category.jpg"}
+                      src={"/photography-category.jpg"}
                       alt=""
                       height={1000}
                       width={1000}
@@ -43,7 +44,7 @@ const ExploreListing = () => {
               </div>
               <div className="flex justify-center">
                 <Image
-                  src={"/venue-category.jpg"}
+                  src={"/farmHouse-category.jpg"}
                   alt=""
                   height={1000}
                   width={1000}
@@ -72,17 +73,39 @@ const ExploreListing = () => {
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-2">
                         <div className="p-1 bg-orange-600 rounded-full">
-                        <CheckIcon color="#ffffff"/>
+                          <CheckIcon color="#ffffff" />
                         </div>
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <Card className="border border-gray-300">
-                    <CardContent className="flex items-center gap-4">
-                      <div>
+                  <Card className="w-[200px] bg-white">
+                    <CardContent className="p-6 flex flex-col items-center gap-2">
+                      <div className="flex -space-x-4 rtl:space-x-reverse">
+                        <Avatar className="border-2 h-20 w-20 border-white rounded-full">
+                          <AvatarImage
+                            src="/pic-1.jpg"
+                            className="bg-yellow-200 object-cover rounded-full"
+                          />
+                        </Avatar>
+                        <Avatar className="border-2 h-16 w-16 border-white  rounded-full">
+                          <AvatarImage
+                            src="/pic-2.jpg"
+                            className="bg-white object-cover rounded-full"
+                          />
+                        </Avatar>
+                        <Avatar className="border-2 h-14 w-14 border-white  rounded-full">
+                          <AvatarImage
+                            src="/pic-3.jpg"
+                            className="bg-pink-100 object-cover rounded-full"
+                          />
+                        </Avatar>
+                      </div>
+                      <div className="text-center mt-2">
                         <p className="text-2xl font-bold">35K+</p>
-                        <p className="text-gray-600">Positive Reviews</p>
+                        <p className="text-gray-500 text-sm">
+                          Positive Reviews
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -94,7 +117,7 @@ const ExploreListing = () => {
                 <Button className="bg-orange-600 hover:scale-110 hover:bg-orange-700 text-white rounded-full w-fit px-6 py-2">
                   Get started with us
                   <div className="p-1 border border-white  rounded-full hover:scale-105">
-                  <RightArrow color="#ffffff"/>
+                    <RightArrow color="#ffffff" />
                   </div>
                 </Button>
               </div>
