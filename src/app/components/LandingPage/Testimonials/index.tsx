@@ -12,6 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+
 interface Testimonial {
   quote: string;
   author: string;

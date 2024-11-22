@@ -5,9 +5,9 @@ import HotelList from "./HotelList";
 
 const Dashboard = () => {
   return (
-    <div className="p-6">
+    <div className="p-4 lg:p-6 container">
       <SearchBar />
-      <div className="flex mt-4">
+      <div className="flex flex-col lg:flex-row mt-10 relative">
         <Sidebar />
         <HotelList />
       </div>
