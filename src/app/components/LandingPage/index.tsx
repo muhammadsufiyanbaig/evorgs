@@ -11,6 +11,7 @@ import DownloadBanner from "./DownloadBanner";
 import HIWBanner from "./HIWBanner";
 
 const LandingPage = () => {
+  // function to handle the form submission
   return (
     <div className="bg-gray-100">
       <Hero />
