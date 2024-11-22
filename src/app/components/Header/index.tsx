@@ -4,7 +4,7 @@ import { Menu, Plus, UserCircle } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b-2 border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/20 backdrop-blur-sm border-b-2 border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -18,31 +18,31 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
-              className="text-sm font-medium text-white hover:text-orange-500"
+              className="text-sm font-medium hover:scale-105 text-orange-500"
             >
               Home
             </Link>
             <Link
               href="/listings"
-              className="text-sm font-medium text-white hover:text-orange-500"
+              className="text-sm font-medium hover:scale-105 text-orange-500"
             >
               Listings
             </Link>
             <Link
               href="/pages"
-              className="text-sm font-medium text-white hover:text-orange-500"
+              className="text-sm font-medium hover:scale-105 text-orange-500"
             >
               Pages
             </Link>
             <Link
               href="/blog"
-              className="text-sm font-medium text-white hover:text-orange-500"
+              className="text-sm font-medium hover:scale-105 text-orange-500"
             >
               Blog
             </Link>
             <Link
               href="/contact"
-              className="text-sm font-medium text-white hover:text-orange-500"
+              className="text-sm font-medium hover:scale-105 text-orange-500"
             >
               Contact Us
             </Link>
@@ -50,8 +50,8 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button  className="border bg-transparent hover:bg-transparent hover:scale-105 border-white hover:border hover:border-orange-500 rounded-full">
-              <UserCircle className="h-10 w-10 text-white hover:text-orange-500" />
+            <Button  className="border bg-transparent hover:bg-transparent hover:scale-105  hover:border-orange-500 rounded-full">
+              <UserCircle className="h-10 w-10 text-orange-500" />
               <span className="sr-only">User profile</span>
             </Button>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full hidden sm:flex">
@@ -59,12 +59,6 @@ export default function Header() {
               Add Listing
             </Button>
            
-            <Button
-              className="rounded-full hover:border hover:border-whit sm:hidden"
-            >
-              <Menu className="h-44 w-44" />
-              <span className="sr-only">Open menu</span>
-            </Button>
           </div>
         </div>
       </div>

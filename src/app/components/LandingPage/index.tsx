@@ -1,20 +1,24 @@
 import React from "react";
 import Hero from "./Hero";
-import Category from "./Category";
+import ExploreListing from "./ExploreListing";
 import Contact from "./contact";
 import Footer from "./Footer";
 import LatestListing from "./LatestListing";
 import Testimonial from "./Testimonials";
-import RecentWork from "./RecentWork";
+import StatsBanner from "./StatsBanner";
+import CTABanner from "./CTABanner";
+import DownloadBanner from "./DownloadBanner";
 
 const LandingPage = () => {
   return (
     <div>
       <Hero />
       <LatestListing/>
-      <Category />
-      <RecentWork/>
+      <ExploreListing />
+      <StatsBanner/>
       <Testimonial/>
+      <CTABanner/>
+      <DownloadBanner/>
       <Contact />
       <Footer/>
     </div>

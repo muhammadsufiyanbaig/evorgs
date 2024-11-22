@@ -409,3 +409,100 @@ export const TrianglesIcon = ({
     </svg>
   );
 };
+
+export const Circle = ({
+  width = 50,
+  height = 50,
+  color = "#F97316",
+}: IconInterface) => (
+  <svg
+    height={height}
+    width={width}
+    viewBox="0 0 40 40"
+    xmlns="http://www.w3.org/2000/svg"
+    fill={color}
+    stroke={color}
+    strokeWidth="1"
+    strokeLinecap="round"
+    strokeLinejoin="miter"
+  >
+    {Array.from({ length: 7 }).map((_, row) =>
+      Array.from({ length: 6 }).map((_, col) => (
+        <line
+          key={`${row}-${col}`}
+          x1={5 + col * 5}
+          y1={5 + row * 5}
+          x2={5 + col * 5}
+          y2={5 + row * 5}
+          strokeLinecap="round"
+          strokeWidth="1"
+        />
+      ))
+    )}
+  </svg>
+);
+
+export const Shape = ({
+  width = 50,
+  height = 50,
+  color = "#F97316",
+}: IconInterface) => (
+  <svg
+    height={height}
+    width={width}
+    version="1.1"
+    id="Layer_1"
+    xmlns="http://www.w3.org/2000/svg"
+    x="0px"
+    y="0px"
+    viewBox="0 0 1080 720"
+    fill={color}
+  >
+    {Array.from({ length: 1 }).map((_, row) =>
+      Array.from({ length: 2 }).map((_, col) => (
+        <g
+          key={`${row}-${col}`}
+          transform={`translate(${col * 270}, ${row * 360})`}
+        >
+          <path
+            className="st0"
+            d="M302.19,378.2V509.9h126.83C429.02,509.9,300.37,380.02,302.19,378.2z"
+          />
+          <path
+            className="st0"
+            d="M302.19,509.9v131.71h126.83C429.02,641.61,300.37,511.73,302.19,509.9z"
+          />
+          <path
+            className="st0"
+            d="M430.8,378.2V509.9h126.83C557.63,509.9,428.97,380.02,430.8,378.2z"
+          />
+          <path
+            className="st0"
+            d="M430.8,509.9v131.71h126.83C557.63,641.61,428.97,511.73,430.8,509.9z"
+          />
+        </g>
+      ))
+    )}
+  </svg>
+);
+
+export const CheckIcon = ({
+  width = 24,
+  height = 24,
+  color = "currentColor",
+}: IconInterface) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={width}
+    height={height}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="lucide lucide-check"
+  >
+    <path d="M20 6 9 17l-5-5"></path>
+  </svg>
+);

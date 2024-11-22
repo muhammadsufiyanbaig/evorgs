@@ -1,4 +1,4 @@
-import { Search, MapPin, Grid3X3, Building2, ShoppingBag, Hotel, LibraryIcon as Museum, Utensils } from 'lucide-react'
+import { Search, MapPin, Grid3X3, School, Utensils, Hotel, LibraryIcon as Museum, Camera } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -6,10 +6,10 @@ import { Card } from "@/components/ui/card"
 
 export default function Hero() {
   const categories = [
-    { name: "Restaurant", icon: Utensils, count: 10 },
-    { name: "Shopping", icon: ShoppingBag, count: 3 },
-    { name: "Hotel", icon: Hotel, count: 4 },
-    { name: "Museum", icon: Museum, count: 3 },
+    { name: "Photography", icon: Camera, count: 10 },
+    { name: "Catring", icon: Utensils, count: 3 },
+    { name: "Farm House", icon: Hotel, count: 4 },
+    { name: "Venue", icon: School, count: 3 },
   ]
 
   return (
@@ -53,9 +53,11 @@ export default function Hero() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="tokyo">Tokyo</SelectItem>
-              <SelectItem value="osaka">Osaka</SelectItem>
-              <SelectItem value="kyoto">Kyoto</SelectItem>
+              <SelectItem value="Karachi">Karachi</SelectItem>
+              <SelectItem value="Lahore">Lahore</SelectItem>
+              <SelectItem value="Islamabad">Islamabad</SelectItem>
+              <SelectItem value="Peshawar">Peshawar</SelectItem>
+              <SelectItem value="Quetta">Quetta</SelectItem>
             </SelectContent>
           </Select>
           <Select>
