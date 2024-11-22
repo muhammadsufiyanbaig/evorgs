@@ -1,102 +1,103 @@
-"use client";
-
-import React, { useState } from "react";
-import { links } from "@/lib/data";
+'use client';
 import Link from "next/link";
-import clsx from "clsx";
-import { useActiveSectionContext } from "@/app/context/active-section-context";
-import { CloseIcon, MenuIcon } from "@/utils/Icons";
+
+import { Button } from "@/components/ui/button";
+import { Menu, Plus, UserCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 
 export default function Header() {
-  const { activeSection, setActiveSection, setTimeOfLastClick } =
-    useActiveSectionContext();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleClick = () => {
+    router.push("/login");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   return (
-    <header className="z-[999] relative">
-      <div className="fixed top-0 left-1/2 h-[4.5rem] w-full rounded-none border-2 border-white border-opacity-40 bg-transparent bg-opacity-80 shadow-xl shadow-black/[0.03] backdrop-blur-[0.5rem] sm:top-6 sm:h-[3.25rem] sm:w-[36rem] sm:rounded-full dark:bg-gray-950 dark:border-black/40 dark:bg-opacity-75 transform -translate-x-1/2"></div>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/30 backdrop-blur-md border-b-2 border-gray-200">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <span className="text-2xl text-black font-bold">
+              EV<span className="text-orange-500">Orgs</span>
+            </span>
+          </Link>
 
-      {/* Hamburger Menu Icon for Mobile */}
-      <div className="fixed top-4 left-4 sm:hidden z-50">
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-        >
-          {isMobileMenuOpen ? (
-            <CloseIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" />
-          ) : (
-            <MenuIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <nav
-        className={clsx(
-          "fixed top-0 left-0 h-full w-[75vw] max-w-sm bg-white dark:bg-gray-950 shadow-lg transform transition-transform",
-          {
-            "-translate-x-full": !isMobileMenuOpen,
-            "translate-x-0": isMobileMenuOpen,
-          }
-        )}
-      >
-        <ul className="flex flex-col items-center justify-center h-full gap-y-5 text-[1.2rem] font-medium text-gray-500 dark:text-gray-400">
-          {links.map((link) => (
-            <li className="relative" key={link.hash}>
-              <Link
-                className={clsx(
-                  "px-3 py-3 hover:text-gray-950 transition dark:hover:text-gray-300",
-                  {
-                    "text-white": activeSection === link.name, // Set active text color to white
-                  }
-                )}
-                href={link.hash}
-                onClick={() => {
-                  setActiveSection(link.name);
-                  setTimeOfLastClick(Date.now());
-                  setIsMobileMenuOpen(false); // Close menu on link click
-                }}
-              >
-                {link.name}
-                {link.name === activeSection && (
-                  <span className="bg-orange-500 p-3 rounded-full absolute inset-0 -z-10 dark:bg-orange-500"></span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* Desktop Menu */}
-      <nav className="hidden sm:flex fixed top-[0.15rem] left-1/2 h-12 -translate-x-1/2 py-2 sm:top-[1.7rem] sm:h-[initial] sm:py-0">
-        <ul className="flex w-[22rem] flex-wrap items-center justify-center gap-y-1 text-[0.9rem] font-medium text-gray-500 sm:w-[initial] sm:flex-nowrap sm:gap-5">
-          {links.map((link) => (
-            <li
-              className="h-3/4 flex items-center justify-center relative"
-              key={link.hash}
+          {/* Hamburger Menu (Mobile) */}
+          <div className="md:hidden flex items-center">
+            <Button
+              onClick={toggleMenu}
+              className="p-2 border bg-transparent hover:bg-gray-100 rounded-full"
             >
-              <Link
-                className={clsx(
-                  "flex w-full items-center justify-center px-3 py-3 hover:text-gray-950 transition dark:text-gray-400 dark:hover:text-gray-300",
-                  {
-                    "text-white": activeSection === link.name, // Set active text color to white
-                  }
-                )}
-                href={link.hash}
-                onClick={() => {
-                  setActiveSection(link.name);
-                  setTimeOfLastClick(Date.now());
-                }}
-              >
-                {link.name}
-                {link.name === activeSection && (
-                  <span className="bg-orange-500 rounded-full absolute inset-0 -z-10 dark:bg-orange-500"></span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+              {menuOpen ? (
+                <X className="h-6 w-6 text-orange-500" />
+              ) : (
+                <Menu className="h-6 w-6 text-orange-500" />
+              )}
+            </Button>
+          </div>
+
+          {/* Navigation */}
+          <nav
+            className={`${
+              menuOpen ? "block" : "hidden"
+            } absolute top-16 left-0 right-0 bg-white shadow-lg md:static md:flex md:items-center md:space-y-0 md:space-x-8 md:bg-transparent md:shadow-none p-4 md:p-0 space-y-4`}
+          >
+            <Link
+              href="/"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
+            >
+              Home
+            </Link>
+            <Link
+              href="/listings"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
+            >
+              Listings
+            </Link>
+            <Link
+              href="/pages"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
+            >
+              Pages
+            </Link>
+            <Link
+              href="/blog"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
+            >
+              Blog
+            </Link>
+            <Link
+              href="/contact"
+              className="block text-sm font-medium hover:scale-105 text-orange-500"
+            >
+              Contact Us
+            </Link>
+          </nav>
+
+          {/* Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              onClick={handleClick}
+              className="border bg-transparent hover:bg-transparent hover:scale-105 hover:border-orange-500 rounded-full"
+            >
+              <UserCircle className="h-10 w-10 text-orange-500" />
+              <span className="sr-only">User profile</span>
+            </Button>
+            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full hidden sm:flex">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Listing
+            </Button>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

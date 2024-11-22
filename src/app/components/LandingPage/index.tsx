@@ -1,21 +1,27 @@
 import React from "react";
 import Hero from "./Hero";
-import Category from "./Category";
+import ExploreListing from "./ExploreListing";
 import Contact from "./contact";
 import Footer from "./Footer";
-import Banner from "./Banner";
+import LatestListing from "./LatestListing";
 import Testimonial from "./Testimonials";
-import RecentWork from "./RecentWork";
+import StatsBanner from "./StatsBanner";
+import CTABanner from "./CTABanner";
+import DownloadBanner from "./DownloadBanner";
+import HIWBanner from "./HIWBanner";
 
 const LandingPage = () => {
   return (
-    <div>
+    <div className="bg-gray-100">
       <Hero />
-      <Banner/>
-      <Category />
-      <RecentWork/>
+      <LatestListing/>
+      <ExploreListing />
+      <StatsBanner/>
       <Testimonial/>
-      <Contact />
+      <CTABanner/>
+      <HIWBanner/>
+      <DownloadBanner/>
+      {/* <Contact /> */}
       <Footer/>
     </div>
   );

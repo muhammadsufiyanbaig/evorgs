@@ -13,7 +13,7 @@ const Footer = () => {
               <Image
                 width={32}
                 height={32}
-                src={"https://your-logo-url.com/logo.svg"} // Replace with your event planning site logo
+                src={"/next.svg"} // Replace with your event planning site logo
                 className="h-8 me-3"
                 alt="Evorgs™"
               />
