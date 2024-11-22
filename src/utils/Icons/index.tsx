@@ -1,4 +1,4 @@
-import { ContactIconProps, FooterIconProps, HeaderIconProps } from "../interfaces/LandingPage";
+import { ContactIconProps, FooterIconProps, HeaderIconProps, HeartIconProps } from "../interfaces";
 
 export const Email = ({ color }: ContactIconProps) => (
   <svg
