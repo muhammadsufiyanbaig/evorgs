@@ -70,7 +70,7 @@ const handleClick = () => {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <div className="text-sm">
-                  <Link href="#" className="font-semibold text-orange-600 hover:text-orange-500">
+                  <Link href="/forget-password" className="font-semibold text-orange-600 hover:text-orange-500">
                     Forgot password?
                   </Link>
                 </div>
