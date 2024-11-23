@@ -20,7 +20,6 @@ const LandingPage = () => {
       <Testimonial/>
       <CTABanner/>
       <HIWBanner/>
-      <DownloadBanner/>
     </div>
   );
 };
