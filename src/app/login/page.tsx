@@ -113,8 +113,10 @@ const handleClick = () => {
 
       {/* Right Section */}
       <div className="hidden p-6 lg:flex lg:w-1/2 lg:items-center lg:justify-center bg-gray-50">
-        <img
-          src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80"
+        <Image
+        height={4000}
+        width={2000}
+        src="/hero-bg.jpg"
           alt="Workspace"
           className="object-cover w-full h-full rounded-xl shadow-2xl"
         />
