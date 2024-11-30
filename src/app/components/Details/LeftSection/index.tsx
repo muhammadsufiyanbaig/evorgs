@@ -7,7 +7,7 @@ import Rating from "../Rating";
 
 const LeftSection = () => {
   return (
-    <div className="space-y-6 w-full lg:w-[70%]">
+    <div className="space-y-6 w-full lg:w-[65%]">
       <Overview />
       <Amenities />
       <Map />

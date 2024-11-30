@@ -28,18 +28,30 @@ const hotels = [
 
 const cardDetails = [
   { rating: hotels[0].rating, label: "Very Good", reviews: true },
-  { icon: <Stars height={30} width={30} />, label: "New Park" },
-  { icon: <Stars height={30} width={30} />, label: "Near nightlife" },
-  { icon: <Stars height={30} width={30} />, label: "Near theater" },
-  { icon: <Stars height={30} width={30} />, label: "Clean Hotel" },
+  { icon: <Stars height={30} width={30} color="#C2410C" />, label: "New Park" },
+  {
+    icon: <Stars height={30} width={30} color="#C2410C" />,
+    label: "Near nightlife",
+  },
+  {
+    icon: <Stars height={30} width={30} color="#C2410C" />,
+    label: "Near theater",
+  },
+  {
+    icon: <Stars height={30} width={30} color="#C2410C" />,
+    label: "Clean Hotel",
+  },
 ];
+
 
 const Overview = () => {
   return (
-    <section className="mt-10">
-      <div className="container py-8 border-t space-y-8">
-        <h2 className="text-xl font-bold">Overview</h2>
-        <p className="text-sm leading-relaxed">
+    <section className=" bg-white rounded-lg px-4 lg:px-6">
+      <h2 className="py-6 text-xl font-bold">Overview</h2>
+      <div className="py-6 relative border-t ">
+        <div className="absolute h-[2px] bg-orange-600 w-1/12 -top-[1px]" />
+       <div className="space-y-6">
+       <p className="text-sm leading-relaxed">
           Located in Taksim Gmsuyu, the heart of Istanbul, the CVK Park
           Bosphorus Hotel Istanbul has risen from the ashes of the historic Park
           Hotel, which also served as Foreign Affairs Palace 120 years ago and
@@ -53,11 +65,13 @@ const Overview = () => {
           well as 68 separate luxury suites, are offered to its special guests
           as a wide variety of selection.
         </p>
-        <div className="w-full max-w-2xl grid grid-cols-2 min-[450px]:grid-cols-3 md:grid-cols-5 gap-3">
+        <div className="w-full max-w-2xl flex flex-wrap justify-around sm:justify-start gap-3">
           {cardDetails.map((card, index) => (
             <Card
               key={index}
-               className={`aspect-square shadow-none border-orange-600 ${index === 0 ? "bg-orange-600 text-white" : ""}`}
+              className={`aspect-square h-28 shadow-none border-orange-600 ${
+                index === 0 ? "bg-orange-600 text-white" : ""
+              }`}
             >
               <CardContent className="p-3 h-full">
                 <div className="flex flex-col justify-between h-full">
@@ -79,7 +93,7 @@ const Overview = () => {
                     <>
                       {card.icon}
                       <div className="">
-                        <p className="font-semibold text-sm">{card.label}</p>
+                        <p className="font-semibold text-xs">{card.label}</p>
                       </div>
                     </>
                   )}
@@ -88,6 +102,7 @@ const Overview = () => {
             </Card>
           ))}
         </div>
+       </div>
       </div>
     </section>
   );

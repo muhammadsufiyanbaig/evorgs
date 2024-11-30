@@ -1,121 +1,296 @@
-'use client'
-import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client";
+
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Image from 'next/image';
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  BookCopy,
+  BookMarked,
+  ChevronDown,
+  Heart,
+  Lock,
+  MapPin,
+  UsersRound,
+  Verified,
+} from "lucide-react";
 
-const VendorProfile = () => {
-  const [activeTab, setActiveTab] = useState('tab1');
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
+export default function PhotographerProfile() {
+  const posts = [
+    {
+      id: 1,
+      imageSrc: "/venue-category.jpg",
+      alt: "Nature scene",
+      title: "My new project",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "12:09 PM",
+      likes: 23,
+      saved: 12,
+      locked: true,
+      badge: null,
+    },
+    {
+      id: 2,
+      imageSrc: "/venue-category.jpg",
+      alt: "Fashion photoshoot",
+      title: "My first photoshoot",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "1 day ago",
+      likes: 12,
+      saved: 4,
+      locked: false,
+      badge: "Premium",
+    },
+    {
+      id: 3,
+      imageSrc: "/venue-category.jpg",
+      alt: "Fashion photoshoot",
+      title: "My first photoshoot",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "1 day ago",
+      likes: 12,
+      saved: 4,
+      locked: false,
+      badge: "Premium",
+    },
+    {
+      id: 4,
+      imageSrc: "/venue-category.jpg",
+      alt: "Fashion photoshoot",
+      title: "My first photoshoot",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "1 day ago",
+      likes: 12,
+      saved: 4,
+      locked: false,
+      badge: "Premium",
+    },
+    {
+      id: 5,
+      imageSrc: "/venue-category.jpg",
+      alt: "Fashion photoshoot",
+      title: "My first photoshoot",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "1 day ago",
+      likes: 12,
+      saved: 4,
+      locked: false,
+      badge: "Premium",
+    },
+    {
+      id: 6,
+      imageSrc: "/venue-category.jpg",
+      alt: "Fashion photoshoot",
+      title: "My first photoshoot",
+      description:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minima tenetur aut aperiam quibusdam eveniet a necessitatibus. Harum, explicabo ducimus.",
+      time: "1 day ago",
+      likes: 12,
+      saved: 4,
+      locked: false,
+      badge: "Premium",
+    },
+    // ...add four more post objects...
+  ];
 
-  const stars = [1, 2, 3, 4, 5];
+  interface SortDropdownProps {
+    value?: string;
+    onValueChange?: (value: string) => void;
+  }
 
-  const tabData = {
-    tab1: [
-      { id: 1, image: '/aboutbanner.jpg', title: 'Image 1' },
-      { id: 2, image: '/banner.jpg', title: 'Image 2' },
-      { id: 3, image: '/Bg-download.png', title: 'Image 3' },
-    ],
-    tab2: [
-      { id: 1, image: '/catering-category.jpg', title: 'Image 4' },
-      { id: 2, image: '/CTABanner.png', title: 'Image 5' },
-      { id: 3, image: '/venue-category.jpg', title: 'Image 6' },
-    ],
-    tab3: [
-      { id: 1, image: '/farmHouse-category.jpg', title: 'Image 7' },
-      { id: 2, image: '/photography-category.jpg', title: 'Image 8' },
-      { id: 3, image: '/hero-bg.jpg', title: 'Image 9' },
-    ],
-  };
+  const [sortBy, setSortBy] = useState("Most popular");
 
   return (
-    <div className="max-w-screen min-h-screen mx-auto mt-10 p-6 bg-gray-50 shadow-md rounded-lg">
-      {/* Profile Header */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-        <div className="w-full md:w-1/3 flex flex-col items-center">
-          <Avatar className="w-24 h-24 mb-4">
-            <AvatarImage src="https://github.com/nutlope.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <h2 className="text-2xl font-semibold text-gray-800">John Doe</h2>
+    <section className="container">
+      <div className="w-full mt-16">
+        {/* Banner and Profile Section */}
+        <div className="relative">
+          <div className="h-52 md:h-96 w-full relative rounded-xl p-4 overflow-hidden">
+            <Image
+              src="/aboutbanner.jpg"
+              alt="Profile banner"
+              width={1000}
+              height={1000}
+              className="h-full w-full object-cover rounded-xl"
+            />
+          </div>
+          <div className="absolute -bottom-10 left-4 md:left-8">
+            <div className="relative w-32 h-32 rounded-full border-4 border-white overflow-hidden">
+              <Image
+                src="/pic-4.jpg"
+                alt="Profile picture"
+                className="object-cover"
+                fill
+              />
+            </div>
+          </div>
         </div>
-        <div className="w-full md:w-2/3 flex flex-col items-center md:items-start">
-          {/* Star Rating */}
-          <div className="flex gap-2">
-            {stars.map((star, index) => (
-              <button
-                key={index}
-                onClick={() => setRating(star)}
-                onMouseEnter={() => setHoverRating(star)}
-                onMouseLeave={() => setHoverRating(0)}
-                className="focus:outline-none"
-              >
-                {hoverRating >= star || rating >= star ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+
+        {/* Profile Info */}
+        <div className="py-12 px-4 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">Johnathan Clein</h1>
+                <Verified className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex items-center gap-2 flex-wrap text-muted-foreground">
+                <span>Commercial photographer</span>
+                <span>•</span>
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>California, USA</span>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 bg-white px-2 py-2 rounded-xl">
+              <div className="text-start px-3 flex flex-col sm:flex-row items-center justify-center gap-2 border-r-2">
+                <UsersRound className="fill-muted-foreground text-muted-foreground" />
+                <div className="text-xs md:text-base text-center sm:text-start">
+                  <div className="font-bold">3,487</div>
+                  <div className="text-sm text-muted-foreground">
+                    subscribers
+                  </div>
+                </div>
+              </div>
+              <div className="text-start px-3 flex flex-col sm:flex-row items-center justify-center gap-2 border-r-2">
+                <BookCopy className="fill-muted-foreground text-muted-foreground" />
+                <div className="text-xs md:text-base text-center sm:text-start">
+                  <div className="font-bold">28</div>
+                  <div className="text-sm text-muted-foreground">posts</div>
+                </div>
+              </div>
+              <div className="text-start px-3 flex flex-col sm:flex-row items-center justify-center gap-2 ">
+                <Heart className="fill-muted-foreground text-muted-foreground" />
+                <div className="text-xs md:text-base text-center sm:text-start">
+                  <div className="font-bold">1,593</div>
+                  <div className="text-sm text-muted-foreground">likes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex flex-col-reverse gap-4 sm:flex-row justify-between items-center mt-8 px-4">
+            <Tabs defaultValue="posts" className="border rounded-xl overflow-hidden p-1 bg-white">
+              <TabsList className="w-full justify-start h-auto p-0 bg-transparent">
+                <TabsTrigger
+                  value="posts"
+                  className="data-[state=active]:bg-orange-400/70 text-xs md:text-base rounded-lg px-3 sm:px-4 py-2"
+                >
+                  Posts
+                </TabsTrigger>
+                <TabsTrigger
+                  value="goals"
+                  className="data-[state=active]:bg-orange-400/70 text-xs md:text-base rounded-lg px-3 sm:px-4 py-2"
+                >
+                  Goals
+                </TabsTrigger>
+                <TabsTrigger
+                  value="community"
+                  className="data-[state=active]:bg-orange-400/70 text-xs md:text-base rounded-lg px-3 sm:px-4 py-2"
+                >
+                  Community
+                  <Badge className="ml-2 bg-orange-600">3</Badge>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="courses"
+                  className="data-[state=active]:bg-orange-400/70 text-xs md:text-base rounded-lg px-3 sm:px-4 py-2"
+                >
+                  Courses
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="flex justify-end w-full sm:w-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-muted-foreground gap-2"
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-300"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                )}
-              </button>
+                    Sort by: <span className="text-black">{sortBy}</span>{" "}
+                    <ChevronDown className="w-4 h-4 bg-white rounded" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setSortBy("Most popular")}>
+                    Most popular
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("Newest")}>
+                    Newest
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("Oldest")}>
+                    Oldest
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
+          {/* Posts Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4 mt-8">
+            {posts.map((post) => (
+              <Card key={post.id} className="relative group overflow-hidden p-2">
+                <div className="relative aspect-video rounded-xl overflow-hidden">
+                  <Image
+                    src={post.imageSrc}
+                    alt={post.alt}
+                    className="object-cover rounded-xl"
+                    fill
+                  />
+                  {post.locked ? (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="flex items-center gap-2 text-white bg-gray-800 px-4 py-2 rounded-full">
+                        <Lock className="w-5 h-5" />
+                        <span className="font-medium">Locked</span>
+                      </div>
+                    </div>
+                  ) : (
+                    post.badge && (
+                      <Badge className="absolute top-0 right-0 bg-orange-600 rounded-xl px-4 py-2">
+                        {post.badge}
+                      </Badge>
+                    )
+                  )}
+                </div>
+                <div className="p-4 space-y-3">
+                 <div className="flex justify-between items-center flex-wrap">
+                 <h3 className="font-bold line-clamp-1">{post.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {post.time}
+                  </p>
+                 </div>
+                 <p className="text-muted-foreground line-clamp-2">{post.description}</p>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Heart className="h-4 w-4 fill-muted-foreground"/>
+                      {post.likes} likes
+                    </span>
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    <BookMarked className="h-4 w-4 "/>
+                      {post.saved} saved
+                    </span>
+                  </div>
+                </div>
+              </Card>
             ))}
           </div>
         </div>
       </div>
-
-      {/* Tabs */}
-      <div className="flex justify-center gap-4 mb-6">
-        {Object.keys(tabData).map((tab) => (
-          <Button
-            key={tab}
-            variant={activeTab === tab ? 'default' : 'ghost'}
-            onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 rounded-lg font-medium ${
-              activeTab === tab
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
-          >
-            {tab.toUpperCase()}
-          </Button>
-        ))}
-      </div>
-
-      {/* Grid Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tabData[activeTab as keyof typeof tabData].map((item: { id: number; image: string; title: string; }) => (
-          <div
-            key={item.id}
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            <Image
-            height={200}
-            width={200}
-              src={item.image}
-              alt={item.title}
-              className="w-full h-64 rounded-t-lg object-cover"
-            />
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800">{item.title}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </section>
   );
-};
-
-export default VendorProfile;
+}

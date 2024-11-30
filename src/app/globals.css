@@ -166,7 +166,7 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-100 text-foreground;
   }
 }
 
@@ -194,3 +194,6 @@ body {
 }
 
 
+.rdp-caption_start.rdp-caption_end{
+  @apply w-full
+}

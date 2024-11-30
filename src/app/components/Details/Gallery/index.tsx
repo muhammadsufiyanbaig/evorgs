@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -53,21 +55,48 @@ const renderStars = (rating: number) => {
           key={`full-${index}`}
           height={15}
           width={15}
-          color="#FFFF00"
+          color="#FB923C"
         />
       ))}
-      {halfStar && <HalfStarFill height={15} width={15} color="#FFFF00" />}
+      {halfStar && <HalfStarFill height={15} width={15} color="#FB923C" />}
       {Array.from({ length: emptyStars }).map((_, index) => (
-        <Star key={`empty-${index}`} height={15} width={15} color="#FFFF00" />
+        <Star key={`empty-${index}`} height={15} width={15} color="#FB923C" />
       ))}
     </>
   );
 };
 
 const Gallery = () => {
+  const handleShare = () => {
+    const url = window.location.href; // Get the current page URL
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        alert("URL copied to clipboard!");
+      })
+      .catch((error) => {
+        console.error("Failed to copy URL:", error);
+      });
+  };
+
   return (
     <section className="mt-32">
       <div className="container">
+        <div className="flex items-center gap-4 mb-4">
+          <Link href={"/vendor/profile"} className="rounded-full aspect-square h-24 sm:h-28 overflow-hidden p-1  bg-white">
+            <Image
+              src={"/pic-4.jpg"}
+              alt=""
+              height={1000}
+              width={1000}
+              className="h-full w-full object-cover rounded-full"
+            />
+          </Link>
+          <div>
+            <Link href={"/vendor/profile"} className="text-2xl sm:text-3xl font-bold">John Doe</Link>
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row justify-between md:items-end">
           <div className="space-y-3">
             <div className="breadcrumb">
@@ -93,7 +122,7 @@ const Gallery = () => {
             <div className="title flex flex-wrap gap-4">
               <h2 className="text-2xl font-bold">{hotels[0].name}</h2>
               <div className="flex items-center justify-center sm:justify-start space-x-2">
-                <span className="text-yellow-500 text-xl flex items-center">
+                <span className="text-orange-500 text-xl flex items-center">
                   {renderStars(hotels[0].rating)}
                 </span>
               </div>
@@ -124,11 +153,14 @@ const Gallery = () => {
               <button className="border border-orange-600 rounded-md p-3">
                 <Heart height={20} width={20} color="#000000" />
               </button>
-              <button className="border border-orange-600 rounded-md p-3">
+              <button
+                className="border border-orange-600 rounded-md p-3"
+                onClick={handleShare} // Attach the click handler
+              >
                 <Share height={20} width={20} color="#000000" />
               </button>
               <button className="px-6 py-3 w-full bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 mt-0">
-                View Place
+                Book Now
               </button>
             </div>
           </div>

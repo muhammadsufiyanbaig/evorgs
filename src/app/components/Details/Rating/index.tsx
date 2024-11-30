@@ -92,7 +92,7 @@ export default function Rating() {
               <p>Reviewed by 1 user</p>
             </div>
             <Card className="p-6 bg-gray-50 shadow-none rounded-lg border-none">
-              <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <Avatar className="w-16 h-16">
                   <AvatarFallback className="bg-gray-200">DT</AvatarFallback>
                 </Avatar>
@@ -106,18 +106,20 @@ export default function Rating() {
                             key={i}
                             className={`w-4 h-4 ${
                               i < PersonRating.rating
-                                ? "fill-yellow-400 text-yellow-400"
-                                : " text-yellow-400"
+                                ? "fill-orange-400 text-orange-400"
+                                : " text-orange-400"
                             }`}
                           />
                         ))}
                     </div>
-                    <span className="text-sm text-muted-foreground flex items-center">
+                    <span className="text-sm text-muted-foreground flex items-center flex-wrap gap-2">
                       by: {PersonRating.author}
-                      <span className="mx-2">
+                    <div className="flex items-center gap-2">
+                    <span className="">
                         <CalendarDays className="h-4 w-4" />
                       </span>
                       {PersonRating.timestamp}
+                    </div>
                     </span>
                   </div>
                   <h3 className="font-medium">{PersonRating.organization}</h3>
