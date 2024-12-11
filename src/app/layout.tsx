@@ -5,6 +5,7 @@ import ActiveSectionContextProvider from "./context/active-section-context";
 import Header from "./components/Header";
 import Footer from "./components/LandingPage/Footer";
 import DownloadBanner from "./components/LandingPage/DownloadBanner";
+import HeaderFooterWrapper from "./components/HeaderFooterWrapper/HeaderFooterWrapper";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,10 +34,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Header />
-          {children}
-          <DownloadBanner />
-          <Footer />
+          <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
         </body>
       </ActiveSectionContextProvider>
     </html>

@@ -2,7 +2,7 @@ import React from "react";
 
 const BookingCard = () => {
   return (
-    <div className=" rounded-xl mt-5 bg-white p-4 shadow-lg sticky top-4">
+    <div className=" rounded-xl mt-5 bg-white p-4 shadow-lg sticky top-20">
       {/* Hotel Info Section */}
       <div className="flex items-start gap-6">
         <div className="aspect-square w-[20%] lg:w-[30%] rounded bg-gray-200"></div>

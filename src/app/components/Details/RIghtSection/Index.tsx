@@ -253,7 +253,7 @@ const RightSection = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" onClick={() => setIsPopupOpen(false)}>
+            <Button className="bg-orange-600 hover:bg-orange-500" type="button" onClick={() => setIsPopupOpen(false)}>
               Close
             </Button>
           </DialogFooter>

@@ -45,7 +45,7 @@ export default function CreateProfile() {
   }
 
   return (
-    <section className="py-10 flex justify-center items-center bg-gradient-to-b min-h-screen from-orange-100 to-white dark:from-orange-900 dark:to-gray-900">
+    <section className="py-10 flex justify-center items-center bg-gradient-to-b min-h-screen from-orange-100 to-white dark:from-orange-900 dark:to-gray-900 pt-20">
       <div className="max-w-3xl w-full px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-xl p-8">
           <h1 className="text-3xl font-serif font-extrabold mb-2 text-orange-500 dark:text-orange-400">
