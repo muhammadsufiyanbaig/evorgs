@@ -165,7 +165,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onSelect }) => {
               </svg>
             </button>
           </div>
-          <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-back gap-1 px-1">
+          <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-back gap-1 px-1"> 
             <div className='border border-orange-600 py-1 rounded-lg bg-orange-500/40 font-bold'>S</div>
             <div className='border border-orange-600 py-1 rounded-lg bg-orange-500/40 font-bold'>M</div>
             <div className='border border-orange-600 py-1 rounded-lg bg-orange-500/40 font-bold'>T</div>
