@@ -1,11 +1,5 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import BreadCrumb from "../../Breadcrumb";
+
 
 const ContactBanner = () => {
   return (
@@ -20,21 +14,7 @@ const ContactBanner = () => {
         <div className="breadcrumb h-full w-full bg-black/70 flex justify-center items-center">
           <div className="flex flex-col justify-center items-center gap-3">
             <h2 className="text-5xl text-white font-semibold ">Contact Us</h2>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink className="text-lg text-white" href="/">
-                    Home
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-lg text-white">
-                    Contact Us
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <BreadCrumb />
           </div>
         </div>
       </div>

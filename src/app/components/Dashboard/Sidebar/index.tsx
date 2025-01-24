@@ -83,7 +83,7 @@ const Sidebar: React.FC = () => {
       >
         <div
           ref={sidebarRef}
-          className="w-3/4 lg:w-auto p-6  bg-gray-50 shadow-md rounded-xl sticky top-2"
+          className="w-3/4 lg:w-auto p-6  bg-gray-50 shadow-md rounded-xl sticky top-20"
         >
           <div className="flex justify-between mt-14 lg:mt-auto  border-b">
             <h3 className="text-lg font-semibold text-gray-800 mb- pb-2">

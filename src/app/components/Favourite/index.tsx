@@ -28,53 +28,92 @@ const hotels = [
   },
 ];
 const Favourite = () => {
-  const [activeTab, setActiveTab] = useState("Flights");
+  const [activeTab, setActiveTab] = useState("Photography");
 
   return (
     <div className="mt-32 mb-10 ">
       <div className="container px-4 lg:px-10 space-y-8">
         <h1 className="font-bold text-3xl">Favourites</h1>
         <div className="space-y-8">
-          <div className="shadow-lg rounded-lg overflow-hidden">
-            <div className="flex justify-between px-2 w-full ">
-              {/* Flights Tab */}
+          <div className="shadow-lg rounded-lg overflow-hidden bg-white/70 relative">
+            <div className="flex justify-between w-full divide-x-2 ">
+              {/* Photography Tab */}
               <button
-                className={`flex-1 text-start px-4 py-2 ${
-                  activeTab === "Flights"
-                    ? "text-orange-500 font-bold"
+                className={`flex-1 text-start whitespace-nowrap px-2 sm:px-4 py-2 text-xs sm:text-base ${
+                  activeTab === "Photography"
+                    ? "text-orange-500 font-semibold sm:font-bold"
                     : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("Flights")}
+                onClick={() => setActiveTab("Photography")}
               >
-                Flights
-                <span className="block text-sm text-gray-400 font-normal">
-                  {activeTab === "Flights" ? "2 marked" : ""}
+                Photography
+                <span className="block text-xs sm:text-sm text-gray-400 font-normal">
+                  {activeTab === "Photography" ? "2 marked" : ""}
                 </span>
               </button>
 
-              {/* Places Tab */}
+              {/* Catring Tab */}
               <button
-                className={`flex-1 text-start px-4 py-2 ${
-                  activeTab === "Places"
-                    ? "text-orange-500 font-bold"
+                className={`flex-1 text-start whitespace-nowrap px-2 sm:px-4 py-2 text-xs sm:text-base ${
+                  activeTab === "Catering"
+                    ? "text-orange-500 font-semibold sm:font-bold"
                     : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("Places")}
+                onClick={() => setActiveTab("Catering")}
               >
-                Places
-                <span className="block text-sm text-gray-400 font-normal">
-                  {activeTab === "Places" ? "3 marked" : ""}
+                Catring
+                <span className="block text-xs sm:text-sm text-gray-400 font-normal">
+                  {activeTab === "Catering" ? "3 marked" : ""}
+                </span>
+              </button>
+
+               {/* Farm House Tab */}
+               <button
+                className={`flex-1 text-start whitespace-nowrap px-2 sm:px-4 py-2 text-xs sm:text-base ${
+                  activeTab === "Farm House"
+                    ? "text-orange-500 font-semibold sm:font-bold"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActiveTab("Farm House")}
+              >
+                Farm House
+                <span className="block text-xs sm:text-sm text-gray-400 font-normal">
+                  {activeTab === "Farm House" ? "3 marked" : ""}
+                </span>
+              </button>
+             
+               {/* Venue Tab */}
+               <button
+                className={`flex-1 text-start whitespace-nowrap px-2 sm:px-4 py-2 text-xs sm:text-base ${
+                  activeTab === "Venue"
+                    ? "text-orange-500 font-semibold sm:font-bold"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActiveTab("Venue")}
+              >
+                Venue
+                <span className="block text-xs sm:text-sm text-gray-400 font-normal">
+                  {activeTab === "Venue" ? "3 marked" : ""}
                 </span>
               </button>
             </div>
 
             {/* Highlighted Active Tab */}
             <div
-              className={`h-1 bg-orange-500 transition-transform duration-300 ${
-                activeTab === "Flights" ? "translate-x-0" : "translate-x-full"
-              }`}
-              style={{ width: "50%" }}
-            />
+             className="h-1 bg-orange-500 transition-transform duration-300 absolute bottom-0"
+             style={{
+               width: "25%",
+               transform: `translateX(${
+                 activeTab === "Photography"
+                   ? "0%"
+                   : activeTab === "Catering"
+                   ? "100%"
+                   : activeTab === "Farm House"
+                   ? "200%"
+                   : "300%"
+               })`,
+             }}
+          />
           </div>
           {hotels.map((hotel, idx) => (
             <div

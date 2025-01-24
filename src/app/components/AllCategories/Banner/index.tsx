@@ -6,6 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import BreadCrumb from "../../Breadcrumb";
 
 const AllCategoriesBanner = () => {
   return (
@@ -20,21 +21,7 @@ const AllCategoriesBanner = () => {
         <div className="breadcrumb h-full w-full bg-black/70 flex justify-center items-center">
           <div className="flex flex-col justify-center items-center gap-3">
             <h2 className="text-5xl text-white font-semibold ">All Categories</h2>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink className="text-lg " href="/">
-                    Home
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-lg">
-                    All Categories
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <BreadCrumb />
           </div>
         </div>
       </div>

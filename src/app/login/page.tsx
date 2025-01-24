@@ -35,9 +35,9 @@ const handleClick = () => {
   router.push("/dashboard");
 }
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen px-2 lg:px-5 my-5">
       {/* Left Section */}
-      <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white rounded-xl">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Image
             height={40}
@@ -112,7 +112,7 @@ const handleClick = () => {
       </div>
 
       {/* Right Section */}
-      <div className="hidden p-6 lg:flex lg:w-1/2 lg:items-center lg:justify-center bg-gray-50">
+      <div className="hidden p-6 lg:flex lg:w-1/2 lg:items-center lg:justify-center">
         <Image
         height={4000}
         width={2000}

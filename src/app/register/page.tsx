@@ -221,7 +221,7 @@ export default function RegisterPage() {
         {/* Login Link */}
         <div className="mt-4 text-center text-sm">
           <span className="text-gray-600">Already have an account? </span>
-          <Link href="/create-profile" className="text-orange-600 hover:underline">
+          <Link href="/login" className="text-orange-600 hover:underline">
             Login here
           </Link>
         </div>

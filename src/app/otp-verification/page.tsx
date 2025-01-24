@@ -85,7 +85,7 @@ export default function OTPVerification() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="otp-1">Enter the 6-digit code sent to your email</Label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center">
               {otp.map((digit, index) => (
                 <Input
                   key={index}
