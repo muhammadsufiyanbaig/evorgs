@@ -1,10 +1,12 @@
 import React from "react";
-import Details from "@/app/components/Details";
+import ServiceProfileComponent from "@/app/components/ServiceProfile";
 
 const ServiceProfile = () => {
-  return <>
-    <Details />
-  </>;
+  return (
+    <>
+      <ServiceProfileComponent />
+    </>
+  );
 };
 
 export default ServiceProfile;
