@@ -41,7 +41,7 @@ export default function CreateProfile() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     console.log("Form Data:", formData)
-    router.push("/dashboard");
+    router.push("/service");
   }
 
   return (

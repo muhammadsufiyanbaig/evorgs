@@ -24,7 +24,7 @@ import {
   Verified,
 } from "lucide-react";
 
-export default function PhotographerProfile() {
+export default function VendorProfile() {
   const posts = [
     {
       id: 1,
@@ -106,11 +106,6 @@ export default function PhotographerProfile() {
     },
     // ...add four more post objects...
   ];
-
-  interface SortDropdownProps {
-    value?: string;
-    onValueChange?: (value: string) => void;
-  }
 
   const [sortBy, setSortBy] = useState("Most popular");
 
