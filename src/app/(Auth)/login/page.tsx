@@ -32,7 +32,7 @@ export default function LoginForm() {
     );
   }
 const handleClick = () => {
-  router.push("/dashboard");
+  router.push("/service");
 }
   return (
     <div className="flex h-screen px-2 lg:px-5 my-5">

@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import Sidebar from "./Sidebar";
 import HotelList from "./HotelList";
 
-const Dashboard = () => {
+const Service = () => {
   return (
     <div className="p-4 lg:p-6 container">
       <SearchBar />
@@ -15,5 +15,5 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Service;
   

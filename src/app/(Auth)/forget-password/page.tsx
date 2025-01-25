@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle, ArrowRight } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function ForgetPassword() {

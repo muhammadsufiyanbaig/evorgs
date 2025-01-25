@@ -18,7 +18,7 @@ const bookings = [
   { id: 7, service: "Event Catering", date: "2024-02-20T17:00:00Z", status: "completed", image: "/catering-category.jpg" },
 ]
 
-export default function BookingHistory() {
+export default function MyBooking() {
   const [filter, setFilter] = useState<"all" | "upcoming" | "completed">("all")
   const [expandedId, setExpandedId] = useState<number | null>(null)
 
@@ -32,7 +32,7 @@ export default function BookingHistory() {
 
   return (
     <div className="w-full min-h-screen max-w-screen mt-10 p-8 bg-gradient-to-br from-orange-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg">
-      <h2 className="text-3xl font-bold text-orange-500 dark:text-orange-400 mb-6 text-center">Your Booking History</h2>
+      <h2 className="text-3xl font-bold text-orange-500 dark:text-orange-400 mb-6 text-center">Your Booking</h2>
       
       <Tabs value={filter} onValueChange={(value) => setFilter(value as typeof filter)} className="mb-6">
         <TabsList className="flex justify-center space-x-5 bg-transparent p-1">
