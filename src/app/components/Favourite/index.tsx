@@ -167,7 +167,7 @@ const Favourite = () => {
                     <Heart height={20} width={20} color="#000000" />
                   </button>
                   <Link
-                    href={"/details"}
+                    href={"/service/123"}
                     className="px-6 py-3 w-full bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 mt-6"
                   >
                     View Place
