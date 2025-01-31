@@ -15,7 +15,7 @@ export function MiniCalendar({ date, onDateSelect }: MiniCalendarProps) {
   const today = date.getDate()
 
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  const previousMonthDays = Array.from({ length: firstDayOfMonth }, (_, i) => ({
+  const previousMonthDays = Array.from({ length: firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1 }, (_, i) => ({
     day: new Date(year, month, 0).getDate() - i,
     isPreviousMonth: true,
   })).reverse()
@@ -29,20 +29,20 @@ export function MiniCalendar({ date, onDateSelect }: MiniCalendarProps) {
   }
 
   return (
-    <div className="select-none">
+    <div className="select-none p-4 bg-white shadow-lg  rounded-lg">
       <div className="flex items-center justify-between mb-4">
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigateMonth("prev")}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="font-medium">{date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</div>
+        <div className="font-medium text-orange-500 text-lg">{date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</div>
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigateMonth("next")}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center mb-2">
         {weekDays.map((day) => (
-          <div key={day} className="text-sm text-muted-foreground">
-            {day}
+          <div key={day} className="flex justify-center items-center text-sm font-semibold p-1 bg-slate-50 text-orange-500">
+           <p>{day}</p>
           </div>
         ))}
       </div>
@@ -50,24 +50,24 @@ export function MiniCalendar({ date, onDateSelect }: MiniCalendarProps) {
         {previousMonthDays.map(({ day }) => (
           <div
             key={`prev-${day}`}
-            className="p-2 text-sm text-muted-foreground cursor-pointer hover:bg-accent rounded-full"
+            className="flex justify-center items-center p-2 text-sm text-gray-400 text-center cursor-pointer  hover:bg-gray-200 rounded-sm"
             onClick={() => {
               const newDate = new Date(year, month - 1, day)
               onDateSelect(newDate)
             }}
           >
-            {day}
+          <p>{day}</p>
           </div>
         ))}
         {days.map((day) => (
           <div
             key={day}
-            className={`p-2 text-sm rounded-full cursor-pointer hover:bg-accent ${
-              day === today ? "bg-orange-500 text-white hover:bg-orange-500/90" : day === 20 ? "text-orange-500" : ""
+            className={`flex justify-center items-center p-2 text-sm rounded-sm text-center cursor-pointer hover:bg-orange-200 ${
+              day === today ? "bg-orange-500 text-white hover:bg-orange-500/90" : "text-gray-700"
             }`}
             onClick={() => onDateSelect(new Date(year, month, day))}
           >
-            {day}
+           <p>{day}</p> 
           </div>
         ))}
       </div>
