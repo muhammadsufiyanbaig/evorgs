@@ -2,7 +2,7 @@ import React from 'react'
 import ContactBanner from './Banner'
 import ContactDetailsCard from './ContactDetailsCard'
 import ContactForm from './ContactForm'
-import DownloadBanner from '../LandingPage/DownloadBanner'
+import DownloadBanner from '../AllCategories/LandingPage/DownloadBanner'
 
 const ContactPage = () => {
   return (

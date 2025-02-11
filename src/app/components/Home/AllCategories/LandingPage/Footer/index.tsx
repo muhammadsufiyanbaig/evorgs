@@ -13,13 +13,13 @@ const Footer = () => {
               <Image
                 width={32}
                 height={32}
-                src={"/next.svg"} // Replace with your event planning site logo
-                className="h-8 me-3"
+                src={"/logo.svg"} // Replace with your event planning site logo
+                className="h-full w-2/3 me-3"
                 alt="Evorgs™"
               />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+              {/* <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                 Evorgs™
-              </span>
+              </span> */}
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">

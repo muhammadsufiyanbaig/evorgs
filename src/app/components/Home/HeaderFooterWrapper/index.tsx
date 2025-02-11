@@ -1,8 +1,8 @@
 "use client";
 import { usePathname } from 'next/navigation';
-import Header from '../Header';
-import DownloadBanner from '../LandingPage/DownloadBanner';
-import Footer from '../LandingPage/Footer';
+import Header from '../../Reuseable/Header';
+import DownloadBanner from '../AllCategories/LandingPage/DownloadBanner';
+import Footer from '../AllCategories/LandingPage/Footer';
 
 const HeaderFooterWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();

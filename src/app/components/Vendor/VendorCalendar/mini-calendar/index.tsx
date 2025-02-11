@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/utils"
+import { getDaysInMonth, getFirstDayOfMonth } from "@/utils/function"
 
 interface MiniCalendarProps {
   date: Date

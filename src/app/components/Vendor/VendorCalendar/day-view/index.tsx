@@ -1,4 +1,4 @@
-import type { Event } from "@/lib/types"
+import type { Event } from "@/utils/interfaces"
 
 interface DayViewProps {
   date: Date

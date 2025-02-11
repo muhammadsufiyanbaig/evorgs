@@ -1,14 +1,7 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import BreadCrumb from "../../Breadcrumb";
+import BreadCrumb from "../../../Reuseable/Breadcrumb";
 
-const AllCategoriesBanner = () => {
+
+const ContactBanner = () => {
   return (
     <section>
       <div
@@ -20,7 +13,7 @@ const AllCategoriesBanner = () => {
       >
         <div className="breadcrumb h-full w-full bg-black/70 flex justify-center items-center">
           <div className="flex flex-col justify-center items-center gap-3">
-            <h2 className="text-5xl text-white font-semibold ">All Categories</h2>
+            <h2 className="text-5xl text-white font-semibold ">Contact Us</h2>
             <BreadCrumb />
           </div>
         </div>
@@ -29,4 +22,4 @@ const AllCategoriesBanner = () => {
   );
 };
 
-export default AllCategoriesBanner;
+export default ContactBanner;

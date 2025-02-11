@@ -1,18 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Bell, Search, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function VendorHeader() {
   return (
     <header className="border-b px-6 py-3 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl text-black font-bold">
-            EV<span className="text-orange-500">Orgs</span>
-          </span>
-        </Link>
-      </div>
+      <div className="">
+            <Link href="/" className="flex items-center">
+              <Image
+                width={32}
+                height={32}
+                src={"/logo.svg"} // Replace with your event planning site logo
+                className="h-16 w-28"
+                alt="Evorgs™"
+              />
+              {/* <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                Evorgs™
+              </span> */}
+            </Link>
+          </div>
       <div className="flex items-center gap-4">
         <Button
           variant="default"

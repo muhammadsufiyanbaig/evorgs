@@ -2,13 +2,14 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import VendorHeader from "@/app/components/Vendor/VendorHeader"
 import  VendorSidebar  from "@/app/components/Vendor/VendorSidebar"
-
+import '@/app/globals.css'
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Evorgs Vendor Dashboard",
   description: "Business management platform",
+  
 }
 
 export default function RootLayout({
@@ -23,7 +24,7 @@ export default function RootLayout({
           <VendorSidebar />
           <div className="flex-1">
             <VendorHeader />
-            <main className="p-6">{children}</main>
+            <main className="">{children}</main>
           </div>
         </div>
       </body>

@@ -1,5 +1,5 @@
-import type { Event } from "@/lib/types"
-import { formatTime } from "@/lib/utils"
+import type { Event } from "@/utils/interfaces"
+import { formatTime } from "@/utils/function"
 
 interface WeekViewProps {
   date: Date

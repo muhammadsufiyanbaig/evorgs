@@ -8,15 +8,15 @@ import { DayView } from "./day-view"
 import { WeekView } from "./week-view"
 import { MonthView } from "./month-view"
 import { MiniCalendar } from "./mini-calendar"
-import type { Event, ViewType } from "@/lib/types"
-import { sampleEvents } from "@/lib/sample-events"
-import { formatDate } from "@/lib/utils"
+import type { Event, ViewType } from "@/utils/interfaces"
+
+import { formatDate } from "@/utils/function"
 import { AddEventDialog } from "./add-event-dialog"
 
 export default function VendorCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState<ViewType>("day")
-  const [events, setEvents] = useState<Event[]>(sampleEvents)
+  const [events, setEvents] = useState<Event[]>([])
   const [isAddEventOpen, setIsAddEventOpen] = useState(false)
 
   const navigateToday = () => {

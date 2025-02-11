@@ -1,6 +1,6 @@
 
 import React from 'react'
-import AllCategories from '@/app/components/AllCategories'
+import AllCategories from '@/app/components/Home/AllCategories'
 
 const All_Categories = () => {
   return (

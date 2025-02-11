@@ -1,5 +1,5 @@
-import type { Event } from "@/lib/types"
-import { getDaysInMonth, getFirstDayOfMonth } from "@/lib/utils"
+import type { Event } from "@/utils/interfaces"
+import { getDaysInMonth, getFirstDayOfMonth } from "@/utils/function"
 
 interface MonthViewProps {
   date: Date
