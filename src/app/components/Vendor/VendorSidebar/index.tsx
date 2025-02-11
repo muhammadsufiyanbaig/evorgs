@@ -3,16 +3,16 @@ import { Home, Calendar, Tag, Smile, Book, Presentation, BellDotIcon, CreditCard
 
 export default function VendorSidebar() {
   const links = [
-    { href: "/vendor/dashboard", icon: Home },
-    { href: "/vendor/calendar", icon: Calendar },
+    { href: "/vendor/dashboard", icon: Home }, // done
+    { href: "/vendor/calendar", icon: Calendar },// done
     { href: "/vendor/sales", icon: Tag },
-    { href: "/vendor/clients", icon: Smile },
+    { href: "/vendor/clients", icon: Smile },// done
     { href: "/vendor/catalog", icon: Book },
     { href: "/vendor/marketing", icon: Presentation },
     { href: "/vendor/notifications", icon: BellDotIcon },
-    { href: "/vendor/payments", icon: CreditCard },
-    { href: "/vendor/team", icon: Users },
-    { href: "/vendor/reports", icon: LineChart },
+    { href: "/vendor/payments", icon: CreditCard },// done
+    { href: "/vendor/team", icon: Users },// done
+    { href: "/vendor/report", icon: LineChart },
     { href: "/vendor/settings", icon: Settings },
   ];
 
