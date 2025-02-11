@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link"
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Tag, Smile, Book, Presentation, BellDot, CreditCard, Users, LineChart, Settings, ChevronRight } from "lucide-react"
+import { Home, Calendar, Tag, Smile, Book, Presentation, BellDot, CreditCard, Users, LineChart, Settings } from "lucide-react"
 
 import {
   Tooltip,
@@ -27,14 +27,14 @@ export default function VendorSidebar() {
   ];
 
   return (
-    <aside className="w-20 bg-zinc-900 min-h-screen flex flex-col items-center py-4 space-y-4">
-      <nav className="pt-4 space-y-4 flex-1">
+    <aside className="w-[4.5rem] bg-zinc-900 min-h-screen flex flex-col items-center py-4 space-y-4">
+      <nav className="space-y-4 flex-1">
         {links.map(({ href, icon: Icon, label }, index) => (
             <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
               <Link href={href} className={`block p-2 text-white hover:bg-white/10 rounded-lg ${pathname === href ? 'bg-orange-600' : ''}`}>
-                <Icon className="w-8 h-8" />
+                <Icon className="w-7 h-7" />
               </Link>
               </TooltipTrigger>
               <TooltipContent side="right" className="px-2 py-1 text-base ml-4">
