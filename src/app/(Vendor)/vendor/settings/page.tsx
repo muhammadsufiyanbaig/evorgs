@@ -27,12 +27,12 @@ export default function WorkspaceSettings() {
               <button
                 key={id}
                 onClick={() => scrollToSection(id)}
-                className={`px-4 py-2 font-medium text-sm transition-colors relative ${
-                  activeTab === id ? "text-primary" : "text-gray-600 hover:text-gray-900"
+                className={`px-4 py-2 font-bold text-sm transition-colors relative ${
+                  activeTab === id ? "text-primary" : "text-gray-600 hover:text-orange-600"
                 }`}
               >
                 {label}
-                {activeTab === id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
+                {activeTab === id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600" />}
               </button>
             ))}
           </nav>
