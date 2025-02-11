@@ -1,7 +1,10 @@
+'use client';
 import Link from "next/link"
+import { usePathname } from "next/navigation";
 import { Home, Calendar, Tag, Smile, Book, Presentation, BellDotIcon, CreditCard, Users, LineChart, Settings } from "lucide-react"
 
 export default function VendorSidebar() {
+  const pathname = usePathname();
   const links = [
     { href: "/vendor/dashboard", icon: Home }, // done
     { href: "/vendor/calendar", icon: Calendar },// done
@@ -12,7 +15,7 @@ export default function VendorSidebar() {
     { href: "/vendor/notifications", icon: BellDotIcon },
     { href: "/vendor/payments", icon: CreditCard },// done
     { href: "/vendor/team", icon: Users },// done
-    { href: "/vendor/report", icon: LineChart },
+    { href: "/vendor/report", icon: LineChart }, //done
     { href: "/vendor/settings", icon: Settings },
   ];
 
@@ -20,12 +23,11 @@ export default function VendorSidebar() {
     <aside className="w-16 bg-zinc-900 min-h-screen flex flex-col items-center py-4 space-y-4">
       <nav className="pt-4 space-y-4 flex-1">
         {links.map(({ href, icon: Icon }, index) => (
-          <Link key={index} href={href} className="block p-2 text-white hover:bg-white/10 rounded-lg">
+          <Link key={index} href={href} className={`block p-2 text-white hover:bg-white/10 rounded-lg ${pathname === href ? 'bg-orange-600' : ''}`}>
             <Icon className="w-7 h-7" />
           </Link>
         ))}
       </nav>
-     
     </aside>
   )
 }
