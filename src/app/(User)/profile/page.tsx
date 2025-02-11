@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Heart, User2, Edit } from "lucide-react"
-import EditUserModal from "@/app/components/EditUserModal"
+import EditUserModal from "@/app/components/Home/EditUserModal"
 
 export default function UserDetailPage() {
   const [user, setUser] = useState({
