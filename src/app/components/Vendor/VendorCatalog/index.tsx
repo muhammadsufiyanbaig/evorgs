@@ -74,6 +74,16 @@ export default function VendorCatalog() {
     setNewCatalogItem((prev) => ({ ...prev, categories: value }))
   }
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setNewCatalogItem((prev) => ({ ...prev, imageSrc: reader.result as string }))
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleAddCatalog = () => {
     if (newCatalogItem.title && newCatalogItem.description && newCatalogItem.categories) {
       setCatalog((prev) => [
@@ -116,6 +126,7 @@ export default function VendorCatalog() {
             handleCategoryChange={handleCategoryChange}
             handleAddCatalog={handleAddCatalog}
             categories={categories}
+            handleImageUpload={handleImageUpload}
           />
         </div>
         <CatalogSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />

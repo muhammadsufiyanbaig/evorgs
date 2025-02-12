@@ -1,5 +1,5 @@
 import type React from "react"
-import { Plus } from "lucide-react"
+import { Plus, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -32,6 +32,7 @@ type AddCatalogModalProps = {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleCategoryChange: (value: string) => void
   handleAddCatalog: () => void
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void  // <-- added handler
   categories: Category[]
 }
 
@@ -42,6 +43,7 @@ const AddCatalogModal: React.FC<AddCatalogModalProps> = ({
   handleInputChange,
   handleCategoryChange,
   handleAddCatalog,
+  handleImageUpload,  // <-- added handler
   categories,
 }) => {
   return (
@@ -98,18 +100,30 @@ const AddCatalogModal: React.FC<AddCatalogModalProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="imageSrc" className="text-right">
-              Image URL
+            {/* Replace image URL input with file upload */}
+            <div className="flex flex-col space-y-2">
+            <Label htmlFor="imageSrc" className="text-sm font-medium text-gray-700">
+              Upload Image
             </Label>
-            <Input
+            <div className="relative flex flex-col items-center justify-center w-full border border-gray-300 rounded-lg p-4 bg-white shadow-sm hover:border-gray-400 transition cursor-pointer">
+              <input
+              type="file"
               id="imageSrc"
               name="imageSrc"
-              value={newCatalogItem.imageSrc}
-              onChange={handleInputChange}
-              className="col-span-3"
-            />
-          </div>
+              onChange={(e) => {
+                handleImageUpload(e);
+                if (e.target.files && e.target.files[0]) {
+                const fileName = e.target.files[0].name;
+                document.getElementById('fileName')!.textContent = fileName;
+                }
+              }}
+              accept="image/*"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <Upload className="w-10 h-10 text-gray-500" />
+            </div>
+            <span id="fileName" className="text-sm text-gray-500"></span>
+            </div>
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleAddCatalog}>
