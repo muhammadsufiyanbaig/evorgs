@@ -17,7 +17,7 @@ export default function VendorSidebar() {
     { href: "/vendor/calendar", icon: Calendar, label: "Calendar" },// done
     { href: "/vendor/sales", icon: Tag, label: "Sales" },
     { href: "/vendor/clients", icon: Smile, label: "Clients" },// done
-    { href: "/vendor/catalog", icon: GalleryVertical, label: "Catalog" },
+    { href: "/vendor/catalog", icon: GalleryVertical, label: "Catalog" }, //done
     { href: "/vendor/booking", icon: Presentation, label: "Booking" }, //done
     { href: "/vendor/marketing", icon: BellRing , label: "Marketing" },
     { href: "/vendor/payments", icon: CreditCard, label: "Payments" },// done
