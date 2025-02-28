@@ -117,3 +117,26 @@ export interface ReportsState {
   setCreatedByFilter: (creator: string | null) => void
   setCurrentView: (view: View) => void
 }
+
+// Define types
+interface Deal {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+}
+
+export interface StoreState {
+  selectedCategory: "Sponsored" | "Featured";
+  sponsoredDeals: Deal[];
+  featuredDeals: Deal[];
+  setCategory: (category: "Sponsored" | "Featured") => void;
+}
+export interface DealCardProps {
+  deal: {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+  };
+}

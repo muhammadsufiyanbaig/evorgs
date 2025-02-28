@@ -15,11 +15,11 @@ export default function VendorSidebar() {
   const links = [
     { href: "/vendor/dashboard", icon: Home, label: "Dashboard" }, // done
     { href: "/vendor/calendar", icon: Calendar, label: "Calendar" },// done
-    { href: "/vendor/sales", icon: Tag, label: "Sales" },
+    { href: "/vendor/sales", icon: Tag, label: "Sales" },// done
     { href: "/vendor/clients", icon: Smile, label: "Clients" },// done
     { href: "/vendor/catalog", icon: GalleryVertical, label: "Catalog" }, //done
     { href: "/vendor/booking", icon: Presentation, label: "Booking" }, //done
-    { href: "/vendor/marketing", icon: BellRing , label: "Marketing" },
+    { href: "/vendor/marketing", icon: BellRing , label: "Marketing" }, //done
     { href: "/vendor/payments", icon: CreditCard, label: "Payments" },// done
     { href: "/vendor/team", icon: Users, label: "Team" },// done
     { href: "/vendor/report", icon: LineChart, label: "Report" }, //done

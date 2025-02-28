@@ -1,5 +1,5 @@
-import { create } from "zustand"
-import type {  ReportsState } from "@/utils/interfaces"
+import { create } from "zustand";
+import type { ReportsState, StoreState } from "@/utils/interfaces";
 
 export const useReportsStore = create<ReportsState>((set) => ({
   reports: [
@@ -62,18 +62,51 @@ export const useReportsStore = create<ReportsState>((set) => ({
 
   toggleFavorite: (id) =>
     set((state) => {
-      const newFavorites = new Set(state.favorites)
+      const newFavorites = new Set(state.favorites);
       if (newFavorites.has(id)) {
-        newFavorites.delete(id)
+        newFavorites.delete(id);
       } else {
-        newFavorites.add(id)
+        newFavorites.add(id);
       }
-      return { favorites: newFavorites }
+      return { favorites: newFavorites };
     }),
 
   setActiveCategory: (category) => set({ activeCategory: category }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setCreatedByFilter: (creator) => set({ createdByFilter: creator }),
   setCurrentView: (view) => set({ currentView: view }),
-}))
+}));
 
+// Zustand store
+export const useStore = create<StoreState>((set) => ({
+  selectedCategory: "Sponsored",
+  sponsoredDeals: [
+    {
+      id: 1,
+      image: "/venue-category.jpg",
+      title: "My new project",
+      description: "A beautiful venue",
+    },
+    {
+      id: 2,
+      image: "/farmHouse-category.jpg",
+      title: "Farm House",
+      description: "Amazing farm house for rent",
+    },
+  ],
+  featuredDeals: [
+    {
+      id: 3,
+      image: "/catering-category.jpg",
+      title: "Catering",
+      description: "Delicious catering services",
+    },
+    {
+      id: 4,
+      image: "/pic-2.jpg",
+      title: "Photography",
+      description: "Capture your memories",
+    },
+  ],
+  setCategory: (category) => set(() => ({ selectedCategory: category })),
+}));
