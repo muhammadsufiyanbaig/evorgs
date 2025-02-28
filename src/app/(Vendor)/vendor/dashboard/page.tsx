@@ -3,6 +3,7 @@ import { BarChart3, Calendar, History } from "lucide-react"
 
 export default function DashboardPage() {
   return (
+    <div className="py-6 px-20 mx-auto">
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -48,6 +49,7 @@ export default function DashboardPage() {
           <h3 className="mt-4 text-xl font-medium">No Appointments Today</h3>
         </CardContent>
       </Card>
+    </div>
     </div>
   )
 }

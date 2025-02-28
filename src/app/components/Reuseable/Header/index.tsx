@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Plus, UserCircle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 
 export default function Header() {
@@ -24,11 +25,20 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl text-black font-bold">
-              EV<span className="text-orange-500">Orgs</span>
-            </span>
-          </Link>
+          <div className="">
+            <Link href="/" className="flex items-center">
+              <Image
+                width={32}
+                height={32}
+                src={"/logo.svg"} // Replace with your event planning site logo
+                className="h-16 w-28"
+                alt="Evorgs™"
+              />
+              {/* <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                Evorgs™
+              </span> */}
+            </Link>
+          </div>
 
           {/* Hamburger Menu (Mobile) */}
           <div className="md:hidden flex items-center">
