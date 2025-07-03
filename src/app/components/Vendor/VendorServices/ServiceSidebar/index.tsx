@@ -18,7 +18,7 @@ type SidebarProps = {
  const CatalogSidebar: React.FC<SidebarProps> = ({ activeCategory, setActiveCategory, catalog, categories }) => {
   return (
     <div className="w-64 border-r bg-white p-6">
-      <h2 className="mb-6 text-xl font-semibold">Catalog</h2>
+      <h2 className="mb-6 text-xl font-semibold">Services</h2>
       <nav className="space-y-2">
         {categories.map((category) => {
           const Icon = category.icon
@@ -35,7 +35,7 @@ type SidebarProps = {
               <Icon className="h-4 w-4" />
               {category.name}
               <span className="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs">
-                {catalog.filter((p) => category.name === "All Catalog" || p.categories === category.name).length}
+                {catalog.filter((p) => category.name === "All Services" || p.categories === category.name).length}
               </span>
             </Button>
           )

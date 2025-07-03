@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link"
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Tag, Smile, GalleryVertical, Presentation, BellRing, CreditCard, Users, LineChart, Settings } from "lucide-react"
+import { Home, CalendarCheck, Receipt, Megaphone, Smile, Users, LineChart, Settings, BookImage } from "lucide-react"
 
 import {
   Tooltip,
@@ -14,11 +14,11 @@ export default function VendorSidebar() {
   const pathname = usePathname();
   const links = [
     { href: "/vendor/dashboard", icon: Home, label: "Dashboard" }, // done
-    { href: "/vendor/calendar", icon: Calendar, label: "Calendar" },// done
-    { href: "/vendor/sales", icon: Tag, label: "Sales" },// done
+    { href: "/vendor/services", icon: BookImage, label: "Services" }, //done
+    { href: "/vendor/bookings", icon: CalendarCheck, label: "Booking" },// done
+    { href: "/vendor/sales", icon: Receipt, label: "Sales" },// done
+    { href: "/vendor/advertisment", icon: Megaphone , label: "Advertisment" }, //done
     { href: "/vendor/clients", icon: Smile, label: "Clients" },// done
-    { href: "/vendor/services", icon: GalleryVertical, label: "Services" }, //done
-    { href: "/vendor/advertisment", icon: BellRing , label: "Advertisment" }, //done
     { href: "/vendor/team", icon: Users, label: "Team" },// done
     { href: "/vendor/report", icon: LineChart, label: "Report" }, //done
     { href: "/vendor/settings", icon: Settings, label: "Settings" }, //done

@@ -2,6 +2,7 @@ import type React from "react"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 type CatalogItem = {
   id: number
@@ -19,7 +20,7 @@ const CatalogGrid: React.FC<CatalogGridProps> = ({ filteredPosts }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {filteredPosts.length > 0 ? (
       filteredPosts.map((post) => (
-        <Card key={post.id} className="p-4 shadow relative">
+        <Link href={`/vendor/services/123`} key={post.id} className="p-4 shadow relative">
           <Image
             src={post.imageSrc || "/placeholder.svg"}
             alt={post.title}
@@ -32,7 +33,7 @@ const CatalogGrid: React.FC<CatalogGridProps> = ({ filteredPosts }) => (
          <div className="absolute top-6 right-6">
          <Badge className="">{post.categories}</Badge>
          </div>
-        </Card>
+        </Link>
       ))
     ) : (
       <p className="text-gray-500">No results found.</p>

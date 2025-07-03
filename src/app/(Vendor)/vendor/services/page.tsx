@@ -1,12 +1,14 @@
-import VendorCatalog from '@/app/components/Vendor/VendorCatalog'
-import React from 'react'
+"use client"
+import type React from "react"
+import ServicesGrid from "@/app/components/Vendor/VendorServices/ServicesGrid"
+import { useServices } from "@/app/components/Vendor/VendorServices/ServiceContext"
 
-const Catalog = () => {
+export default function VendorServicesPage() {
+  const { filteredPosts } = useServices()
+
   return (
-    <>
-      <VendorCatalog/>
-    </>
+    <div>
+      <ServicesGrid filteredPosts={filteredPosts} />
+    </div>
   )
 }
-
-export default Catalog
