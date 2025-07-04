@@ -18,7 +18,6 @@ export default function VendorSidebar() {
     { href: "/vendor/bookings", icon: CalendarCheck, label: "Booking" },// done
     { href: "/vendor/sales", icon: Receipt, label: "Sales" },// done
     { href: "/vendor/advertisment", icon: Megaphone , label: "Advertisment" }, //done
-    { href: "/vendor/clients", icon: Smile, label: "Clients" },// done
     { href: "/vendor/team", icon: Users, label: "Team" },// done
     { href: "/vendor/report", icon: LineChart, label: "Report" }, //done
     { href: "/vendor/settings", icon: Settings, label: "Settings" }, //done
