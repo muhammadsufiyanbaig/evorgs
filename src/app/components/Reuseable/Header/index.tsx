@@ -58,7 +58,7 @@ export default function Header() {
           <nav
             className={`${
               menuOpen ? "block" : "hidden"
-            } absolute top-16 left-0 right-0 bg-white shadow-lg md:static md:flex md:items-center md:space-y-0 md:space-x-8 md:bg-transparent md:shadow-none p-4 md:p-0 space-y-4`}
+            } absolute top-16 left-0 right-0 bg-white shadow-lg md:static md:flex md:items-center md:space-y-0 md:space-x-20 md:bg-transparent md:shadow-none p-4 md:p-0 space-y-4`}
           >
             <Link
               href="/"
@@ -66,24 +66,13 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link
-              href="/listings"
-              className="block text-sm font-medium hover:scale-105 text-orange-500"
-            >
-              Listings
-            </Link>
-            <Link
-              href="/pages"
-              className="block text-sm font-medium hover:scale-105 text-orange-500"
-            >
-              Pages
-            </Link>
+            
             <Link
               href="/blog"
               className="block text-sm font-medium hover:scale-105 text-orange-500"
             >
               Blog
-            </Link>
+            </Link>  
             <Link
               href="/contact"
               className="block text-sm font-medium hover:scale-105 text-orange-500"
