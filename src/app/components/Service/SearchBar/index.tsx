@@ -1,57 +1,127 @@
-import { Search, MapPin, SlidersHorizontal } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+"use client"
 
-export default function Component() {
+import { Search, MapPin, Grid3X3, Camera, Utensils, Hotel, School, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useRouter } from "next/navigation"
+
+const categories = [
+  { name: "Photography", icon: Camera, count: 10, value: "photography" },
+  { name: "Catering", icon: Utensils, count: 3, value: "catering" },
+  { name: "Farm House", icon: Hotel, count: 4, value: "farmhouse" },
+  { name: "Venue", icon: School, count: 3, value: "venue" },
+]
+
+interface SearchBarProps {
+  onCategoryChange?: (category: string) => void
+  onSearchChange?: (query: string) => void
+  onLocationChange?: (location: string) => void
+  selectedCategory?: string
+  searchQuery?: string
+  selectedLocation?: string
+  showRedirect?: boolean
+}
+
+export default function SearchBar({
+  onCategoryChange,
+  onSearchChange,
+  onLocationChange,
+  selectedCategory = "",
+  searchQuery = "",
+  selectedLocation = "",
+  showRedirect = false,
+}: SearchBarProps) {
+  const router = useRouter()
+
+  const handleSearch = () => {
+    if (showRedirect) {
+      // Redirect to services page with filters
+      const params = new URLSearchParams()
+      if (selectedCategory && selectedCategory !== "all") params.set("category", selectedCategory)
+      if (searchQuery) params.set("search", searchQuery)
+      if (selectedLocation && selectedLocation !== "all") params.set("location", selectedLocation)
+
+      router.push(`/services?${params.toString()}`)
+    }
+  }
+
+  const handleCategorySelect = (value: string) => {
+    if (onCategoryChange) {
+      onCategoryChange(value)
+    }
+    if (showRedirect && value && value !== "all") {
+      // Immediately redirect when category is selected in hero
+      router.push(`/services?category=${value}`)
+    }
+  }
+
   return (
-    <div className="w-full container p-4 !mt-28 rounded-xl md:rounded-full md:py-0 md:pr-0 bg-white shadow-md">
-      <div className="grid grid-rows-4 md:grid-rows-1 md:grid-cols-[auto_auto_auto_20%] gap-3 p-2">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="What are you looking for"
-            className="w-full pl-4 h-12  md:border-none md:shadow-none"
-          />
+    <div className="max-w-6xl mx-auto">
+      <div className="bg-white rounded-3xl shadow-2xl border border-orange-100 p-4 backdrop-blur-sm">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search Input */}
+          <div className="flex-1 flex items-center px-6 py-4 bg-orange-50 rounded-2xl group focus-within:bg-white focus-within:shadow-lg transition-all duration-300">
+            <Search className="w-5 h-5 text-orange-400 mr-4 group-focus-within:text-orange-500 transition-colors duration-300" />
+            <Input
+              type="text"
+              placeholder="What are you looking for?"
+              className="border-0 bg-transparent focus-visible:ring-0 text-gray-700 placeholder:text-gray-500 text-lg"
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+            />
+          </div>
+
+          {/* Location Select */}
+          <Select value={selectedLocation} onValueChange={onLocationChange}>
+            <SelectTrigger className="lg:w-[250px] border-0 bg-orange-50 rounded-2xl focus:ring-2 focus:ring-orange-200 py-4 px-6 text-lg hover:bg-white transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-orange-500" />
+                <SelectValue placeholder="Select Location" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">All Locations</SelectItem>
+              <SelectItem value="karachi">Karachi</SelectItem>
+              <SelectItem value="lahore">Lahore</SelectItem>
+              <SelectItem value="islamabad">Islamabad</SelectItem>
+              <SelectItem value="peshawar">Peshawar</SelectItem>
+              <SelectItem value="quetta">Quetta</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Category Select */}
+          <Select value={selectedCategory} onValueChange={handleCategorySelect}>
+            <SelectTrigger className="lg:w-[250px] border-0 bg-orange-50 rounded-2xl focus:ring-2 focus:ring-orange-200 py-4 px-6 text-lg hover:bg-white transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <Grid3X3 className="w-5 h-5 text-orange-500" />
+                <SelectValue placeholder="Select Category" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  <div className="flex items-center gap-3">
+                    <category.icon className="w-4 h-4" />
+                    {category.name}
+                    <span className="text-xs text-gray-500 ml-2">({category.count})</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Search Button */}
+          <Button
+            onClick={handleSearch}
+            className="lg:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 text-lg font-semibold group"
+          >
+            <Search className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+            Search
+            <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-300" />
+          </Button>
         </div>
-        <Select>
-          <SelectTrigger className="w-full h-12  md:border-none md:shadow-none">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <SelectValue placeholder="Select Location" />
-            </div>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="new-york">New York</SelectItem>
-            <SelectItem value="london">London</SelectItem>
-            <SelectItem value="paris">Paris</SelectItem>
-            <SelectItem value="tokyo">Tokyo</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select>
-          <SelectTrigger className="w-full h-12  md:border-none md:shadow-none">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              <SelectValue placeholder="Select Category" />
-            </div>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="electronics">Electronics</SelectItem>
-            <SelectItem value="clothing">Clothing</SelectItem>
-            <SelectItem value="furniture">Furniture</SelectItem>
-            <SelectItem value="books">Books</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button className="h-12 px-8 bg-orange-500 hover:bg-orange-600 rounded-full">
-          <Search className="h-4 w-4 mr-2" />
-          Search
-        </Button>
       </div>
     </div>
   )

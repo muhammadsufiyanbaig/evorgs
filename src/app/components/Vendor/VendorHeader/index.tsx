@@ -1,9 +1,12 @@
+'use client'
 import { Button } from "@/components/ui/button";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Search, Settings, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function VendorHeader() {
+  const router = useRouter();
   return (
     <header className="border-b px-6 py-3 flex items-center justify-between">
       <div className="">
@@ -24,22 +27,22 @@ export default function VendorHeader() {
         <Button
           variant="default"
           className="bg-orange-500 hover:bg-orange-500/90"
+          onClick={()=> router.push("/vendor/profile/status")}
         >
           <span className="mr-2 bg-white/20 px-2 py-0.5 rounded-full text-sm">
-            100%
+            75%
           </span>
-          Complete Setup
+          Status
         </Button>
-        <Button variant="ghost" size="icon">
-          <Search className="w-5 h-5" />
+        <Button variant="ghost" size="icon" onClick={()=> router.push("/vendor/profile/settings")}>
+          <Settings className="w-5 h-5" />
         </Button>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon"  onClick={()=> router.push("/vendor/profile")}>
           <User className="w-5 h-5" />
         </Button>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" onClick={()=> router.push("/vendor/notification")}>
           <Bell className="w-5 h-5" />
         </Button>
-        <div className="w-8 h-8 rounded-full bg-gray-200" />
       </div>
     </header>
   );
