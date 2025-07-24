@@ -34,11 +34,10 @@ export default function VendorSidebar() {
   const { open: isOpen, setOpen: setIsOpen } = useSidebar(); // requires setter for closing
 
   const links = [
-    { href: "/vendor/", icon: Home, label: "Dashboard" },
+    { href: "/vendor/", icon: LineChart, label: "Dashboard" },
     { href: "/vendor/bookings", icon: CalendarCheck, label: "Bookings" },
     { href: "/vendor/pos", icon: Receipt, label: "POS" },
     { href: "/vendor/messages", icon: MessageSquare, label: "Messages" },
-    { href: "/vendor/analytics", icon: LineChart, label: "Analytics" },
     { href: "/vendor/services", icon: Layers, label: "Services" },
     { href: "/vendor/vouchers", icon: Ticket, label: "Vouchers" },
     { href: "/vendor/advertisment", icon: Megaphone, label: "Advertisment" },

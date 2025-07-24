@@ -60,11 +60,10 @@ export default function Header() {
                     width={40}
                     height={40}
                     src="/logo.svg"
-                    className="h-10 w-10 transition-transform group-hover:scale-105"
+                    className="h-10 w-24 transition-transform group-hover:scale-105"
                     alt="Evorgs™"
                   />
                 </div>
-                <span className="ml-2 text-xl font-bold text-orange-500">Evorgs™</span>
               </Link>
             </div>
 
