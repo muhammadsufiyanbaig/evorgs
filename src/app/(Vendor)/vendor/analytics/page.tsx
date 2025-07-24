@@ -4,7 +4,7 @@ import React from 'react'
 const Report = () => {
   return (
     <>
-      <VendorReport/>
+      <VendorReport />
     </>
   )
 }

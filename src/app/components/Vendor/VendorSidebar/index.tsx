@@ -1,7 +1,24 @@
 'use client';
-import Link from "next/link"
+
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarCheck, Receipt, Megaphone, Smile, Users, LineChart, Settings, BookImage } from "lucide-react"
+import {
+  Megaphone,
+  BookImage,
+  CalendarCheck,
+  Receipt,
+  Home,
+  Users,
+  LineChart,
+  Settings,
+  Ticket,
+  MailCheck,
+  User,
+  Layers,
+  Newspaper,
+  MessageSquare,
+  X,
+} from "lucide-react";
 
 import {
   Tooltip,
@@ -10,31 +27,61 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useSidebar } from "@/components/ui/sidebar"; // context managing sidebar state
+
 export default function VendorSidebar() {
   const pathname = usePathname();
+  const { open: isOpen, setOpen: setIsOpen } = useSidebar(); // requires setter for closing
+
   const links = [
-    { href: "/vendor/dashboard", icon: Home, label: "Dashboard" }, // done
-    { href: "/vendor/services", icon: BookImage, label: "Services" }, //done
-    { href: "/vendor/bookings", icon: CalendarCheck, label: "Booking" },// done
-    { href: "/vendor/sales", icon: Receipt, label: "Sales" },// done
-    { href: "/vendor/advertisment", icon: Megaphone , label: "Advertisment" }, //done
-    { href: "/vendor/team", icon: Users, label: "Team" },// done
-    { href: "/vendor/report", icon: LineChart, label: "Report" }, //done
-    { href: "/vendor/settings", icon: Settings, label: "Settings" }, //done
+    { href: "/vendor/", icon: Home, label: "Dashboard" },
+    { href: "/vendor/bookings", icon: CalendarCheck, label: "Bookings" },
+    { href: "/vendor/pos", icon: Receipt, label: "POS" },
+    { href: "/vendor/messages", icon: MessageSquare, label: "Messages" },
+    { href: "/vendor/analytics", icon: LineChart, label: "Analytics" },
+    { href: "/vendor/services", icon: Layers, label: "Services" },
+    { href: "/vendor/vouchers", icon: Ticket, label: "Vouchers" },
+    { href: "/vendor/advertisment", icon: Megaphone, label: "Advertisment" },
+    { href: "/vendor/blogs", icon: Newspaper, label: "Blogs" },
+    { href: "/vendor/profile", icon: User, label: "Profile" },
   ];
 
   return (
-    <aside className="w-[4.5rem] bg-zinc-900 min-h-screen flex flex-col items-center py-4 space-y-4">
-      <nav className="space-y-4 flex-1">
-        {links.map(({ href, icon: Icon, label }, index) => (
-            <TooltipProvider delayDuration={0}>
+    <aside
+      className={`
+        static top-16 left-0 z-50 h-[calc(100vh-4rem)] w-48 bg-zinc-900 text-white transform transition-transform duration-300
+        md:fixed md:translate-x-0 md:w-20 md:flex md:flex-col md:items-center 
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+    >
+      {/* Close Button - visible only on mobile */}
+      <div className="flex justify-end p-4 md:hidden">
+        <button
+          onClick={() => setIsOpen(false)}
+          className="text-white hover:text-gray-300 transition"
+          aria-label="Close sidebar"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <nav className="flex flex-col items-center md:space-y-4 p-4 space-y-2">
+        {links.map(({ href, icon: Icon, label }) => (
+          <TooltipProvider key={href} delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
-              <Link href={href} className={`block p-2 text-white hover:bg-white/10 rounded-lg ${pathname === href ? 'bg-orange-600' : ''}`}>
-                <Icon className="w-7 h-7" />
-              </Link>
+                <Link
+                  href={href}
+                  className={`flex items-center gap-3 md:justify-center p-2 rounded-lg transition w-full hover:bg-white/10 ${
+                    pathname === href ? "bg-orange-600" : ""
+                  }`}
+                  onClick={() => setIsOpen(false)} // optional: auto-close sidebar on mobile when navigating
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="md:hidden text-sm">{label}</span>
+                </Link>
               </TooltipTrigger>
-              <TooltipContent side="right" className="px-2 py-1 text-base ml-4">
+              <TooltipContent side="right" className="hidden md:block px-2 py-1 text-sm">
                 {label}
               </TooltipContent>
             </Tooltip>
@@ -42,6 +89,5 @@ export default function VendorSidebar() {
         ))}
       </nav>
     </aside>
-  )
+  );
 }
-

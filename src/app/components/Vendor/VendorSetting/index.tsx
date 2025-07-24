@@ -1,5 +1,7 @@
 
-export function FeatureCard({ icon, title, description }:{icon: JSX.Element, title: string, description: string}) {
+import React from 'react';
+
+export function FeatureCard({ icon, title, description }:{icon: React.ReactElement, title: string, description: string}) {
     return (
       <div className="bg-white p-6 rounded-lg border shadow-sm hover:shadow-md transition-shadow">
         <div className="flex items-start space-x-4">

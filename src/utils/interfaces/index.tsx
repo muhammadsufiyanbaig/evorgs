@@ -21,7 +21,7 @@ export interface ProfileFormData {
 }
 
 export type SectionName = (typeof links)[number]["name"];
-export type Event = {
+export type CalendarEvent = {
   id: string;
   title: string;
   date: Date;
@@ -31,7 +31,6 @@ export type Event = {
   color: "blue" | "pink";
 };
 
-export type ViewType = "day" | "week" | "month" | "year";
 
 export type Client = {
   id: string;
@@ -139,4 +138,94 @@ export interface DealCardProps {
     description: string;
     image: string;
   };
+}
+
+export type ServiceType = "FarmHouse" | "Venue" | "Catering" | "Photography"
+export type BookingStatus = "Pending" | "Confirmed" | "Completed" | "Canceled"
+export type PaymentStatus =
+  | "Awaiting Advance"
+  | "Advance Paid"
+  | "Partially Paid"
+  | "Fully Paid"
+  | "Refunded"
+  | "Canceled"
+export type VisitStatus = "Not Requested" | "Requested" | "Scheduled" | "Completed" | null
+export type CustomOrderStatus = "Requested" | "Quoted" | "Accepted" | "Rejected"
+
+export interface User {
+  id: string
+  name: string
+  email: string
+}
+
+export interface Booking {
+  id: string
+  bookingReference: string
+  userId: string
+  userName: string
+  userAvatar: string
+  serviceType: ServiceType
+  serviceName: string
+  serviceId: string
+  eventDate: string
+  numberOfGuests: number
+  totalAmount: number
+  advanceAmount: number
+  balanceAmount: number
+  status: BookingStatus
+  paymentStatus: PaymentStatus
+  visitRequested: boolean
+  visitStatus: VisitStatus
+  visitScheduledFor: string | null
+  specialRequests: string
+  createdAt: string
+}
+
+export interface Service {
+  id: string
+  name: string
+  category: "Venue" | "Catering" | "Photography" | "FarmHouse"
+  location: string
+  price: number
+  rating: number
+  reviewCount: number
+  imageUrl: string
+}
+
+export interface CateringCustomPackage {
+  id: string
+  vendorId: string
+  userId: string
+  orderDetails: string
+  guestCount: number
+  eventDate: string
+  price: number
+  status: CustomOrderStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PhotographyCustomOrder {
+  id: string
+  vendorId: string
+  userId: string
+  orderDetails: string
+  eventDate: string
+  eventDuration: number
+  price: number
+  status: CustomOrderStatus
+  createdAt: string
+  updatedAt: string
+}
+
+export type ViewType = "day" | "week" | "month"
+
+export interface Event {
+  id: string
+  title: string
+  date: Date
+  startTime: string
+  location: string
+  color: "blue" | "pink" | "gray"
+  bookingId?: string
 }
