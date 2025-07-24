@@ -1,14 +1,9 @@
 import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { SidebarProvider } from "@/components/ui/sidebar"
+
 import "@/app/globals.css"
-
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "Evorgs Admin's Panel",
-  description: "Platform management platform",
-}
+import { AdminSidebar } from "@/app/components/Admin/Sidebar"
+import { AdminHeader } from "@/app/components/Admin/Header"
 
 export default function RootLayout({
   children,
@@ -17,8 +12,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
+      <body>
+          <SidebarProvider defaultOpen={true}>
+            <div className="flex min-h-screen w-full">
+              <AdminSidebar />
+              <div className="flex flex-1 flex-col">
+                <AdminHeader />
+                <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">{children}</main>
+              </div>
+            </div>
+          </SidebarProvider>
       </body>
     </html>
   )
