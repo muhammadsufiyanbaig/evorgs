@@ -28,7 +28,8 @@ const mockPaymentSchedule = {
   transactionId: null,
 }
 
-export default function EditPaymentSchedulePage({ params }: { params: { id: string } }) {
+export default async function EditPaymentSchedulePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const router = useRouter()
   const [formData, setFormData] = useState({
     bookingId: "",
@@ -60,7 +61,7 @@ export default function EditPaymentSchedulePage({ params }: { params: { id: stri
       lastReminderDate: mockPaymentSchedule.lastReminderDate,
       transactionId: mockPaymentSchedule.transactionId,
     })
-  }, [params.id])
+  }, [resolvedParams.id])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,7 +74,7 @@ export default function EditPaymentSchedulePage({ params }: { params: { id: stri
   const handleDelete = () => {
     if (confirm("Are you sure you want to delete this payment schedule?")) {
       // Handle deletion here
-      console.log("Payment schedule deleted:", params.id)
+      console.log("Payment schedule deleted:", resolvedParams.id)
       router.push("/payment-schedule")
     }
   }
@@ -81,7 +82,7 @@ export default function EditPaymentSchedulePage({ params }: { params: { id: stri
   const handleMarkAsPaid = () => {
     if (confirm("Mark this payment as paid?")) {
       // Handle marking as paid
-      console.log("Payment marked as paid:", params.id)
+      console.log("Payment marked as paid:", resolvedParams.id)
       setFormData((prev) => ({ ...prev, status: "Paid" }))
     }
   }
@@ -89,7 +90,7 @@ export default function EditPaymentSchedulePage({ params }: { params: { id: stri
   const handleSendReminder = () => {
     if (confirm("Send payment reminder to customer?")) {
       // Handle sending reminder
-      console.log("Reminder sent for:", params.id)
+      console.log("Reminder sent for:", resolvedParams.id)
       setScheduleInfo((prev) => ({
         ...prev,
         reminderSent: true,

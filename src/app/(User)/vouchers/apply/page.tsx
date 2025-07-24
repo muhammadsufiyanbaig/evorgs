@@ -1,3 +1,5 @@
+"use client";
+
 import VoucherApplication from "@/app/components/Home/Coupon";
 
 export default function Page() {
@@ -9,8 +11,8 @@ export default function Page() {
           serviceId: "service-123",
           originalAmount: 25000,
         }}
-        onVoucherApplied={() => {}}
-        onVoucherRemoved={() => {}}
+        onVoucherApplied={() => { }}
+        onVoucherRemoved={() => { }}
       />
     </main>
   )

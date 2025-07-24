@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 
-export default function BookingPaymentPage({ params }: { params: { id: string } }) {
-  const booking = mockBookings.find((b) => b.id === params.id)
+export default async function BookingPaymentPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const booking = mockBookings.find((b) => b.id === id)
 
   if (!booking) {
     notFound()

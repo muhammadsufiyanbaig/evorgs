@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Calendar, CheckCircle, Clock, AlertTriangle } from "lucide-react"
 
-export default function BookingVisitPage({ params }: { params: { id: string } }) {
-  const booking = mockBookings.find((b) => b.id === params.id)
+export default async function BookingVisitPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const booking = mockBookings.find((b) => b.id === id)
 
   if (!booking) {
     notFound()

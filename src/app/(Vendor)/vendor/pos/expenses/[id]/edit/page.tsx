@@ -24,7 +24,8 @@ const mockExpense = {
   receiptUrl: "/receipt-1.pdf",
 }
 
-export default function EditExpensePage({ params }: { params: { id: string } }) {
+export default function EditExpensePage({ params }: { params: Promise<{ id: string }> }) {
+  const [id, setId] = useState<string>("")
   const router = useRouter()
   const [formData, setFormData] = useState({
     bookingId: "",
@@ -37,30 +38,40 @@ export default function EditExpensePage({ params }: { params: { id: string } }) 
   })
 
   useEffect(() => {
-    // Load expense data
-    setFormData({
-      ...mockExpense,
-      receiptFile: null,
-      existingReceiptUrl: mockExpense.receiptUrl,
-    })
-  }, [params.id])
+    const getParams = async () => {
+      const resolvedParams = await params
+      setId(resolvedParams.id)
+    }
+    getParams()
+  }, [params])
+
+  useEffect(() => {
+    if (id) {
+      // Load expense data
+      setFormData({
+        ...mockExpense,
+        receiptFile: null,
+        existingReceiptUrl: mockExpense.receiptUrl,
+      })
+    }
+  }, [id])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle form submission here
     console.log("Form updated:", formData)
     // Redirect to expenses page
-    router.push("/expenses")
+    router.push("/vendor/pos/expenses")
   }
 
   const handleDelete = () => {
     if (confirm("Are you sure you want to delete this expense?")) {
       // Handle deletion here
-      console.log("Expense deleted:", params.id)
-      router.push("/expenses")
+      console.log("Expense deleted:", id)
+      router.push("/vendor/pos/expenses")
     }
   }
-
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }

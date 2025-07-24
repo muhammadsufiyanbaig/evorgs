@@ -26,7 +26,8 @@ const mockTransaction = {
   paymentGatewayReference: "stripe_pi_123456",
 }
 
-export default function EditTransactionPage({ params }: { params: { id: string } }) {
+export default async function EditTransactionPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const router = useRouter()
   const [formData, setFormData] = useState({
     bookingId: "",
@@ -42,7 +43,7 @@ export default function EditTransactionPage({ params }: { params: { id: string }
   useEffect(() => {
     // Load transaction data
     setFormData(mockTransaction)
-  }, [params.id])
+  }, [id])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,7 +56,7 @@ export default function EditTransactionPage({ params }: { params: { id: string }
   const handleDelete = () => {
     if (confirm("Are you sure you want to delete this transaction?")) {
       // Handle deletion here
-      console.log("Transaction deleted:", params.id)
+      console.log("Transaction deleted:", id)
       router.push("/transactions")
     }
   }
