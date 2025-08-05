@@ -45,8 +45,7 @@ const menuItems = [
     icon: Users,
     items: [
       { title: "View Users", url: "/admin/users" },
-      { title: "User Approvals", url: "/admin/users/approvals" },
-      { title: "User Profiles", url: "/admin/users/profiles" },
+      { title: "User Create", url: "/admin/users/create" },
     ],
   },
   {
@@ -54,8 +53,7 @@ const menuItems = [
     icon: Store,
     items: [
       { title: "View Vendors", url: "/admin/vendors" },
-      { title: "Vendor Approvals", url: "/admin/vendors/approvals" },
-      { title: "Vendor Profiles", url: "/admin/vendors/profiles" },
+      { title: "Vendor Create", url: "/admin/vendors/create" },
     ],
   },
   {
@@ -81,16 +79,15 @@ const menuItems = [
     icon: UtensilsCrossed,
     items: [
       { title: "Custom Packages", url: "/admin/catering/custom" },
-      { title: "Standard Packages", url: "/admin/catering/standard" },
-      { title: "Package Requests", url: "/admin/catering/requests" },
+      { title: "Standard Packages", url: "/admin/catering/standard" }
     ],
   },
   {
     title: "Photography Management",
     icon: Camera,
     items: [
-      { title: "Custom Orders", url: "/admin/photography/orders" },
-      { title: "Photography Packages", url: "/admin/photography/packages" },
+      { title: "Custom Orders", url: "/admin/photography/custom" },
+      { title: "Photography Packages", url: "/admin/photography/standard" },
     ],
   },
   {
@@ -113,7 +110,7 @@ const menuItems = [
     ],
   },
   {
-    title: "Advertisement Management",
+    title: "Ads Management",
     icon: Megaphone,
     items: [
       { title: "All Ads", url: "/admin/ads" },

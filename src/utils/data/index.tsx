@@ -900,3 +900,176 @@ export const mockPhotographyRequests: PhotographyCustomOrder[] = [
     updatedAt: "2024-07-11T18:00:00Z",
   },
 ]
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+export interface Vendor {
+  id: string
+  vendorName: string
+  vendorEmail: string
+  vendorPhone: string
+  vendorAddress: string
+  vendorProfileDescription: string
+  vendorWebsite: string
+  vendorSocialLinks: string[]
+  profileImage: string
+  bannerImage: string
+  vendorType: string
+  vendorStatus: boolean // For the switch
+  vendorTypeId: string
+  rating: number
+  reviewCount: number
+  createdAt: string
+  updatedAt: string
+  // Placeholder for detailed data
+  bookings?: any[]
+  vouchers?: any[]
+  posData?: any[]
+  revenueData?: any[]
+}
+
+const mockVendors: Vendor[] = [
+  {
+    id: "ven_1",
+    vendorName: "Acme Solutions",
+    vendorEmail: "contact@acme.com",
+    vendorPhone: "123-456-7890",
+    vendorAddress: "123 Main St, Anytown, USA",
+    vendorProfileDescription: "Leading provider of innovative solutions.",
+    vendorWebsite: "https://www.acme.com",
+    vendorSocialLinks: ["https://twitter.com/acme"],
+    profileImage: "/placeholder.svg?height=64&width=64",
+    bannerImage: "/placeholder.svg?height=200&width=800",
+    vendorType: "Software",
+    vendorStatus: true,
+    vendorTypeId: "type_1",
+    rating: 4.5,
+    reviewCount: 120,
+    createdAt: "2023-01-15T10:00:00Z",
+    updatedAt: "2024-07-20T14:30:00Z",
+    bookings: [
+      { id: "b1", date: "2024-07-25", service: "Consultation", amount: 150 },
+      { id: "b2", date: "2024-07-26", service: "Workshop", amount: 300 },
+    ],
+    vouchers: [{ id: "v1", code: "SAVE10", value: 10 }],
+    posData: [{ month: "Jan", sales: 10000 }],
+    revenueData: [{ month: "Jan", revenue: 9000 }],
+  },
+  {
+    id: "ven_2",
+    vendorName: "Global Innovations",
+    vendorEmail: "info@global.com",
+    vendorPhone: "987-654-3210",
+    vendorAddress: "456 Oak Ave, Otherville, USA",
+    vendorProfileDescription: "Innovating for a better future.",
+    vendorWebsite: "https://www.global.com",
+    vendorSocialLinks: ["https://linkedin.com/global"],
+    profileImage: "/placeholder.svg?height=64&width=64",
+    bannerImage: "/placeholder.svg?height=200&width=800",
+    vendorType: "Consulting",
+    vendorStatus: false,
+    vendorTypeId: "type_2",
+    rating: 3.8,
+    reviewCount: 75,
+    createdAt: "2022-11-01T09:00:00Z",
+    updatedAt: "2024-06-10T11:00:00Z",
+    bookings: [{ id: "b3", date: "2024-08-01", service: "Strategy Session", amount: 500 }],
+    vouchers: [{ id: "v2", code: "FIRST20", value: 20 }],
+    posData: [{ month: "Feb", sales: 12000 }],
+    revenueData: [{ month: "Feb", revenue: 11000 }],
+  },
+  {
+    id: "ven_3",
+    vendorName: "Creative Designs",
+    vendorEmail: "hello@creative.com",
+    vendorPhone: "555-123-4567",
+    vendorAddress: "789 Pine Ln, Design City, USA",
+    vendorProfileDescription: "Bringing ideas to life through design.",
+    vendorWebsite: "https://www.creative.com",
+    vendorSocialLinks: ["https://instagram.com/creative"],
+    profileImage: "/placeholder.svg?height=64&width=64",
+    bannerImage: "/placeholder.svg?height=200&width=800",
+    vendorType: "Design",
+    vendorStatus: true,
+    vendorTypeId: "type_3",
+    rating: 4.9,
+    reviewCount: 200,
+    createdAt: "2023-03-20T11:00:00Z",
+    updatedAt: "2024-07-01T09:00:00Z",
+    bookings: [],
+    vouchers: [],
+    posData: [{ month: "Mar", sales: 8000 }],
+    revenueData: [{ month: "Mar", revenue: 7500 }],
+  },
+]
+
+// Simulate GraphQL client
+export const graphqlClient = {
+  adminListAllVendors: async (input?: {
+    page?: number
+    limit?: number
+  }): Promise<{
+    vendors: Vendor[]
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }> => {
+    await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate network delay
+    const page = input?.page || 1
+    const limit = input?.limit || 10
+    const start = (page - 1) * limit
+    const end = start + limit
+    const paginatedVendors = mockVendors.slice(start, end)
+
+    return {
+      vendors: paginatedVendors,
+      total: mockVendors.length,
+      page,
+      limit,
+      totalPages: Math.ceil(mockVendors.length / limit),
+    }
+  },
+  getVendorById: async (id: string): Promise<Vendor | undefined> => {
+    await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate network delay
+    return mockVendors.find((vendor) => vendor.id === id)
+  },
+  createVendor: async (newVendor: Omit<Vendor, "id" | "createdAt" | "updatedAt">): Promise<Vendor> => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const id = `ven_${mockVendors.length + 1}`
+    const createdAt = new Date().toISOString()
+    const updatedAt = createdAt
+    const vendor = {
+      ...newVendor,
+      id,
+      createdAt,
+      updatedAt,
+    }
+    mockVendors.push(vendor)
+    return vendor
+  },
+  updateVendor: async (id: string, updatedFields: Partial<Vendor>): Promise<Vendor | undefined> => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const index = mockVendors.findIndex((vendor) => vendor.id === id)
+    if (index > -1) {
+      mockVendors[index] = {
+        ...mockVendors[index],
+        ...updatedFields,
+        updatedAt: new Date().toISOString(),
+      }
+      return mockVendors[index]
+    }
+    return undefined
+  },
+  deleteVendor: async (id: string): Promise<boolean> => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const initialLength = mockVendors.length
+    const newVendors = mockVendors.filter((vendor) => vendor.id !== id)
+    mockVendors.splice(0, mockVendors.length, ...newVendors) // Update the original array
+    return mockVendors.length < initialLength
+  },
+}

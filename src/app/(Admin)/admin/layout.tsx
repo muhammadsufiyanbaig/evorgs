@@ -1,28 +1,44 @@
-import type React from "react"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import type { ReactNode } from "react";
+import { Metadata } from "next";
+import "@/app/globals.css";
+import AdminWrapper from "@/app/components/Admin/Wrapper";
 
-import "@/app/globals.css"
-import { AdminSidebar } from "@/app/components/Admin/Sidebar"
-import { AdminHeader } from "@/app/components/Admin/Header"
+export const metadata: Metadata = {
+  title: {
+    template: "%s | Admin Dashboard",
+    default: "Admin Dashboard - Evorgs",
+  },
+  description: "Secure admin dashboard for managing Evorgs platform. Access analytics, user management, and system controls.",
+  keywords: ["admin", "dashboard", "management", "evorgs", "control panel"],
+  robots: {
+    index: false,
+    follow: false,
+    nosnippet: true,
+  },
+  openGraph: {
+    title: "Admin Dashboard - Evorgs",
+    description: "Secure admin dashboard for managing Evorgs platform",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Admin Dashboard - Evorgs",
+    description: "Secure admin dashboard for managing Evorgs platform",
+  },
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+
+
   return (
     <html lang="en">
       <body>
-          <SidebarProvider defaultOpen={true}>
-            <div className="flex min-h-screen w-full">
-              <AdminSidebar />
-              <div className="flex flex-1 flex-col">
-                <AdminHeader />
-                <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">{children}</main>
-              </div>
-            </div>
-          </SidebarProvider>
+        <AdminWrapper>
+        {children}
+        </AdminWrapper>
       </body>
     </html>
-  )
+  );
 }

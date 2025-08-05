@@ -35,7 +35,7 @@ export function AdminHeader() {
             height={40}
             className="w-20 h-8 object-contain"
           />
-          <h1 className="hidden sm:block text-xl font-semibold text-gray-900 dark:text-white">EvOrgs Admin</h1>
+          <h1 className="hidden sm:block text-xl font-semibold text-gray-900 dark:text-white"> Admin</h1>
         </div>
 
         {/* Global search */}
