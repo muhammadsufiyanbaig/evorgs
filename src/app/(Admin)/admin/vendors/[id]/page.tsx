@@ -10,13 +10,14 @@ import { Badge } from "@/components/ui/badge"
 import { graphqlClient } from "@/utils/data"
 
 interface VendorDetailPageProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export default async function VendorDetailPage({ params }: VendorDetailPageProps) {
-    const vendor = await graphqlClient.getVendorById(params.id)
+    const { id } = await params
+    const vendor = await graphqlClient.getVendorById(id)
 
     if (!vendor) {
         notFound()

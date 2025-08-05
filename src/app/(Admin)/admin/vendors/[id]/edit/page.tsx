@@ -7,13 +7,14 @@ import { graphqlClient } from "@/utils/data"
 import { VendorForm } from "@/app/components/Admin/vendor-form"
 
 interface EditVendorPageProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export default async function EditVendorPage({ params }: EditVendorPageProps) {
-    const vendor = await graphqlClient.getVendorById(params.id)
+    const { id } = await params
+    const vendor = await graphqlClient.getVendorById(id)
 
     if (!vendor) {
         notFound()
