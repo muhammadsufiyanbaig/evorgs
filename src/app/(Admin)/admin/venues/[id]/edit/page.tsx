@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,20 +13,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Save, Plus, X } from "lucide-react"
 
-export default function CreateVenuePage() {
+// Mock data - in real app, this would come from API
+const mockVenue = {
+  id: "1",
+  vendorId: "vendor-1",
+  name: "Grand Ballroom",
+  location: "Downtown Plaza, New York",
+  description: "Elegant ballroom perfect for weddings and corporate events",
+  imageUrl: "/placeholder.svg?height=400&width=600",
+  price: 2500,
+  tags: ["Wedding", "Corporate", "Luxury"],
+  amenities: ["WiFi", "Parking", "Catering", "Sound System"],
+  minPersonLimit: 50,
+  maxPersonLimit: 300,
+  isAvailable: true,
+  rating: 4.8,
+  reviewCount: 124,
+  createdAt: "2024-01-15T10:00:00Z",
+  updatedAt: "2024-01-20T14:30:00Z",
+}
+
+export default function EditVenuePage() {
+  const params = useParams()
   const router = useRouter()
   const [formData, setFormData] = useState({
-    name: "",
-    vendorId: "",
-    location: "",
-    description: "",
-    imageUrl: "",
-    price: "",
-    minPersonLimit: "",
-    maxPersonLimit: "",
-    isAvailable: true,
-    tags: [] as string[],
-    amenities: [] as string[],
+    name: mockVenue.name,
+    vendorId: mockVenue.vendorId,
+    location: mockVenue.location,
+    description: mockVenue.description,
+    imageUrl: mockVenue.imageUrl,
+    price: mockVenue.price.toString(),
+    minPersonLimit: mockVenue.minPersonLimit.toString(),
+    maxPersonLimit: mockVenue.maxPersonLimit.toString(),
+    isAvailable: mockVenue.isAvailable,
+    tags: [...mockVenue.tags],
+    amenities: [...mockVenue.amenities],
   })
 
   const [newTag, setNewTag] = useState("")
@@ -61,27 +82,27 @@ export default function CreateVenuePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // In real app, this would make an API call
-    console.log("Creating venue:", formData)
-    router.push("/admin/venues")
+    console.log("Updating venue:", formData)
+    router.push(`/admin/venues/${params.id}`)
   }
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <div className="flex items-center gap-4 mb-4">
-          <Link href="/admin/venues">
+          <Link href={`/admin/venues/${params.id}`}>
             <Button
               variant="outline"
               size="sm"
               className="border-orange-200 text-orange-600 hover:bg-orange-50 bg-transparent"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Venues
+              Back to Venue
             </Button>
           </Link>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900">Create New Venue</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Edit Venue</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl">
@@ -284,9 +305,9 @@ export default function CreateVenuePage() {
         <div className="mt-6 flex gap-4">
           <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">
             <Save className="w-4 h-4 mr-2" />
-            Create Venue
+            Update Venue
           </Button>
-          <Link href="/admin/venues">
+          <Link href={`/admin/venues/${params.id}`}>
             <Button
               type="button"
               variant="outline"

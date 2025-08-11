@@ -1,5 +1,60 @@
 import { links } from "../data";
 
+export type AdminCustomPackage = {
+  id: string
+  userId: string
+  vendorId: string
+  orderDetails: string
+  guestCount: number
+  eventDate: string // ISO date
+  price: number
+  status: "pending" | "confirmed" | "canceled" | "fulfilled"
+  createdAt: string
+  updatedAt: string
+}
+
+export type AdminCustomPackageFilters = {
+  status?: AdminCustomPackage["status"]
+  q?: string
+  page?: number
+  pageSize?: number
+}
+
+export type AdminCustomPackageList = {
+  packages: AdminCustomPackage[]
+  total: number
+  page: number
+  totalPages: number
+}
+
+export type CateringPackage = {
+  id: string
+  vendorId: string
+  packageName: string
+  serviceArea: string
+  description: string
+  imageUrl: string
+  price: number
+  minGuests: number
+  maxGuests: number
+  menuItems: string[]
+  dietaryOptions: string[]
+  amenities: string[]
+  isAvailable: boolean
+  reviewCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type CateringPackageList = {
+  packages: CateringPackage[]
+  total: number
+  page: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
 export interface ContactFormData {
   senderName: string;
   senderEmail: string;
@@ -19,6 +74,24 @@ export interface ProfileFormData {
   dateOfBirth: string;
   profileImage: File | null;
 }
+export type Farmhouse = {
+  id: string;
+  vendorId: string;
+  name: string;
+  location: string;
+  description: string;
+  imageUrl: string;
+  perNightPrice: number;
+  minNights: number;
+  maxNights: number;
+  maxGuests: number;
+  amenities: string[];
+  isAvailable: boolean;
+  rating: number;
+  reviewCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type SectionName = (typeof links)[number]["name"];
 export type CalendarEvent = {

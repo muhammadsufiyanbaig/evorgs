@@ -62,7 +62,6 @@ const menuItems = [
     items: [
       { title: "All Venues", url: "/admin/venues" },
       { title: "Create Venue", url: "/admin/venues/create" },
-      { title: "Venue Availability", url: "/admin/venues/availability" },
     ],
   },
   {
@@ -71,15 +70,15 @@ const menuItems = [
     items: [
       { title: "All Farmhouses", url: "/admin/farmhouses" },
       { title: "Create Farmhouse", url: "/admin/farmhouses/create" },
-      { title: "Farmhouse Availability", url: "/admin/farmhouses/availability" },
     ],
   },
   {
     title: "Catering Management",
     icon: UtensilsCrossed,
     items: [
-      { title: "Custom Packages", url: "/admin/catering/custom" },
-      { title: "Standard Packages", url: "/admin/catering/standard" }
+      { title: "Custom Orders", url: "/admin/catering/custom" },
+      { title: "Standard Packages", url: "/admin/catering/standard" },
+      { title: "Create Packages", url: "/admin/catering/standard/create" }
     ],
   },
   {
@@ -88,6 +87,7 @@ const menuItems = [
     items: [
       { title: "Custom Orders", url: "/admin/photography/custom" },
       { title: "Photography Packages", url: "/admin/photography/standard" },
+      { title: "Create Packages", url: "/admin/photography/standard/create" },
     ],
   },
   {
