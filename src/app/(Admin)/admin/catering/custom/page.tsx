@@ -16,9 +16,10 @@ function StatusBadge({ status }: { status: string }) {
   return <Badge className={map[status] || "bg-muted text-foreground"}>{status}</Badge>
 }
 
-export default async function Page({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
-  const q = typeof searchParams.q === "string" ? searchParams.q : ""
-  const status = typeof searchParams.status === "string" ? (searchParams.status as any) : undefined
+export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const resolvedSearchParams = await searchParams
+  const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : ""
+  const status = typeof resolvedSearchParams.status === "string" ? (resolvedSearchParams.status as any) : undefined
   const data = await AdminListCustomPackages({ q, status })
 
   return (

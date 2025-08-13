@@ -2,8 +2,9 @@ import { FarmhouseForm } from "@/app/components/Admin/farmhouse-form";
 import { getFarmhouseById } from "@/utils/data";
 import { notFound } from "next/navigation";
 
-export default async function EditFarmhousePage({ params }: { params: { id: string } }) {
-    const farmhouse = await getFarmhouseById(params.id);
+export default async function EditFarmhousePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const farmhouse = await getFarmhouseById(id);
 
     if (!farmhouse) {
         notFound();

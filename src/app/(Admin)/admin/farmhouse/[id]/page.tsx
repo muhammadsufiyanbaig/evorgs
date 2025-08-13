@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, Bed, Calendar, DollarSign, Wifi, ParkingSquare, Utensils, Bath } from 'lucide-react';
 
-export default async function FarmhouseDetailsPage({ params }: { params: { id: string } }) {
-const farmhouse = await getFarmhouseById(params.id);
+export default async function FarmhouseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+const resolvedParams = await params;
+const farmhouse = await getFarmhouseById(resolvedParams.id);
 
 if (!farmhouse) {
     notFound();

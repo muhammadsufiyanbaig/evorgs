@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react"
+import Link from "next/link"
 
-export default async function EditPackagePage({ params }: { params: { id: string } }) {
-  const pkg = findPackageById(params.id)
+export default async function EditPackagePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const pkg = findPackageById(id)
   const vendors = getVendors()
   if (!pkg) return notFound()
 
@@ -78,7 +80,7 @@ export default async function EditPackagePage({ params }: { params: { id: string
               className="border-orange-300 text-orange-700 hover:bg-orange-50 bg-transparent"
               asChild
             >
-              <a href={`/admin/photography/standard/${pkg.id}`}>Cancel</a>
+              <Link href={`/admin/photography/standard/${pkg.id}`}>Cancel</Link>
             </Button>
             <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
               Save Changes

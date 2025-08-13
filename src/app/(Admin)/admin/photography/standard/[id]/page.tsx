@@ -13,8 +13,9 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleString()
 }
 
-export default async function PackageDetailPage({ params }: { params: { id: string } }) {
-  const pkg = findPackageById(params.id)
+export default async function PackageDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const pkg = findPackageById(id)
   if (!pkg) return notFound()
 
   return (

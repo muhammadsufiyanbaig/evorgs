@@ -3,14 +3,15 @@
 import { GetStandardPackageById, UpdateStandardPackageAction } from "@/app/(Admin)/admin/catering/action"
 import { PackageForm } from "@/app/components/Admin/package-form"
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const pkg = await GetStandardPackageById(params.id)
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const pkg = await GetStandardPackageById(id)
   if (!pkg) {
     return <div className="text-muted-foreground">Package not found.</div>
   }
 
   const onSubmit = async (formData: FormData) => {
-    await UpdateStandardPackageAction(params.id, formData)
+    await UpdateStandardPackageAction(id, formData)
   }
 
   return (

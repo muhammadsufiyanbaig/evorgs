@@ -95,8 +95,9 @@ const menuItems = [
     icon: Calendar,
     items: [
       { title: "All Bookings", url: "/admin/bookings" },
-      { title: "Create Booking", url: "/admin/bookings/create" },
-      { title: "Schedule Visits", url: "/admin/bookings/visits" },
+      { title: "Booking List", url: "/admin/bookings/list" },
+      { title: "Visiting Requests", url: "/admin/bookings/visits" },
+      { title: "Scheduling", url: "/admin/bookings/scheduling" },
       { title: "Booking Analytics", url: "/admin/bookings/analytics" },
     ],
   },
