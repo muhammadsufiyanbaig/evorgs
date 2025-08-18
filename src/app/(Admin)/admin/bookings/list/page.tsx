@@ -88,7 +88,7 @@ export default function BookingsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Bookings Management</h1>
             <p className="text-gray-600 mt-2">Manage all booking requests and their details</p>
           </div>
-          <Link href="/bookings/create">
+          <Link href="/admin/bookings/create">
             <Button className="bg-orange-600 hover:bg-orange-700 text-white">
               <Plus className="w-4 h-4 mr-2" />
               Create Booking
@@ -191,7 +191,7 @@ export default function BookingsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Link href={`/bookings/${booking.id}`}>
+                            <Link href={`/admin/bookings/${booking.id}`}>
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -200,7 +200,7 @@ export default function BookingsPage() {
                                 <Eye className="w-4 h-4" />
                               </Button>
                             </Link>
-                            <Link href={`/bookings/${booking.id}/edit`}>
+                            <Link href={`/admin/bookings/${booking.id}/edit`}>
                               <Button
                                 variant="outline"
                                 size="sm"
