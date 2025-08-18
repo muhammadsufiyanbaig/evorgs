@@ -156,7 +156,7 @@ export default function VisitsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Link href={`/visits/${request.id}`}>
+                            <Link href={`/admin/visits/${request.id}`}>
                               <Button
                                 variant="outline"
                                 size="sm"

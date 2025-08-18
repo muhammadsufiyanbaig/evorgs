@@ -79,7 +79,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/bookings">
+            <Link href="/admin/bookings">
               <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Bookings
@@ -90,7 +90,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
               <p className="text-gray-600 mt-1">Booking ID: {id}</p>
             </div>
           </div>
-          <Link href={`/bookings/${id}/edit`}>
+          <Link href={`/admin/bookings/${id}/edit`}>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
               <Edit className="w-4 h-4 mr-2" />
               Edit Booking

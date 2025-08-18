@@ -66,7 +66,7 @@ export default async function VisitDetailPage({ params }: { params: Promise<{ id
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/visits">
+            <Link href="/admin/visits">
               <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Visits
@@ -77,7 +77,7 @@ export default async function VisitDetailPage({ params }: { params: Promise<{ id
               <p className="text-gray-600 mt-1">Visit ID: {id}</p>
             </div>
           </div>
-          <Link href={`/visits/${id}/edit`}>
+          <Link href={`/admin/visits/${id}/edit`}>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
               <Edit className="w-4 h-4 mr-2" />
               Edit Visit

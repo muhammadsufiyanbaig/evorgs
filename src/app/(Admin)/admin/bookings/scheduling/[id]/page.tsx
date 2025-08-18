@@ -68,7 +68,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/scheduling">
+            <Link href="/admin/scheduling">
               <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Scheduling
@@ -79,7 +79,7 @@ export default function ScheduleDetailPage({ params }: { params: Promise<{ id: s
               <p className="text-gray-600 mt-1">Schedule ID: {id}</p>
             </div>
           </div>
-          <Link href={`/scheduling/${id}/edit`}>
+          <Link href={`/admin/scheduling/${id}/edit`}>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
               <Edit className="w-4 h-4 mr-2" />
               Edit Schedule

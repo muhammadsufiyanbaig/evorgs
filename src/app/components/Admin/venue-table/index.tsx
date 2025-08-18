@@ -100,7 +100,7 @@ export function VenueTable({ venues }: VenueTableProps) {
                   size="sm"
                   className="text-orange-500 border-orange-500 hover:bg-orange-50 hover:text-orange-600 bg-transparent"
                 >
-                  <Link href={`/dashboard/venues/${venue.id}`}>
+                  <Link href={`/admin/dashboard/venues/${venue.id}`}>
                     <EyeIcon className="h-4 w-4 mr-1" /> View
                   </Link>
                 </Button>
@@ -110,7 +110,7 @@ export function VenueTable({ venues }: VenueTableProps) {
                   size="sm"
                   className="text-orange-500 border-orange-500 hover:bg-orange-50 hover:text-orange-600 bg-transparent"
                 >
-                  <Link href={`/dashboard/venues/${venue.id}/edit`}>
+                  <Link href={`/admin/dashboard/venues/${venue.id}/edit`}>
                     <PencilIcon className="h-4 w-4 mr-1" /> Edit
                   </Link>
                 </Button>

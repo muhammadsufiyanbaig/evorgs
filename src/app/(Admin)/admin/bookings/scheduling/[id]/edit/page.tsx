@@ -82,7 +82,7 @@ export default function EditSchedulePage({ params }: { params: Promise<{ id: str
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href={`/scheduling/${id}`}>
+            <Link href={`/admin/scheduling/${id}`}>
               <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 bg-transparent">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Details
@@ -341,7 +341,7 @@ export default function EditSchedulePage({ params }: { params: Promise<{ id: str
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-4">
-            <Link href={`/scheduling/${id}`}>
+            <Link href={`/admin/scheduling/${id}`}>
               <Button variant="outline" className="border-orange-200 hover:bg-orange-50 bg-transparent">
                 Cancel
               </Button>
