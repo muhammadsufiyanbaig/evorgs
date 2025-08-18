@@ -105,9 +105,11 @@ const menuItems = [
     title: "POS Management",
     icon: CreditCard,
     items: [
+      { title: "Dashboard", url: "/admin/pos/dashboard" },
       { title: "Transactions", url: "/admin/pos/transactions" },
-      { title: "Payment Schedules", url: "/admin/pos/schedules" },
       { title: "Expense Management", url: "/admin/pos/expenses" },
+      { title: "Payment Schedules", url: "/admin/pos/payment-schedules" },
+      { title: "Logs", url: "/admin/pos/logs" },
     ],
   },
   {
