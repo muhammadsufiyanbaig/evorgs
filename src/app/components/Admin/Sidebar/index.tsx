@@ -102,6 +102,27 @@ const menuItems = [
     ],
   },
   {
+    title: "Voucher Management",
+    icon: Ticket,
+    items: [
+      { title: "Dashboard", url: "/admin/vouchers" },
+      { title: "Voucher List", url: "/admin/vouchers/list" },
+      { title: "Create Voucher", url: "/admin/vouchers/create" },
+      { title: "Vendor Voucher", url: "/admin/vouchers/vendors" },
+      { title: "Voucher Analytics", url: "/admin/vouchers/analytics" },
+      { title: "Voucher Report", url: "/admin/vouchers/report" },
+    ],
+  },
+  {
+    title: "Chat Management",
+    icon: MessageSquare,
+    items: [
+      { title: "All Chats", url: "/admin/chats" },
+      { title: "Service Inquiries", url: "/admin/chats/inquiries" },
+      { title: "Message Status", url: "/admin/chats/status" },
+    ],
+  },
+  {
     title: "POS Management",
     icon: CreditCard,
     items: [
@@ -130,24 +151,7 @@ const menuItems = [
       { title: "Notification Settings", url: "/admin/notifications/settings" },
     ],
   },
-  {
-    title: "Voucher Management",
-    icon: Ticket,
-    items: [
-      { title: "All Vouchers", url: "/admin/vouchers" },
-      { title: "Create Voucher", url: "/admin/vouchers/create" },
-      { title: "Voucher Analytics", url: "/admin/vouchers/analytics" },
-    ],
-  },
-  {
-    title: "Chat Management",
-    icon: MessageSquare,
-    items: [
-      { title: "All Chats", url: "/admin/chats" },
-      { title: "Service Inquiries", url: "/admin/chats/inquiries" },
-      { title: "Message Status", url: "/admin/chats/status" },
-    ],
-  },
+  
   {
     title: "Settings & Preferences",
     icon: Settings,
