@@ -16,6 +16,7 @@ import {
   Settings,
   ChevronRight,
   Building2,
+  HelpCircle,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -117,9 +118,9 @@ const menuItems = [
     title: "Chat Management",
     icon: MessageSquare,
     items: [
-      { title: "All Chats", url: "/admin/chats" },
+      { title: "Chats Dashboard", url: "/admin/chats" },
+      { title: "All Chats", url: "/admin/chats/all" },
       { title: "Service Inquiries", url: "/admin/chats/inquiries" },
-      { title: "Message Status", url: "/admin/chats/status" },
     ],
   },
   {
@@ -137,18 +138,35 @@ const menuItems = [
     title: "Ads Management",
     icon: Megaphone,
     items: [
-      { title: "All Ads", url: "/admin/ads" },
-      { title: "Pending Requests", url: "/admin/ads/pending" },
-      { title: "Ad Analytics", url: "/admin/ads/analytics" },
+      { title: "Ads Dashboard", url: "/admin/advertisement/" },
+      { title: "Ads Details", url: "/admin/advertisement/details" },
+      { title: "Ad Analytics", url: "/admin/advertisement/analytics" },
     ],
   },
   {
     title: "Notification Management",
     icon: Bell,
     items: [
-      { title: "All Notifications", url: "/admin/notifications" },
+      { title: "Notifications Dashboard", url: "/admin/notifications" },
+      { title: "All Notifications", url: "/admin/notifications/all" },
       { title: "Send Notification", url: "/admin/notifications/send" },
-      { title: "Notification Settings", url: "/admin/notifications/settings" },
+      { title: "Notification Scheduled", url: "/admin/notifications/scheduled" },
+    ],
+  },
+  {
+    title: "Support Management",
+    icon: HelpCircle,
+    items: [
+      { title: "All Support Tickets", url: "/admin/support" },
+      { title: "Support Ticket Analytics", url: "/admin/support/analytics" },
+    ],
+  },
+  {
+    title: "Review Management",
+    icon: Bell,
+    items: [
+      { title: "All Reviews", url: "/admin/reviews" },
+      { title: "Review Analytics", url: "/admin/reviews/analytics" },
     ],
   },
   
@@ -156,9 +174,11 @@ const menuItems = [
     title: "Settings & Preferences",
     icon: Settings,
     items: [
-      { title: "Search Alerts", url: "/admin/settings/alerts" },
-      { title: "System Settings", url: "/admin/settings/system" },
-      { title: "User Preferences", url: "/admin/settings/preferences" },
+      { title: "General", url: "/admin/preferences/" },
+      { title: "Search Alerts", url: "/admin/preferences/alerts" },
+      { title: "System Settings", url: "/admin/preferences/system" },
+      { title: "User Preferences", url: "/admin/preferences/user" },
+      { title: "Vendor Preferences", url: "/admin/preferences/vendor" },
     ],
   },
 ]

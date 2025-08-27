@@ -760,9 +760,21 @@ export const mockAdInquiries = [
 ]
 
 export const mockUsers: User[] = [
-  { id: "user1", name: "Alice Johnson", email: "alice@example.com" },
-  { id: "user2", name: "Bob Williams", email: "bob@example.com" },
-  { id: "user3", name: "Charlie Brown", email: "charlie@example.com" },
+  {
+    id: "user1", name: "Alice Johnson", email: "alice@example.com",
+    firstName: "",
+    lastName: ""
+  },
+  {
+    id: "user2", name: "Bob Williams", email: "bob@example.com",
+    firstName: "",
+    lastName: ""
+  },
+  {
+    id: "user3", name: "Charlie Brown", email: "charlie@example.com",
+    firstName: "",
+    lastName: ""
+  },
 ]
 
 export const mockServices: Service[] = [
