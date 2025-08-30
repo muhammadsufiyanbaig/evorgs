@@ -157,7 +157,9 @@ const menuItems = [
     title: "Support Management",
     icon: HelpCircle,
     items: [
-      { title: "All Support Tickets", url: "/admin/support" },
+      { title: "Supports Dashboard", url: "/admin/support" },
+      { title: "All Support Tickets", url: "/admin/support/tickets" },
+      { title: "Support Responses", url: "/admin/support/responses" },
       { title: "Support Ticket Analytics", url: "/admin/support/analytics" },
     ],
   },
