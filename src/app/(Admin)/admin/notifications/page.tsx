@@ -1,11 +1,15 @@
-import React from 'react'
+import { StatsCards } from "@/app/components/Admin/notification/stats-card"
+import { NotificationsTable } from "@/app/components/Admin/notification/table"
 
-const page = () => {
+export default function AdminDashboard() {
   return (
-    <div>
-      
-    </div>
+    <>
+      <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <div className="space-y-6">
+          <StatsCards />
+          <NotificationsTable />
+        </div>
+      </main>
+    </>
   )
 }
-
-export default page

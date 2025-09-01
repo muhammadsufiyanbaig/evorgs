@@ -34,11 +34,10 @@ export default function VendorSidebar() {
   const { open: isOpen, setOpen: setIsOpen } = useSidebar(); // requires setter for closing
 
   const links = [
-    { href: "/vendor/", icon: Home, label: "Dashboard" },
+    { href: "/vendor", icon: LineChart, label: "Dashboard" },
     { href: "/vendor/bookings", icon: CalendarCheck, label: "Bookings" },
     { href: "/vendor/pos", icon: Receipt, label: "POS" },
     { href: "/vendor/messages", icon: MessageSquare, label: "Messages" },
-    { href: "/vendor/analytics", icon: LineChart, label: "Analytics" },
     { href: "/vendor/services", icon: Layers, label: "Services" },
     { href: "/vendor/vouchers", icon: Ticket, label: "Vouchers" },
     { href: "/vendor/advertisment", icon: Megaphone, label: "Advertisment" },
@@ -61,7 +60,7 @@ export default function VendorSidebar() {
           className="text-white hover:text-gray-300 transition"
           aria-label="Close sidebar"
         >
-          <X className="w-6 h-6" />
+          <X className="w-8 h-8" />
         </button>
       </div>
 
@@ -77,7 +76,7 @@ export default function VendorSidebar() {
                   }`}
                   onClick={() => setIsOpen(false)} // optional: auto-close sidebar on mobile when navigating
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-6 h-6" />
                   <span className="md:hidden text-sm">{label}</span>
                 </Link>
               </TooltipTrigger>
