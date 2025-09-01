@@ -59,18 +59,20 @@ export function ResponseForm({ reviewId, vendorName, onSubmit, onCancel }: Respo
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="w-full max-w-2xl bg-white border-orange-200 shadow-lg">
+      <CardHeader className="bg-orange-500 text-white rounded-t-lg">
+        <CardTitle className="flex items-center gap-2 text-white">
           <MessageSquare className="h-5 w-5" />
           Add Vendor Response
         </CardTitle>
-        <CardDescription>Respond to this review as {vendorName}</CardDescription>
+        <CardDescription className="text-orange-100">
+          Respond to this review as {vendorName}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 bg-white p-6">
         {/* Template Selection */}
         <div className="space-y-3">
-          <Label>Response Templates</Label>
+          <Label className="text-orange-800 font-medium">Response Templates</Label>
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(responseTemplates).map(([key, template]) => (
               <Button
@@ -78,14 +80,18 @@ export function ResponseForm({ reviewId, vendorName, onSubmit, onCancel }: Respo
                 variant={templateType === key ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleTemplateSelect(key as ResponseTemplateType)}
-                className="justify-start text-xs h-auto p-2"
+                className={`justify-start text-xs h-auto p-2 ${
+                  templateType === key
+                    ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
+                    : "border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 bg-white"
+                }`}
               >
                 {key.toLowerCase().replace("_", " ")}
               </Button>
             ))}
           </div>
           {templateType && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge className="text-xs bg-orange-100 text-orange-800 border-orange-300">
               Using template: {templateType.toLowerCase().replace("_", " ")}
             </Badge>
           )}
@@ -93,28 +99,32 @@ export function ResponseForm({ reviewId, vendorName, onSubmit, onCancel }: Respo
 
         {/* Response Text */}
         <div className="space-y-2">
-          <Label htmlFor="response">Response Text *</Label>
+          <Label htmlFor="response" className="text-orange-800 font-medium">
+            Response Text *
+          </Label>
           <Textarea
             id="response"
             placeholder="Write your response to this review..."
             value={responseText}
             onChange={(e) => setResponseText(e.target.value)}
             rows={6}
-            className="resize-none"
+            className="resize-none border-orange-300 focus:border-orange-500 focus:ring-orange-500 bg-white"
           />
-          <p className="text-xs text-muted-foreground">{responseText.length}/1000 characters</p>
+          <p className="text-xs text-orange-600">{responseText.length}/1000 characters</p>
         </div>
 
         {/* Action Plan */}
         <div className="space-y-2">
-          <Label htmlFor="actionPlan">Action Plan (Optional)</Label>
+          <Label htmlFor="actionPlan" className="text-orange-800 font-medium">
+            Action Plan (Optional)
+          </Label>
           <Textarea
             id="actionPlan"
             placeholder="Describe any specific actions you plan to take..."
             value={actionPlan}
             onChange={(e) => setActionPlan(e.target.value)}
             rows={3}
-            className="resize-none"
+            className="resize-none border-orange-300 focus:border-orange-500 focus:ring-orange-500 bg-white"
           />
         </div>
 
@@ -125,20 +135,28 @@ export function ResponseForm({ reviewId, vendorName, onSubmit, onCancel }: Respo
             id="compensation"
             checked={offerCompensation}
             onChange={(e) => setOfferCompensation(e.target.checked)}
-            className="rounded border-border"
+            className="rounded border-orange-300 text-orange-500 focus:ring-orange-500 focus:ring-offset-white"
           />
-          <Label htmlFor="compensation" className="text-sm">
+          <Label htmlFor="compensation" className="text-sm text-orange-800">
             This response includes a compensation offer
           </Label>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <Button variant="outline" onClick={onCancel}>
+        <div className="flex items-center justify-between pt-4 border-t border-orange-200">
+          <Button 
+            variant="outline" 
+            onClick={onCancel}
+            className="border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 bg-white"
+          >
             <X className="mr-2 h-4 w-4" />
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!responseText.trim() || responseText.length > 1000}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!responseText.trim() || responseText.length > 1000}
+            className="bg-orange-500 hover:bg-orange-600 text-white disabled:bg-orange-300 disabled:text-white"
+          >
             <Send className="mr-2 h-4 w-4" />
             Send Response
           </Button>

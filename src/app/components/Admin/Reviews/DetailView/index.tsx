@@ -56,10 +56,10 @@ export function ReviewDetailView({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-4 w-4 ${star <= rating ? "fill-primary text-primary" : "text-muted-foreground"}`}
+            className={`h-4 w-4 ${star <= rating ? "fill-orange-500 text-orange-500" : "text-gray-300"}`}
           />
         ))}
-        <span className="ml-2 text-sm font-medium">{rating}/5</span>
+        <span className="ml-2 text-sm font-medium text-orange-600">{rating}/5</span>
       </div>
     )
   }
@@ -76,44 +76,59 @@ export function ReviewDetailView({
 
   const getStatusBadge = (review: Review) => {
     if (!review.isPublished) {
-      return <Badge variant="secondary">Draft</Badge>
+      return <Badge className="bg-gray-100 text-gray-700 border-gray-200">Draft</Badge>
     }
     if (review.moderationStatus === "PENDING") {
-      return <Badge variant="outline">Pending</Badge>
+      return <Badge className="bg-orange-100 text-orange-700 border-orange-200">Pending</Badge>
     }
     if (review.moderationStatus === "FLAGGED") {
-      return <Badge variant="destructive">Flagged</Badge>
+      return <Badge className="bg-red-100 text-red-700 border-red-200">Flagged</Badge>
     }
     if (review.moderationStatus === "UNDER_REVIEW") {
-      return <Badge variant="secondary">Under Review</Badge>
+      return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">Under Review</Badge>
     }
     if (review.isVerified) {
-      return <Badge variant="default">Verified</Badge>
+      return <Badge className="bg-orange-500 text-white">Verified</Badge>
     }
-    return <Badge variant="secondary">Published</Badge>
+    return <Badge className="bg-orange-100 text-orange-700 border-orange-200">Published</Badge>
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen p-6">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">Review Details</h1>
+            <h1 className="text-2xl font-bold text-orange-600">Review Details</h1>
             {getStatusBadge(review)}
           </div>
-          <p className="text-muted-foreground">Review ID: {review.id}</p>
+          <p className="text-gray-600">Review ID: {review.id}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onEdit}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onEdit}
+            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+          >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>
-          <Button variant="outline" size="sm" onClick={onFlag}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onFlag}
+            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+          >
             <Flag className="mr-2 h-4 w-4" />
             Flag
           </Button>
-          <Button variant="destructive" size="sm" onClick={onDelete}>
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={onDelete}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </Button>
@@ -121,46 +136,46 @@ export function ReviewDetailView({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="user">User Info</TabsTrigger>
-          <TabsTrigger value="vendor">Vendor Info</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-orange-50 border-orange-200">
+          <TabsTrigger value="details" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-orange-600">Details</TabsTrigger>
+          <TabsTrigger value="user" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-orange-600">User Info</TabsTrigger>
+          <TabsTrigger value="vendor" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-orange-600">Vendor Info</TabsTrigger>
+          <TabsTrigger value="history" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-orange-600">History</TabsTrigger>
         </TabsList>
 
         <TabsContent value="details" className="space-y-6">
           {/* Review Content */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="flex items-center justify-between text-orange-600">
                 <span>Review Content</span>
                 <div className="flex items-center gap-4">
                   {renderStars(review.rating)}
-                  <Badge variant="outline" className="capitalize">
+                  <Badge className="bg-orange-100 text-orange-700 border-orange-200 capitalize">
                     {review.serviceType.toLowerCase()}
                   </Badge>
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="prose max-w-none">
-                <p className="text-foreground leading-relaxed">{review.comment}</p>
+                <p className="text-gray-700 leading-relaxed">{review.comment}</p>
               </div>
 
               {review.serviceAspects && (
                 <div className="space-y-3">
-                  <h4 className="font-medium text-foreground">Service Aspects</h4>
+                  <h4 className="font-medium text-orange-600">Service Aspects</h4>
                   <div className="grid grid-cols-2 gap-4">
                     {Object.entries(review.serviceAspects.venue || {}).map(([aspect, rating]) => (
                       <div key={aspect} className="flex items-center justify-between">
-                        <span className="text-sm capitalize text-muted-foreground">
+                        <span className="text-sm capitalize text-gray-600">
                           {aspect.replace(/([A-Z])/g, " $1").toLowerCase()}
                         </span>
                         <div className="flex items-center gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`h-3 w-3 ${star <= (rating as number) ? "fill-primary text-primary" : "text-muted-foreground"}`}
+                              className={`h-3 w-3 ${star <= (rating as number) ? "fill-orange-500 text-orange-500" : "text-gray-300"}`}
                             />
                           ))}
                         </div>
@@ -170,14 +185,14 @@ export function ReviewDetailView({
                 </div>
               )}
 
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 text-orange-500" />
                   <span>Created: {formatDate(review.createdAt)}</span>
                 </div>
                 {review.updatedAt !== review.createdAt && (
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-4 w-4 text-orange-500" />
                     <span>Updated: {formatDate(review.updatedAt)}</span>
                   </div>
                 )}
@@ -186,38 +201,38 @@ export function ReviewDetailView({
           </Card>
 
           {/* Engagement Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Engagement</CardTitle>
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="text-orange-600">Engagement</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-orange-500" />
                   <div>
-                    <p className="text-sm font-medium">{review.viewsCount || 0}</p>
-                    <p className="text-xs text-muted-foreground">Views</p>
+                    <p className="text-sm font-medium text-gray-700">{review.viewsCount || 0}</p>
+                    <p className="text-xs text-gray-500">Views</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ThumbsUp className="h-4 w-4 text-muted-foreground" />
+                  <ThumbsUp className="h-4 w-4 text-orange-500" />
                   <div>
-                    <p className="text-sm font-medium">{review.likesCount || 0}</p>
-                    <p className="text-xs text-muted-foreground">Likes</p>
+                    <p className="text-sm font-medium text-gray-700">{review.likesCount || 0}</p>
+                    <p className="text-xs text-gray-500">Likes</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-muted-foreground" />
+                  <Flag className="h-4 w-4 text-orange-500" />
                   <div>
-                    <p className="text-sm font-medium">{review.flaggedCount || 0}</p>
-                    <p className="text-xs text-muted-foreground">Flags</p>
+                    <p className="text-sm font-medium text-gray-700">{review.flaggedCount || 0}</p>
+                    <p className="text-xs text-gray-500">Flags</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                  <MessageSquare className="h-4 w-4 text-orange-500" />
                   <div>
-                    <p className="text-sm font-medium">{review.response ? 1 : 0}</p>
-                    <p className="text-xs text-muted-foreground">Responses</p>
+                    <p className="text-sm font-medium text-gray-700">{review.response ? 1 : 0}</p>
+                    <p className="text-xs text-gray-500">Responses</p>
                   </div>
                 </div>
               </div>
@@ -226,20 +241,20 @@ export function ReviewDetailView({
 
           {/* Vendor Response */}
           {review.response ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+            <Card className="border-orange-100 bg-white">
+              <CardHeader className="border-b border-orange-50">
+                <CardTitle className="flex items-center gap-2 text-orange-600">
                   <MessageSquare className="h-5 w-5" />
                   Vendor Response
                 </CardTitle>
-                <CardDescription>Response from {review.vendor?.vendorName}</CardDescription>
+                <CardDescription className="text-gray-600">Response from {review.vendor?.vendorName}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-foreground leading-relaxed">{review.response.responseText}</p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <CardContent className="space-y-4 pt-6">
+                <p className="text-gray-700 leading-relaxed">{review.response.responseText}</p>
+                <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span>Responded: {formatDate(review.response.createdAt)}</span>
                   {review.response.templateType && (
-                    <Badge variant="outline" className="capitalize">
+                    <Badge className="bg-orange-100 text-orange-700 border-orange-200 capitalize">
                       {review.response.templateType.toLowerCase().replace("_", " ")}
                     </Badge>
                   )}
@@ -247,15 +262,18 @@ export function ReviewDetailView({
               </CardContent>
             </Card>
           ) : (
-            <Card>
+            <Card className="border-orange-100 bg-white">
               <CardContent className="pt-6">
                 <div className="text-center space-y-4">
-                  <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto" />
+                  <MessageSquare className="h-12 w-12 text-orange-300 mx-auto" />
                   <div>
-                    <h3 className="font-medium text-foreground">No Response Yet</h3>
-                    <p className="text-sm text-muted-foreground">This review hasn't been responded to by the vendor.</p>
+                    <h3 className="font-medium text-orange-600">No Response Yet</h3>
+                    <p className="text-sm text-gray-600">This review hasn't been responded to by the vendor.</p>
                   </div>
-                  <Button onClick={onRespond} className="mt-4">
+                  <Button 
+                    onClick={onRespond} 
+                    className="mt-4 bg-orange-500 hover:bg-orange-600 text-white"
+                  >
                     Add Response
                   </Button>
                 </div>
@@ -264,30 +282,44 @@ export function ReviewDetailView({
           )}
 
           {/* Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Moderation Actions</CardTitle>
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="text-orange-600">Moderation Actions</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="flex flex-wrap gap-2">
                 {review.isVerified ? (
-                  <Button variant="outline" onClick={onUnverify}>
+                  <Button 
+                    variant="outline" 
+                    onClick={onUnverify}
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  >
                     <XCircle className="mr-2 h-4 w-4" />
                     Unverify
                   </Button>
                 ) : (
-                  <Button onClick={onVerify}>
+                  <Button 
+                    onClick={onVerify}
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                  >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Verify
                   </Button>
                 )}
                 {review.isPublished ? (
-                  <Button variant="outline" onClick={onUnpublish}>
+                  <Button 
+                    variant="outline" 
+                    onClick={onUnpublish}
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  >
                     <XCircle className="mr-2 h-4 w-4" />
                     Unpublish
                   </Button>
                 ) : (
-                  <Button onClick={onPublish}>
+                  <Button 
+                    onClick={onPublish}
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                  >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Publish
                   </Button>
@@ -298,53 +330,57 @@ export function ReviewDetailView({
         </TabsContent>
 
         <TabsContent value="user" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Information</CardTitle>
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="text-orange-600">User Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-16 w-16 border-2 border-orange-200">
                   <AvatarImage src={review.user?.profileImage || "/placeholder.svg"} />
-                  <AvatarFallback className="text-lg">
+                  <AvatarFallback className="text-lg bg-orange-100 text-orange-600">
                     {review.user?.firstName?.[0]}
                     {review.user?.lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-medium text-foreground">
+                  <h3 className="text-lg font-medium text-orange-600">
                     {review.user?.firstName} {review.user?.lastName}
                   </h3>
                   <div className="flex items-center gap-2">
                     {review.user?.isVerified && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge className="bg-orange-500 text-white text-xs">
                         Verified
                       </Badge>
                     )}
-                    <Badge variant={review.user?.isActive ? "default" : "secondary"} className="text-xs">
+                    <Badge className={`text-xs ${review.user?.isActive ? "bg-orange-100 text-orange-700 border-orange-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
                       {review.user?.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </div>
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-orange-100" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{review.user?.email}</span>
+                  <Mail className="h-4 w-4 text-orange-500" />
+                  <span className="text-sm text-gray-700">{review.user?.email}</span>
                 </div>
                 {review.user?.phone && (
                   <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{review.user.phone}</span>
+                    <Phone className="h-4 w-4 text-orange-500" />
+                    <span className="text-sm text-gray-700">{review.user.phone}</span>
                   </div>
                 )}
               </div>
 
               <div className="pt-4">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   View User Profile
                 </Button>
@@ -354,51 +390,51 @@ export function ReviewDetailView({
         </TabsContent>
 
         <TabsContent value="vendor" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Vendor Information</CardTitle>
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="text-orange-600">Vendor Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-16 w-16 border-2 border-orange-200">
                   <AvatarImage src={review.vendor?.logo || "/placeholder.svg"} />
-                  <AvatarFallback className="text-lg">{review.vendor?.vendorName?.[0]}</AvatarFallback>
+                  <AvatarFallback className="text-lg bg-orange-100 text-orange-600">{review.vendor?.vendorName?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-medium text-foreground">{review.vendor?.vendorName}</h3>
-                  <p className="text-sm text-muted-foreground">{review.vendor?.businessType}</p>
+                  <h3 className="text-lg font-medium text-orange-600">{review.vendor?.vendorName}</h3>
+                  <p className="text-sm text-gray-600">{review.vendor?.businessType}</p>
                   <div className="flex items-center gap-2">
                     {review.vendor?.isVerified && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge className="bg-orange-500 text-white text-xs">
                         Verified
                       </Badge>
                     )}
-                    <Badge variant={review.vendor?.isActive ? "default" : "secondary"} className="text-xs">
+                    <Badge className={`text-xs ${review.vendor?.isActive ? "bg-orange-100 text-orange-700 border-orange-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}>
                       {review.vendor?.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </div>
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-orange-100" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{review.vendor?.email}</span>
+                  <Mail className="h-4 w-4 text-orange-500" />
+                  <span className="text-sm text-gray-700">{review.vendor?.email}</span>
                 </div>
                 {review.vendor?.phone && (
                   <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{review.vendor.phone}</span>
+                    <Phone className="h-4 w-4 text-orange-500" />
+                    <span className="text-sm text-gray-700">{review.vendor.phone}</span>
                   </div>
                 )}
               </div>
 
               {review.vendor?.address && (
                 <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                  <div className="text-sm">
+                  <MapPin className="h-4 w-4 text-orange-500 mt-0.5" />
+                  <div className="text-sm text-gray-700">
                     <p>{review.vendor.address}</p>
                     {review.vendor.city && review.vendor.state && (
                       <p>
@@ -411,7 +447,11 @@ export function ReviewDetailView({
               )}
 
               <div className="pt-4">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   View Vendor Profile
                 </Button>
@@ -421,27 +461,27 @@ export function ReviewDetailView({
         </TabsContent>
 
         <TabsContent value="history" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Review History</CardTitle>
-              <CardDescription>Timeline of changes and actions</CardDescription>
+          <Card className="border-orange-100 bg-white">
+            <CardHeader className="border-b border-orange-50">
+              <CardTitle className="text-orange-600">Review History</CardTitle>
+              <CardDescription className="text-gray-600">Timeline of changes and actions</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Review created</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</p>
+                    <p className="text-sm font-medium text-gray-700">Review created</p>
+                    <p className="text-xs text-gray-500">{formatDate(review.createdAt)}</p>
                   </div>
                 </div>
 
                 {review.updatedAt !== review.createdAt && (
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-secondary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-orange-300 rounded-full mt-2"></div>
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">Review updated</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(review.updatedAt)}</p>
+                      <p className="text-sm font-medium text-gray-700">Review updated</p>
+                      <p className="text-xs text-gray-500">{formatDate(review.updatedAt)}</p>
                     </div>
                   </div>
                 )}
@@ -450,20 +490,20 @@ export function ReviewDetailView({
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">Vendor responded</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(review.response.createdAt)}</p>
+                      <p className="text-sm font-medium text-gray-700">Vendor responded</p>
+                      <p className="text-xs text-gray-500">{formatDate(review.response.createdAt)}</p>
                     </div>
                   </div>
                 )}
 
                 {review.moderatedAt && (
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">Moderated by {review.moderatedBy}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(review.moderatedAt)}</p>
+                      <p className="text-sm font-medium text-gray-700">Moderated by {review.moderatedBy}</p>
+                      <p className="text-xs text-gray-500">{formatDate(review.moderatedAt)}</p>
                       {review.moderationNotes && (
-                        <p className="text-xs text-muted-foreground italic">"{review.moderationNotes}"</p>
+                        <p className="text-xs text-gray-500 italic">"{review.moderationNotes}"</p>
                       )}
                     </div>
                   </div>

@@ -253,85 +253,54 @@ export default function ReviewsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Reviews</h1>
-          <p className="text-muted-foreground">Manage and moderate all reviews in your system</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Review
-          </Button>
-        </div>
+      <div className="flex items-center justify-between bg-orange-50 p-6 rounded-lg border border-orange-200">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-orange-900">Reviews</h1>
+        <p className="text-orange-700">Manage and moderate all reviews in your system</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-100">
+        <Download className="mr-2 h-4 w-4" />
+        Export
+        </Button>
+        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+        <Plus className="mr-2 h-4 w-4" />
+        Add Review
+        </Button>
+      </div>
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filters</CardTitle>
-          <CardDescription>Filter and search through reviews</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ReviewsFilters filters={filters} onFiltersChange={setFilters} onClearFilters={handleClearFilters} />
-        </CardContent>
+      <Card className="border-orange-200 bg-white">
+      <CardHeader className="bg-orange-50 border-b border-orange-200">
+        <CardTitle className="text-lg text-orange-900">Filters</CardTitle>
+        <CardDescription className="text-orange-700">Filter and search through reviews</CardDescription>
+      </CardHeader>
+      <CardContent className="bg-white">
+        <ReviewsFilters filters={filters} onFiltersChange={setFilters} onClearFilters={handleClearFilters} />
+      </CardContent>
       </Card>
 
-      {/* Bulk Actions */}
-      {selectedReviews.length > 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {selectedReviews.length} review{selectedReviews.length !== 1 ? "s" : ""} selected
-              </p>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => handleBulkAction("verify")}>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Verify
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleBulkAction("publish")}>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Publish
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleBulkAction("flag")}>
-                  <Flag className="mr-2 h-4 w-4" />
-                  Flag
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleBulkAction("delete")}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Reviews Table */}
-      <Card>
-        <CardContent className="p-0">
-          <ReviewsTable
-            reviews={mockReviews}
-            selectedReviews={selectedReviews}
-            onSelectReview={handleSelectReview}
-            onSelectAll={handleSelectAll}
-            onViewReview={handleViewReview}
-            onEditReview={handleEditReview}
-            onDeleteReview={handleDeleteReview}
-            onVerifyReview={handleVerifyReview}
-            onUnverifyReview={handleUnverifyReview}
-            onPublishReview={handlePublishReview}
-            onUnpublishReview={handleUnpublishReview}
-            onFlagReview={handleFlagReview}
-          />
-        </CardContent>
+      <Card className="border-orange-200 bg-white">
+      <CardContent className="p-0 bg-white">
+        <ReviewsTable
+        reviews={mockReviews}
+        selectedReviews={selectedReviews}
+        onSelectReview={handleSelectReview}
+        onSelectAll={handleSelectAll}
+        onViewReview={handleViewReview}
+        onEditReview={handleEditReview}
+        onDeleteReview={handleDeleteReview}
+        onVerifyReview={handleVerifyReview}
+        onUnverifyReview={handleUnverifyReview}
+        onPublishReview={handlePublishReview}
+        onUnpublishReview={handleUnpublishReview}
+        onFlagReview={handleFlagReview}
+        />
+      </CardContent>
       </Card>
     </div>
   )
