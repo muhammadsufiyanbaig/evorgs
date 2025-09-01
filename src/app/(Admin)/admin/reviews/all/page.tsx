@@ -37,14 +37,16 @@ const mockReviews: Review[] = [
         name: ""
     },
     vendor: {
-        id: "vendor-1",
-        vendorName: "Sunset Gardens Venue",
-        email: "info@sunsetgardens.com",
-        logo: "/placeholder.svg?height=32&width=32",
-        businessType: "Wedding Venue",
-        isActive: true,
-        isVerified: true,
-        businessName: ""
+      id: "vendor-1",
+      vendorName: "Sunset Gardens Venue",
+      email: "info@sunsetgardens.com",
+      logo: "/placeholder.svg?height=32&width=32",
+      businessType: "Wedding Venue",
+      isActive: true,
+      isVerified: true,
+      businessName: "",
+      vendorEmail: "",
+      vendorType: ""
     },
     response: {
       id: "response-1",
@@ -81,14 +83,16 @@ const mockReviews: Review[] = [
         name: ""
     },
     vendor: {
-        id: "vendor-2",
-        vendorName: "Gourmet Catering Co",
-        email: "info@gourmetcatering.com",
-        logo: "/placeholder.svg?height=32&width=32",
-        businessType: "Catering Service",
-        isActive: true,
-        isVerified: true,
-        businessName: ""
+      id: "vendor-2",
+      vendorName: "Gourmet Catering Co",
+      email: "info@gourmetcatering.com",
+      logo: "/placeholder.svg?height=32&width=32",
+      businessType: "Catering Service",
+      isActive: true,
+      isVerified: true,
+      businessName: "",
+      vendorEmail: "",
+      vendorType: ""
     },
   },
   {
@@ -117,14 +121,16 @@ const mockReviews: Review[] = [
         name: ""
     },
     vendor: {
-        id: "vendor-3",
-        vendorName: "Capture Moments Photography",
-        email: "info@capturemoments.com",
-        logo: "/placeholder.svg?height=32&width=32",
-        businessType: "Photography Service",
-        isActive: true,
-        isVerified: true,
-        businessName: ""
+      id: "vendor-3",
+      vendorName: "Capture Moments Photography",
+      email: "info@capturemoments.com",
+      logo: "/placeholder.svg?height=32&width=32",
+      businessType: "Photography Service",
+      isActive: true,
+      isVerified: true,
+      businessName: "",
+      vendorEmail: "",
+      vendorType: ""
     },
   },
   {
@@ -153,14 +159,16 @@ const mockReviews: Review[] = [
         name: ""
     },
     vendor: {
-        id: "vendor-4",
-        vendorName: "Countryside Farmhouse",
-        email: "info@countrysidefarhouse.com",
-        logo: "/placeholder.svg?height=32&width=32",
-        businessType: "Farmhouse Rental",
-        isActive: true,
-        isVerified: true,
-        businessName: ""
+      id: "vendor-4",
+      vendorName: "Countryside Farmhouse",
+      email: "info@countrysidefarhouse.com",
+      logo: "/placeholder.svg?height=32&width=32",
+      businessType: "Farmhouse Rental",
+      isActive: true,
+      isVerified: true,
+      businessName: "",
+      vendorEmail: "",
+      vendorType: ""
     },
   },
 ]

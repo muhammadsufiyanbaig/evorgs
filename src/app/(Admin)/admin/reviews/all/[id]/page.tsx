@@ -42,19 +42,21 @@ const mockReview: Review = {
       name: ""
   },
   vendor: {
-      id: "vendor-1",
-      vendorName: "Sunset Gardens Venue",
-      email: "info@sunsetgardens.com",
-      phone: "+1 (555) 987-6543",
-      logo: "/placeholder.svg?height=64&width=64",
-      businessType: "Wedding Venue",
-      address: "123 Garden Lane",
-      city: "Springfield",
-      state: "CA",
-      country: "United States",
-      isActive: true,
-      isVerified: true,
-      businessName: ""
+    id: "vendor-1",
+    vendorName: "Sunset Gardens Venue",
+    email: "info@sunsetgardens.com",
+    phone: "+1 (555) 987-6543",
+    logo: "/placeholder.svg?height=64&width=64",
+    businessType: "Wedding Venue",
+    address: "123 Garden Lane",
+    city: "Springfield",
+    state: "CA",
+    country: "United States",
+    isActive: true,
+    isVerified: true,
+    businessName: "",
+    vendorEmail: "",
+    vendorType: ""
   },
   serviceAspects: {
     venue: {
@@ -78,7 +80,8 @@ const mockReview: Review = {
   },
 }
 
-export default function ReviewDetailPage({ params }: { params: { id: string } }) {
+export default async function ReviewDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const router = useRouter()
   const [showResponseForm, setShowResponseForm] = useState(false)
   const [review, setReview] = useState<Review>(mockReview)
