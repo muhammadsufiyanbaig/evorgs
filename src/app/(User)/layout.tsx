@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "@/app/globals.css";
 import ActiveSectionContextProvider from "../context/active-section-context";
 import HeaderFooterWrapper from "@/app/components/Home/HeaderFooterWrapper";
+import Providers from "@/utils/provider";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -27,13 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ActiveSectionContextProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
-        </body>
-      </ActiveSectionContextProvider>
+      <Providers>
+        <ActiveSectionContextProvider>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
+          </body>
+        </ActiveSectionContextProvider>
+      </Providers>
     </html>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, Plus, X, User, Settings, LogOut, Bell, Heart, Calendar } from "lucide-react"
+import { Menu, X, User, Settings, LogOut, Bell, Heart, Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
@@ -16,27 +16,29 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { useAuth, useAuthUser, useIsAuthenticated } from "@/hooks/useAuth"
 
 export default function Header() {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
-  // Simulate user authentication state - replace with your actual auth logic
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [user] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
-    notifications: 3,
-  })
+  const { logout } = useAuth()
+  const isLoggedIn = useIsAuthenticated()
+  const user = useAuthUser()
 
   const handleLogin = () => {
-    setIsLoggedIn(true)
+    router.push('/login')
     setMenuOpen(false)
   }
 
-  const handleLogout = () => {
-    setIsLoggedIn(false)
+  const handleRegister = () => {
+    router.push('/register')
     setMenuOpen(false)
+  }
+
+  const handleLogout = async () => {
+    logout()
+    setMenuOpen(false)
+    router.push('/')
   }
 
   const toggleMenu = () => {
@@ -106,9 +108,9 @@ export default function Header() {
                   {/* Notifications */}
                   <Button variant="ghost" size="icon" className="relative hover:bg-orange-50 rounded-full">
                     <Bell className="h-5 w-5 text-gray-600" />
-                    {user.notifications > 0 && (
+                    {(user as any)?.notifications && (user as any).notifications > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-xs">
-                        {user.notifications}
+                        {(user as any).notifications}
                       </Badge>
                     )}
                   </Button>
@@ -118,12 +120,14 @@ export default function Header() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-orange-50">
                         <Avatar className="h-10 w-10 ring-2 ring-orange-200 hover:ring-orange-300 transition-all">
-                          <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                          <AvatarImage src={(user as any)?.avatar || "/placeholder.svg"} alt={(user as any)?.name || "User"} />
                           <AvatarFallback className="bg-orange-500 text-white">
-                            {user.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
+                            {(user as any)?.name
+                              ? (user as any).name
+                                  .split(" ")
+                                  .map((n: string) => n[0])
+                                  .join("")
+                              : "U"}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
@@ -131,24 +135,24 @@ export default function Header() {
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{user.name}</p>
-                          <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                          <p className="text-sm font-medium leading-none">{(user as any)?.name || "User"}</p>
+                          <p className="text-xs leading-none text-muted-foreground">{(user as any)?.email || "user@example.com"}</p>
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/profile')}>
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/my-bookings')}>
                         <Calendar className="mr-2 h-4 w-4" />
                         <span>Booking</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/favorites')}>
                         <Heart className="mr-2 h-4 w-4" />
                         <span>Favorites</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/settings')}>
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
                       </DropdownMenuItem>
@@ -169,7 +173,10 @@ export default function Header() {
                   >
                     Sign In
                   </Button>
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                  <Button 
+                    onClick={handleRegister}
+                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
                     Get Started
                   </Button>
                 </>
@@ -217,17 +224,19 @@ export default function Header() {
             <div className="p-4 border-b bg-orange-50">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-12 w-12 ring-2 ring-orange-200">
-                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                  <AvatarImage src={(user as any)?.avatar || "/placeholder.svg"} alt={(user as any)?.name || "User"} />
                   <AvatarFallback className="bg-orange-500 text-white">
-                    {user.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {(user as any)?.name
+                      ? (user as any).name
+                          .split(" ")
+                          .map((n: string) => n[0])
+                          .join("")
+                      : "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-gray-900">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-medium text-gray-900">{(user as any)?.name || "User"}</p>
+                  <p className="text-sm text-gray-500">{(user as any)?.email || "user@example.com"}</p>
                 </div>
               </div>
             </div>
@@ -276,12 +285,12 @@ export default function Header() {
                   Profile
                 </Link>
                 <Link
-                  href="/bookings"
+                  href="/my-bookings"
                   onClick={closeMenu}
                   className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
                 >
                   <Calendar className="mr-3 h-5 w-5" />
-                    bookings
+                  My Bookings
                 </Link>
                 <Link
                   href="/favorites"
@@ -325,7 +334,10 @@ export default function Header() {
                 >
                   Sign In
                 </Button>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg">
+                <Button 
+                  onClick={handleRegister}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg"
+                >
                   Get Started
                 </Button>
               </>
