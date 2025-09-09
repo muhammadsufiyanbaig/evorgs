@@ -32,6 +32,13 @@ export const useAuth = () => {
     resetVendorPassword: store.resetVendorPassword,
     resetAdminPassword: store.resetAdminPassword,
     
+    // Profile management methods
+    updateUserProfile: store.updateUserProfile,
+    changeUserPassword: store.changeUserPassword,
+    deleteUserAccount: store.deleteUserAccount,
+    resendUserOtp: store.resendUserOtp,
+    setNewUserPassword: store.setNewUserPassword,
+    
     // Utility methods
     logout: store.logout,
     clearError: store.clearError,

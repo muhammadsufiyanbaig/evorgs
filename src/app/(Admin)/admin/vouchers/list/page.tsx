@@ -25,75 +25,8 @@ import {
 import { VoucherDetailsDialog } from "@/app/components/Admin/voucher/detail-dailouge"
 import { VoucherEditDialog } from "@/app/components/Admin/voucher/edit-dailog"
 
-// Mock data based on GraphQL schema
-const mockVouchers = [
-    {
-        id: "1",
-        vendorId: "vendor-1",
-        vendorName: "Restaurant ABC",
-        couponCode: "SAVE20",
-        title: "20% Off All Orders",
-        description: "Get 20% discount on all menu items",
-        discountType: "PERCENTAGE",
-        discountValue: 20,
-        maxDiscountAmount: 50,
-        minOrderValue: 25,
-        applicableFor: "ALL",
-        serviceTypes: ["FOOD"],
-        totalUsageLimit: 1000,
-        usagePerUser: 3,
-        currentUsageCount: 245,
-        validFrom: "2024-01-01",
-        validUntil: "2024-12-31",
-        isActive: true,
-        createdAt: "2024-01-01T00:00:00Z",
-        updatedAt: "2024-01-15T10:30:00Z",
-    },
-    {
-        id: "2",
-        vendorId: "vendor-2",
-        vendorName: "Shop XYZ",
-        couponCode: "FIXED10",
-        title: "$10 Off Orders",
-        description: "Fixed $10 discount on orders above $50",
-        discountType: "FIXED_AMOUNT",
-        discountValue: 10,
-        maxDiscountAmount: 10,
-        minOrderValue: 50,
-        applicableFor: "NEW_USERS",
-        serviceTypes: ["RETAIL"],
-        totalUsageLimit: 500,
-        usagePerUser: 1,
-        currentUsageCount: 89,
-        validFrom: "2024-02-01",
-        validUntil: "2024-06-30",
-        isActive: true,
-        createdAt: "2024-02-01T00:00:00Z",
-        updatedAt: "2024-02-10T14:20:00Z",
-    },
-    {
-        id: "3",
-        vendorId: "vendor-3",
-        vendorName: "Service 123",
-        couponCode: "EXPIRED15",
-        title: "15% Service Discount",
-        description: "15% off on all services",
-        discountType: "PERCENTAGE",
-        discountValue: 15,
-        maxDiscountAmount: 30,
-        minOrderValue: 20,
-        applicableFor: "ALL",
-        serviceTypes: ["SERVICE"],
-        totalUsageLimit: 200,
-        usagePerUser: 2,
-        currentUsageCount: 156,
-        validFrom: "2023-12-01",
-        validUntil: "2024-01-31",
-        isActive: false,
-        createdAt: "2023-12-01T00:00:00Z",
-        updatedAt: "2024-01-31T23:59:59Z",
-    },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockVouchers: any[] = []
 
 export default function VouchersPage() {
     const [vouchers, setVouchers] = useState(mockVouchers)

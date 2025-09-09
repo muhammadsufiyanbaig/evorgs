@@ -86,7 +86,7 @@ export function VenueForm({ initialData, onSubmit, isEditing = false }: VenueFor
             ? `"${values.name}" has been updated successfully.`
             : `"${values.name}" has been created successfully.`,
         })
-        router.push("/dashboard")
+        router.push("/services/venues")
         router.refresh()
       } catch (error) {
         toast({

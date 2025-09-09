@@ -1,39 +1,19 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "@/app/globals.css";
 import ActiveSectionContextProvider from "../context/active-section-context";
-import HeaderFooterWrapper from "@/app/components/Home/HeaderFooterWrapper";
-
-const geistSans = localFont({
-  src: "../fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
-  title: "Evorgs",
-  description: "",
+  title: "Evorgs - Authentication",
+  description: "Login or register to access your Evorgs account",
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ActiveSectionContextProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-         {children}
-        </body>
-      </ActiveSectionContextProvider>
-    </html>
+    <ActiveSectionContextProvider>
+      {children}
+    </ActiveSectionContextProvider>
   );
 }

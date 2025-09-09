@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,41 +10,77 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Upload, Save, ArrowLeft } from "lucide-react"
+import { Upload, Save, ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
-
-// Mock existing user data
-const mockUser = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main St, New York, NY 10001",
-  profileImage: "/placeholder.svg?height=100&width=100",
-  dateOfBirth: new Date("1990-05-15"),
-  gender: "Male" as const,
-}
+import { useAuth, useAuthUser, useAuthLoading, useAuthError, useAuthUserType } from "@/hooks/useAuth"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import type { User } from "@/utils/graphql/auth"
 
 export default function EditProfilePage() {
-  const [date, setDate] = useState<Date | undefined>(mockUser.dateOfBirth)
-  const [profileImage, setProfileImage] = useState<string>(mockUser.profileImage)
+  const router = useRouter()
+  const { updateUserProfile, changeUserPassword } = useAuth()
+  const authUser = useAuthUser()
+  const userType = useAuthUserType()
+  const isLoading = useAuthLoading()
+  const error = useAuthError()
+  
+  // Ensure we're dealing with a User type
+  const user = (userType === 'User' ? authUser : null) as User | null
+  
+  const [date, setDate] = useState<Date | undefined>(undefined)
+  const [profileImage, setProfileImage] = useState<string>("")
   const [formData, setFormData] = useState({
-    firstName: mockUser.firstName,
-    lastName: mockUser.lastName,
-    email: mockUser.email,
-    phone: mockUser.phone,
-    address: mockUser.address,
-    gender: mockUser.gender,
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    gender: "Male" as 'Male' | 'Female' | 'Others',
   })
+
+  // Initialize form with user data
+  useEffect(() => {
+    if (user && 'firstName' in user) { // Type guard for User type
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        gender: user.gender || "Male",
+      })
+      setProfileImage(user.profileImage || "")
+      if (user.dateOfBirth) {
+        setDate(new Date(user.dateOfBirth))
+      }
+    }
+  }, [user])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission - would integrate with your updateProfile functionality
-    console.log("Profile updated:", { ...formData, dateOfBirth: date, profileImage })
+    
+    try {
+      const updateInput = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        address: formData.address,
+        gender: formData.gender,
+        profileImage,
+        dateOfBirth: date?.toISOString(),
+      }
+
+      await updateUserProfile(updateInput)
+      toast.success("Profile updated successfully!")
+      router.push("/profile")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile")
+    }
   }
 
   return (
@@ -179,12 +215,25 @@ export default function EditProfilePage() {
               </div>
 
               <div className="flex gap-4">
-                <Button type="submit" className="flex-1 bg-orange-600 hover:bg-orange-700 text-white">
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
                 </Button>
                 <Link href="/profile">
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" disabled={isLoading}>
                     Cancel
                   </Button>
                 </Link>

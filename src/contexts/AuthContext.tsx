@@ -104,22 +104,22 @@ interface AuthContextType extends AuthState {
   loginUser: (input: LoginInput) => Promise<void>;
   loginVendor: (input: VendorLoginInput) => Promise<void>;
   loginAdmin: (input: AdminLoginInput) => Promise<void>;
-  
+
   // Registration methods
   registerUser: (input: RegisterInput) => Promise<void>;
   registerVendor: (input: VendorRegisterInput) => Promise<void>;
   registerAdmin: (input: AdminSignupInput) => Promise<void>;
-  
+
   // OTP verification methods
   verifyUserOtp: (input: VerifyOtpInput) => Promise<void>;
   verifyVendorOtp: (input: VendorVerifyOtpInput) => Promise<void>;
   verifyAdminOtp: (input: AdminVerifyOtpInput) => Promise<void>;
-  
+
   // Password reset methods
   resetUserPassword: (input: ResetPasswordInput) => Promise<void>;
   resetVendorPassword: (input: VendorResetPasswordInput) => Promise<void>;
   resetAdminPassword: (input: AdminResetPasswordInput) => Promise<void>;
-  
+
   // General methods
   logout: () => void;
   clearError: () => void;
@@ -139,15 +139,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loginUserMutation] = useMutation(LOGIN_USER);
   const [loginVendorMutation] = useMutation(VENDOR_LOGIN);
   const [loginAdminMutation] = useMutation(ADMIN_LOGIN);
-  
+
   const [registerUserMutation] = useMutation(REGISTER_USER);
   const [registerVendorMutation] = useMutation(VENDOR_REGISTER);
   const [registerAdminMutation] = useMutation(ADMIN_SIGNUP);
-  
+
   const [verifyUserRegistrationMutation] = useMutation(VERIFY_USER_REGISTRATION);
   const [verifyVendorRegistrationMutation] = useMutation(VERIFY_VENDOR_REGISTRATION);
   const [verifyAdminOtpMutation] = useMutation(ADMIN_VERIFY_OTP);
-  
+
   const [resetUserPasswordMutation] = useMutation(RESET_USER_PASSWORD);
   const [resetVendorPasswordMutation] = useMutation(RESET_VENDOR_PASSWORD);
   const [resetAdminPasswordMutation] = useMutation(ADMIN_RESET_PASSWORD);
@@ -175,7 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (token && userType) {
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: {} as CurrentUser, userType, token } });
-      
+
       // Trigger appropriate query based on user type
       switch (userType) {
         case 'User':
@@ -229,8 +229,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       storeAuthData(token, 'User');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, userType: 'User', token } });
-      
-      router.push('/dashboard');
+      router.push('/my-bookings');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -247,7 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       storeAuthData(token, 'Vendor');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: vendor, userType: 'Vendor', token } });
-      
+
       router.push('/vendor');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -266,7 +265,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (success && token && admin) {
         storeAuthData(token, 'Admin');
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user: admin, userType: 'Admin', token } });
-        
+
         router.push('/admin');
       } else {
         throw new Error('Login failed');
@@ -285,7 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await registerUserMutation({ variables: { input } });
       dispatch({ type: 'SET_LOADING', payload: false });
-      
+
       router.push('/otp-verification');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -300,7 +299,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await registerVendorMutation({ variables: { input } });
       dispatch({ type: 'SET_LOADING', payload: false });
-      
+
       router.push('/otp-verification');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -319,7 +318,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (success && token && admin) {
         storeAuthData(token, 'Admin');
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user: admin, userType: 'Admin', token } });
-        
+
         router.push('/admin');
       } else {
         router.push('/otp-verification');
@@ -341,8 +340,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       storeAuthData(token, 'User');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, userType: 'User', token } });
-      
-      router.push('/dashboard');
+      router.push('/services');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -359,7 +357,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       storeAuthData(token, 'Vendor');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: vendor, userType: 'Vendor', token } });
-      
+
       router.push('/vendor');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -374,7 +372,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await verifyAdminOtpMutation({ variables: { input } });
       dispatch({ type: 'SET_LOADING', payload: false });
-      
+
       // Handle based on purpose (registration, login, password_reset)
       router.push('/admin');
     } catch (error: any) {
@@ -391,7 +389,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await resetUserPasswordMutation({ variables: { input } });
       dispatch({ type: 'SET_LOADING', payload: false });
-      
+
       router.push('/reset-password');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -406,7 +404,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       await resetVendorPasswordMutation({ variables: { input } });
       dispatch({ type: 'SET_LOADING', payload: false });
-      
+
       router.push('/reset-password');
     } catch (error: any) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -425,7 +423,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (success && token && admin) {
         storeAuthData(token, 'Admin');
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user: admin, userType: 'Admin', token } });
-        
+
         router.push('/admin');
       }
     } catch (error: any) {

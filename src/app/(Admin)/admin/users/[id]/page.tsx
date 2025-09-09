@@ -11,95 +11,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowLeft, Calendar, Camera, ChefHat, Edit, Home, Mail, MapPin, Phone, Star, MapPinIcon } from "lucide-react"
 
-// Mock user data
-const mockUser = {
-  id: "1",
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main St, New York, NY 10001",
-  profileImage: "/placeholder.svg?height=120&width=120",
-  dateOfBirth: "1990-05-15",
-  gender: "Male",
-  createdAt: "2024-01-15T10:30:00Z",
-  isVerified: true,
-}
+// TODO: Replace with GraphQL data from useQuery based on user ID
+const mockUser: any = null
 
-// Mock bookings data
-const mockBookings = [
-  {
-    id: "B001",
-    service: "Wedding Photography",
-    serviceType: "Photography",
-    date: "2024-03-15",
-    status: "Completed",
-    amount: 2500,
-    venue: "Grand Hotel Ballroom",
-  },
-  {
-    id: "B002",
-    service: "Birthday Catering",
-    serviceType: "Catering",
-    date: "2024-02-20",
-    status: "Completed",
-    amount: 1200,
-    venue: "Private Residence",
-  },
-  {
-    id: "B003",
-    service: "Corporate Event Venue",
-    serviceType: "Venue",
-    date: "2024-04-10",
-    status: "Upcoming",
-    amount: 3500,
-    venue: "Convention Center",
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockBookings: any[] = []
 
-// Mock vouchers data
-const mockVouchers = [
-  {
-    id: "V001",
-    code: "WELCOME20",
-    discount: "20%",
-    status: "Used",
-    usedDate: "2024-02-15",
-    service: "Photography",
-  },
-  {
-    id: "V002",
-    code: "BIRTHDAY50",
-    discount: "$50",
-    status: "Active",
-    expiryDate: "2024-06-30",
-    service: "Catering",
-  },
-  {
-    id: "V003",
-    code: "VENUE15",
-    discount: "15%",
-    status: "Expired",
-    expiryDate: "2024-01-31",
-    service: "Venue",
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockVouchers: any[] = []
 
-// Mock favorite services
-const mockFavoriteServices = {
-  catering: [
-    { id: "C001", name: "Italian Cuisine Catering", rating: 4.8, bookings: 3 },
-    { id: "C002", name: "BBQ & Grill Masters", rating: 4.6, bookings: 1 },
-  ],
-  photography: [
-    { id: "P001", name: "Professional Wedding Photography", rating: 4.9, bookings: 2 },
-    { id: "P002", name: "Event Photography Studio", rating: 4.7, bookings: 1 },
-  ],
-  farmhouse: [{ id: "F001", name: "Rustic Country Farmhouse", rating: 4.5, bookings: 0 }],
-  venue: [
-    { id: "V001", name: "Grand Convention Center", rating: 4.8, bookings: 1 },
-    { id: "V002", name: "Elegant Banquet Hall", rating: 4.6, bookings: 0 },
-  ],
+// TODO: Replace with GraphQL data from useQuery
+const mockFavoriteServices: {
+  catering: Array<{ id: string; name: string; rating: number; bookings: number }>;
+  photography: Array<{ id: string; name: string; rating: number; bookings: number }>;
+  farmhouse: Array<{ id: string; name: string; rating: number; bookings: number }>;
+  venue: Array<{ id: string; name: string; rating: number; bookings: number }>;
+} = {
+  catering: [],
+  photography: [],
+  farmhouse: [],
+  venue: [],
 }
 
 export default function UserDetailPage() {

@@ -89,139 +89,11 @@ interface PhotographyService extends BaseService {
 
 type Service = VenueService | FarmhouseService | CateringService | PhotographyService
 
-// Mock data based on schema
-const mockServices: Service[] = [
-  {
-    id: "venue1",
-    type: "venue",
-    name: "Grand Ballroom",
-    location: "Downtown Convention Center, New York",
-    description:
-      "Elegant ballroom perfect for weddings and corporate events with stunning chandeliers and marble floors.",
-    imageUrl: ["/placeholder.svg?height=200&width=300&text=Grand+Ballroom"],
-    price: "$2,500",
-    tags: ["Wedding", "Corporate", "Elegant"],
-    amenities: ["Air Conditioning", "Sound System", "Lighting", "Catering Kitchen", "Parking"],
-    minPersonLimit: 50,
-    maxPersonLimit: 300,
-    isAvailable: true,
-    rating: 4.8,
-    reviewCount: 45,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z",
-  },
-  {
-    id: "venue2",
-    type: "venue",
-    name: "Garden Pavilion",
-    location: "Central Park Gardens, New York",
-    description: "Beautiful outdoor pavilion surrounded by lush gardens, perfect for intimate ceremonies.",
-    imageUrl: ["/placeholder.svg?height=200&width=300&text=Garden+Pavilion"],
-    price: "$1,800",
-    tags: ["Outdoor", "Garden", "Intimate"],
-    amenities: ["Garden Setting", "Weather Protection", "Bridal Suite", "Photography Areas"],
-    minPersonLimit: 20,
-    maxPersonLimit: 150,
-    isAvailable: true,
-    rating: 4.6,
-    reviewCount: 32,
-    createdAt: "2024-01-05T00:00:00Z",
-    updatedAt: "2024-01-20T00:00:00Z",
-  },
-  {
-    id: "farmhouse1",
-    type: "farmhouse",
-    name: "Rustic Country Retreat",
-    location: "Hudson Valley, New York",
-    description: "Charming farmhouse with modern amenities, perfect for weekend getaways and small events.",
-    imageUrl: ["/placeholder.svg?height=200&width=300&text=Rustic+Farmhouse"],
-    perNightPrice: 350,
-    minNights: 2,
-    maxNights: 7,
-    maxGuests: 12,
-    amenities: ["Full Kitchen", "Fireplace", "Hot Tub", "BBQ Area", "WiFi", "Parking"],
-    isAvailable: true,
-    rating: 4.7,
-    reviewCount: 28,
-    createdAt: "2024-01-10T00:00:00Z",
-    updatedAt: "2024-01-25T00:00:00Z",
-  },
-  {
-    id: "catering1",
-    type: "catering",
-    name: "Premium Wedding Package",
-    packageName: "Premium Wedding Package",
-    serviceArea: ["Manhattan", "Brooklyn", "Queens"],
-    description: "Complete catering solution for weddings with premium ingredients and professional service.",
-    imageUrl: ["/placeholder.svg?height=200&width=300&text=Wedding+Catering"],
-    price: 85,
-    minGuests: 50,
-    maxGuests: 500,
-    menuItems: ["Appetizers", "Main Course", "Desserts", "Beverages"],
-    dietaryOptions: ["Vegetarian", "Vegan", "Gluten-Free", "Halal"],
-    amenities: ["Professional Staff", "Table Service", "Cleanup", "Linens"],
-    isAvailable: true,
-    rating: 4.5,
-    reviewCount: 67,
-    createdAt: "2024-01-08T00:00:00Z",
-    updatedAt: "2024-01-22T00:00:00Z",
-  },
-  {
-    id: "photography1",
-    type: "photography",
-    name: "Wedding Photography Deluxe",
-    packageName: "Wedding Photography Deluxe",
-    serviceArea: ["New York City", "Long Island", "Westchester"],
-    description: "Complete wedding photography package with engagement session and premium album.",
-    imageUrl: ["/placeholder.svg?height=200&width=300&text=Wedding+Photography"],
-    price: 2500,
-    duration: 8,
-    photographerCount: 2,
-    deliverables: ["500+ Edited Photos", "Premium Album", "Online Gallery", "USB Drive"],
-    amenities: ["Engagement Session", "Bridal Prep", "Ceremony", "Reception", "Editing"],
-    isAvailable: false,
-    rating: 4.9,
-    reviewCount: 89,
-    createdAt: "2024-01-12T00:00:00Z",
-    updatedAt: "2024-01-28T00:00:00Z",
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockServices: Service[] = []
 
-const mockRecentReviews = [
-  {
-    id: "1",
-    serviceId: "venue1",
-    serviceName: "Grand Ballroom",
-    userName: "Sarah Johnson",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 5,
-    reviewText: "Absolutely stunning venue! Perfect for our wedding.",
-    createdAt: "2024-01-15T10:30:00Z",
-    isVerified: true,
-  },
-  {
-    id: "2",
-    serviceId: "catering1",
-    serviceName: "Premium Wedding Package",
-    userName: "Michael Chen",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 4,
-    reviewText: "Great food quality and professional service.",
-    createdAt: "2024-01-12T14:20:00Z",
-    isVerified: false,
-  },
-  {
-    id: "3",
-    serviceId: "photography1",
-    serviceName: "Wedding Photography Deluxe",
-    userName: "Emily Rodriguez",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 5,
-    reviewText: "Amazing photographer! Captured every moment perfectly.",
-    createdAt: "2024-01-10T16:45:00Z",
-    isVerified: true,
-  },
-]
+// TODO: Replace with GraphQL data from useQuery  
+const mockRecentReviews: any[] = []
 
 export default function ServicesPage() {
   const router = useRouter()
@@ -536,7 +408,7 @@ export default function ServicesPage() {
                       <AvatarFallback className="bg-orange-100 text-orange-700">
                         {review.userName
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: any[]) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>

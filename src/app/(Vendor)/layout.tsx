@@ -1,12 +1,20 @@
-"use client";
+import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import VendorRouteWrapper from "./VendorRouteWrapper";
 
-import { VendorRoute } from "@/components/ProtectedRoute";
-import { ReactNode } from "react";
+export const metadata: Metadata = {
+  title: "Evorgs - Vendor Dashboard",
+  description: "Manage your services, bookings, and business on Evorgs",
+};
 
-export default function VendorLayout({ children }: { children: ReactNode }) {
+interface VendorLayoutProps {
+  children: ReactNode;
+}
+
+export default function VendorLayout({ children }: VendorLayoutProps) {
   return (
-    <VendorRoute>
+    <VendorRouteWrapper>
       {children}
-    </VendorRoute>
+    </VendorRouteWrapper>
   );
 }

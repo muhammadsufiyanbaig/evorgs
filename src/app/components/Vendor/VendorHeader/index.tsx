@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Bell, MessageSquare, Settings, User } from "lucide-react"
+import { Bell, MessageSquare, Settings, User, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
@@ -14,10 +14,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuthUser, useAuthUserType, useAuth } from "@/hooks/useAuth"
+import { type Vendor } from "@/utils/graphql/auth"
 import Image from "next/image"
 
 export default function VendorHeader() {
   const router = useRouter()
+  const authUser = useAuthUser()
+  const userType = useAuthUserType()
+  const { logout } = useAuth()
+
+  // Debug logs
+  console.log('=== VENDOR HEADER DEBUG ===')
+  console.log('Auth User:', authUser)
+  console.log('User Type:', userType)
+  console.log('============================')
+
+  // Cast user to vendor if userType is Vendor
+  const vendor = userType === 'Vendor' ? authUser as Vendor : null
+  
+  // Fallback vendor data when authUser is null but userType is Vendor (common after page refresh)
+  const fallbackVendor = {
+    vendorName: 'Vendor User',
+    vendorEmail: 'Loading...',
+    profileImage: null
+  }
+  
+  // Use vendor data or fallback for display
+  const displayVendor = vendor || (userType === 'Vendor' ? fallbackVendor : null)
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
+  }
+
+  // Generate initials from vendor name
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200">
@@ -66,9 +105,9 @@ export default function VendorHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:ring-2 hover:ring-orange-500 transition">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder.svg?height=36&width=36" />
+                  <AvatarImage src={displayVendor?.profileImage || "/placeholder.svg?height=36&width=36"} />
                   <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-                    JD
+                    {displayVendor?.vendorName ? getInitials(displayVendor.vendorName) : 'V'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -76,8 +115,12 @@ export default function VendorHeader() {
             <DropdownMenuContent className="w-56 shadow-xl" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-semibold leading-none">John Doe</p>
-                  <p className="text-xs text-muted-foreground">john@example.com</p>
+                  <p className="text-sm font-semibold leading-none">
+                    {displayVendor?.vendorName || 'Vendor'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {displayVendor?.vendorEmail || 'No email'}
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -90,7 +133,8 @@ export default function VendorHeader() {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 hover:bg-red-100">
+              <DropdownMenuItem className="text-red-600 hover:bg-red-100" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -6,22 +6,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { Bell, Shield, Trash2, ArrowLeft, RotateCcw } from "lucide-react"
+import { Bell, Shield, Trash2, ArrowLeft, RotateCcw, Loader2 } from "lucide-react"
 import Link from "next/link"
-
-// Mock user preferences data
-const mockPreferences = {
-  pushNotifications: true,
-  emailNotifications: true,
-}
+import { useAuth, useAuthUser, useAuthLoading, useAuthUserType } from "@/hooks/useAuth"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import type { User } from "@/utils/graphql/auth"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function SettingsPage() {
-  const [preferences, setPreferences] = useState(mockPreferences)
+  const router = useRouter()
+  const { deleteUserAccount } = useAuth()
+  const authUser = useAuthUser()
+  const userType = useAuthUserType()
+  const isLoading = useAuthLoading()
+  
+  // Ensure we're dealing with a User type
+  const user = (userType === 'User' ? authUser : null) as User | null
+
+  const [preferences, setPreferences] = useState({
+    pushNotifications: true,
+    emailNotifications: true,
+  })
 
   const handlePreferenceChange = (key: keyof typeof preferences, value: boolean) => {
     setPreferences((prev) => ({ ...prev, [key]: value }))
     // Would integrate with your updateUserPreferences functionality
-    console.log("Preference updated:", { [key]: value })
+    toast.success(`${key === 'pushNotifications' ? 'Push' : 'Email'} notifications ${value ? 'enabled' : 'disabled'}`)
   }
 
   const handleResetPreferences = () => {
@@ -29,13 +50,17 @@ export default function SettingsPage() {
       pushNotifications: true,
       emailNotifications: true,
     })
-    // Would integrate with your resetUserPreferences functionality
-    console.log("Preferences reset to default")
+    toast.success("Preferences reset to default")
   }
 
-  const handleDeleteAccount = () => {
-    // Would integrate with your deleteAccount functionality
-    console.log("Delete account requested")
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteUserAccount()
+      toast.success("Account deleted successfully")
+      router.push("/")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete account")
+    }
   }
 
   return (
@@ -116,7 +141,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Your email address is verified</p>
               </div>
               <Badge variant="default" className="bg-orange-100 text-orange-800 border-orange-200">
-                Verified
+                {user?.isVerified ? "Verified" : "Unverified"}
               </Badge>
             </div>
 
@@ -183,10 +208,41 @@ export default function SettingsPage() {
                 <h3 className="font-medium text-destructive">Delete Account</h3>
                 <p className="text-sm text-muted-foreground">Permanently delete your account and all associated data</p>
               </div>
-              <Button variant="destructive" onClick={handleDeleteAccount}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Account
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Account
+                      </>
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your account
+                      and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDeleteAccount}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete Account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>

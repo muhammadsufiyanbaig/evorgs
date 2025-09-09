@@ -20,6 +20,11 @@ import {
   RESET_USER_PASSWORD,
   RESET_VENDOR_PASSWORD,
   ADMIN_RESET_PASSWORD,
+  UPDATE_USER_PROFILE,
+  CHANGE_USER_PASSWORD,
+  DELETE_USER_ACCOUNT,
+  RESEND_USER_OTP,
+  SET_NEW_USER_PASSWORD,
   type User,
   type Vendor,
   type Admin,
@@ -36,6 +41,10 @@ import {
   type ResetPasswordInput,
   type VendorResetPasswordInput,
   type AdminResetPasswordInput,
+  type UpdateProfileInput,
+  type ChangePasswordInput,
+  type ResendOtpInput,
+  type SetNewPasswordInput,
 } from '@/utils/graphql/auth';
 
 // Define the current user type (union of all user types)
@@ -74,6 +83,13 @@ interface AuthState {
   resetUserPassword: (input: ResetPasswordInput) => Promise<void>;
   resetVendorPassword: (input: VendorResetPasswordInput) => Promise<void>;
   resetAdminPassword: (input: AdminResetPasswordInput) => Promise<void>;
+  
+  // Profile management methods
+  updateUserProfile: (input: UpdateProfileInput) => Promise<void>;
+  changeUserPassword: (input: ChangePasswordInput) => Promise<void>;
+  deleteUserAccount: () => Promise<void>;
+  resendUserOtp: (input: ResendOtpInput) => Promise<void>;
+  setNewUserPassword: (input: SetNewPasswordInput) => Promise<void>;
   
   // Utility methods
   initializeAuth: () => Promise<void>;
@@ -462,18 +478,31 @@ export const useAuthStore = create<AuthState>()(
           const token = localStorage.getItem('auth_token');
           const userType = localStorage.getItem('user_type') as UserType;
 
+          console.log('Initializing auth:', { token: !!token, userType });
+
           if (!token || !userType) {
+            console.log('No auth data found, setting loading to false');
             get().setLoading(false);
             return;
           }
 
+          // Set auth state immediately for faster login experience
           set((state) => {
             state.token = token;
             state.userType = userType;
+            state.isAuthenticated = true; // Set this immediately
+            state.isLoading = false; // Stop loading immediately
           });
 
-          // Fetch user data based on type
-          await get().refreshUserData();
+          console.log('Auth data loaded, attempting to fetch user data in background...');
+          
+          // Try to fetch user data in background, but don't block the UI
+          try {
+            await get().refreshUserData();
+          } catch (error) {
+            console.warn('Background user data fetch failed, but keeping auth state:', error);
+            // Don't logout here, user might just have network issues
+          }
         } catch (error) {
           console.error('Failed to initialize auth:', error);
           get().logout();
@@ -484,6 +513,8 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { userType, token } = get();
           
+          console.log('Refreshing user data:', { userType, token: !!token });
+          
           if (!token || !userType) {
             throw new Error('No authentication data found');
           }
@@ -492,6 +523,7 @@ export const useAuthStore = create<AuthState>()(
 
           switch (userType) {
             case 'User':
+              console.log('Fetching user data...');
               const userResult = await client.query({
                 query: GET_CURRENT_USER,
                 fetchPolicy: 'network-only',
@@ -500,14 +532,23 @@ export const useAuthStore = create<AuthState>()(
               break;
 
             case 'Vendor':
-              const vendorResult = await client.query({
-                query: GET_VENDOR_PROFILE,
-                fetchPolicy: 'network-only',
-              });
-              userData = (vendorResult.data as any).vendorProfile;
+              console.log('Fetching vendor data...');
+              try {
+                const vendorResult = await client.query({
+                  query: GET_VENDOR_PROFILE,
+                  fetchPolicy: 'network-only',
+                });
+                userData = (vendorResult.data as any).vendorProfile;
+              } catch (vendorError) {
+                console.warn('GET_VENDOR_PROFILE query failed, keeping auth state without user data:', vendorError);
+                // Don't throw error, just continue without user data
+                // The vendor can still access protected routes with just token + userType
+                userData = null;
+              }
               break;
 
             case 'Admin':
+              console.log('Fetching admin data...');
               const adminResult = await client.query({
                 query: ADMIN_ME,
                 fetchPolicy: 'network-only',
@@ -519,14 +560,133 @@ export const useAuthStore = create<AuthState>()(
               throw new Error('Invalid user type');
           }
 
-          if (userData) {
-            get().setUser(userData, userType);
-          } else {
-            throw new Error('Failed to fetch user data');
+          console.log('User data fetched:', { userData: !!userData, userType });
+
+          // Always update the state, even if userData is null (for vendor with failing GraphQL)
+          set((state) => {
+            state.user = userData; // This can be null for vendor if GraphQL fails
+            state.userType = userType;
+            state.isAuthenticated = true; // Keep authenticated even without user data
+            state.isLoading = false;
+          });
+
+          if (!userData) {
+            console.warn('No user data returned from API, but keeping authenticated state');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to refresh user data:', error);
+          
+          // Only logout for authentication errors, not network errors
+          if (error.graphQLErrors?.some((e: any) => 
+            e.message?.includes('Unauthorized') || 
+            e.message?.includes('Invalid token') ||
+            e.message?.includes('Authentication') ||
+            e.extensions?.code === 'UNAUTHENTICATED'
+          )) {
+            console.log('Authentication error detected, logging out');
+            get().logout();
+          } else {
+            // For network errors or other issues, just log but keep the user logged in
+            console.warn('Non-authentication error, keeping user logged in:', error.message);
+          }
+        }
+      },
+
+      // ======== PROFILE MANAGEMENT METHODS ========
+      updateUserProfile: async (input: UpdateProfileInput) => {
+        try {
+          get().setLoading(true);
+          get().setError(null);
+
+          const { data } = await client.mutate({
+            mutation: UPDATE_USER_PROFILE,
+            variables: { input },
+          });
+
+          const updatedUser = (data as any).updateProfile;
+          if (updatedUser) {
+            get().setUser(updatedUser, get().userType!);
+          }
+        } catch (error: any) {
+          get().setError(error.message || 'Failed to update profile');
+        } finally {
+          get().setLoading(false);
+        }
+      },
+
+      changeUserPassword: async (input: ChangePasswordInput) => {
+        try {
+          get().setLoading(true);
+          get().setError(null);
+
+          await client.mutate({
+            mutation: CHANGE_USER_PASSWORD,
+            variables: { input },
+          });
+
+          // Password changed successfully
+        } catch (error: any) {
+          get().setError(error.message || 'Failed to change password');
+          throw error;
+        } finally {
+          get().setLoading(false);
+        }
+      },
+
+      deleteUserAccount: async () => {
+        try {
+          get().setLoading(true);
+          get().setError(null);
+
+          await client.mutate({
+            mutation: DELETE_USER_ACCOUNT,
+          });
+
+          // Account deleted successfully, logout user
           get().logout();
+        } catch (error: any) {
+          get().setError(error.message || 'Failed to delete account');
+          throw error;
+        } finally {
+          get().setLoading(false);
+        }
+      },
+
+      resendUserOtp: async (input: ResendOtpInput) => {
+        try {
+          get().setLoading(true);
+          get().setError(null);
+
+          await client.mutate({
+            mutation: RESEND_USER_OTP,
+            variables: { input },
+          });
+
+          // OTP resent successfully
+        } catch (error: any) {
+          get().setError(error.message || 'Failed to resend OTP');
+          throw error;
+        } finally {
+          get().setLoading(false);
+        }
+      },
+
+      setNewUserPassword: async (input: SetNewPasswordInput) => {
+        try {
+          get().setLoading(true);
+          get().setError(null);
+
+          await client.mutate({
+            mutation: SET_NEW_USER_PASSWORD,
+            variables: { input },
+          });
+
+          // Password reset successfully
+        } catch (error: any) {
+          get().setError(error.message || 'Failed to set new password');
+          throw error;
+        } finally {
+          get().setLoading(false);
         }
       },
     })),

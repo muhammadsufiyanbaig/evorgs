@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,53 +10,82 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Save, X, ArrowLeft, Plus, Trash2 } from "lucide-react"
-
-// Mock vendor data based on your schema
-type VendorType = "FarmHouse" | "Venue" | "Catering" | "Photography";
-type VendorStatus = "Approved" | "Pending" | "Rejected";
-
-const initialVendorData: {
-  id: string;
-  vendorName: string;
-  vendorEmail: string;
-  vendorPhone: string;
-  vendorAddress: string;
-  vendorProfileDescription: string;
-  vendorWebsite: string;
-  vendorSocialLinks: string[];
-  profileImage: string;
-  bannerImage: string;
-  vendorType: VendorType;
-  vendorStatus: VendorStatus;
-} = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  vendorName: "Sunset Gardens Venue",
-  vendorEmail: "contact@sunsetgardens.com",
-  vendorPhone: "+1 (555) 123-4567",
-  vendorAddress: "123 Garden Lane, Beverly Hills, CA 90210",
-  vendorProfileDescription:
-    "Premier wedding venue with stunning sunset views and elegant gardens. We specialize in creating unforgettable moments for your special day.",
-  vendorWebsite: "https://sunsetgardens.com",
-  vendorSocialLinks: ["@sunsetgardens", "facebook.com/sunsetgardens"],
-  profileImage: "/placeholder.svg?height=120&width=120",
-  bannerImage: "/placeholder.svg?height=300&width=800",
-  vendorType: "Venue",
-  vendorStatus: "Approved",
-}
+import { Camera, Save, X, ArrowLeft, Plus, Trash2, Loader2 } from "lucide-react"
+import { useQuery } from "@apollo/client/react"
+import { GET_VENDOR_PROFILE, type Vendor } from '@/utils/graphql/auth'
+import { useAuthUser, useAuthUserType } from "@/hooks/useAuth"
+import { useToast } from "@/hooks/use-toast"
 
 export default function EditVendorProfile() {
   const router = useRouter()
-  const [vendor, setVendor] = useState(initialVendorData)
-  const [isLoading, setIsLoading] = useState(false)
+  const authUser = useAuthUser()
+  const userType = useAuthUserType()
+  const { toast } = useToast()
+
+  // GraphQL query for vendor profile
+  const { 
+    data: vendorProfileData, 
+    loading: profileLoading, 
+    error: profileError,
+    refetch 
+  } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
+    skip: userType !== 'Vendor' || !authUser,
+    errorPolicy: 'all'
+  })
+
+  // Use GraphQL data if available, fallback to auth data
+  const vendor = vendorProfileData?.vendorProfile || (userType === 'Vendor' ? authUser : null) as Vendor | null
+
+  const [formData, setFormData] = useState({
+    vendorName: '',
+    vendorEmail: '',
+    vendorPhone: '',
+    vendorAddress: '',
+    vendorProfileDescription: '',
+    vendorWebsite: '',
+    vendorSocialLinks: [] as string[],
+    profileImage: '',
+    bannerImage: '',
+    vendorType: 'Venue' as Vendor['vendorType']
+  })
+
+  // Update form data when vendor data is loaded
+  useEffect(() => {
+    if (vendor) {
+      setFormData({
+        vendorName: vendor.vendorName || '',
+        vendorEmail: vendor.vendorEmail || '',
+        vendorPhone: vendor.vendorPhone || '',
+        vendorAddress: vendor.vendorAddress || '',
+        vendorProfileDescription: vendor.vendorProfileDescription || '',
+        vendorWebsite: vendor.vendorWebsite || '',
+        vendorSocialLinks: vendor.vendorSocialLinks || [],
+        profileImage: vendor.profileImage || '',
+        bannerImage: vendor.bannerImage || '',
+        vendorType: vendor.vendorType || 'Venue'
+      })
+    }
+  }, [vendor])
+
+  const [updating, setUpdating] = useState(false)
 
   const handleSave = async () => {
-    setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsLoading(false)
-    // Redirect back to profile page
-    router.push("/vendor/profile")
+    if (!vendor?.id) return
+
+    setUpdating(true)
+    
+    // TODO: Implement UPDATE_VENDOR_PROFILE mutation when available
+    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+    
+    toast({
+      title: "Coming Soon",
+      description: "Profile update functionality will be available soon.",
+    })
+    
+    setUpdating(false)
+    
+    // For now, just go back to profile
+    // router.push('/vendor/profile')
   }
 
   const handleCancel = () => {
@@ -64,27 +93,56 @@ export default function EditVendorProfile() {
   }
 
   const addSocialLink = () => {
-    setVendor({
-      ...vendor,
-      vendorSocialLinks: [...vendor.vendorSocialLinks, ""],
+    setFormData({
+      ...formData,
+      vendorSocialLinks: [...formData.vendorSocialLinks, ""],
     })
   }
 
   const removeSocialLink = (index: number) => {
-    const newLinks = vendor.vendorSocialLinks.filter((_, i) => i !== index)
-    setVendor({
-      ...vendor,
+    const newLinks = formData.vendorSocialLinks.filter((_, i) => i !== index)
+    setFormData({
+      ...formData,
       vendorSocialLinks: newLinks,
     })
   }
 
   const updateSocialLink = (index: number, value: string) => {
-    const newLinks = [...vendor.vendorSocialLinks]
+    const newLinks = [...formData.vendorSocialLinks]
     newLinks[index] = value
-    setVendor({
-      ...vendor,
+    setFormData({
+      ...formData,
       vendorSocialLinks: newLinks,
     })
+  }
+
+  // Loading state
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-orange-500 mb-4" />
+          <p className="text-gray-600">Loading vendor profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (profileError || !vendor) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Profile</h3>
+            <p className="text-red-600 mb-4">{profileError?.message || 'No vendor data available'}</p>
+            <Button onClick={() => router.push('/vendor/profile')} className="bg-red-500 hover:bg-red-600">
+              Back to Profile
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -137,9 +195,9 @@ export default function EditVendorProfile() {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Avatar className="h-20 w-20 border-4 border-orange-100">
-                      <AvatarImage src={vendor.profileImage || "/placeholder.svg"} alt={vendor.vendorName} />
+                      <AvatarImage src={formData.profileImage || "/placeholder.svg"} alt={formData.vendorName} />
                       <AvatarFallback className="bg-orange-100 text-orange-600 text-xl">
-                        {vendor.vendorName.charAt(0)}
+                        {formData.vendorName.charAt(0) || 'V'}
                       </AvatarFallback>
                     </Avatar>
                     <Button
@@ -175,8 +233,8 @@ export default function EditVendorProfile() {
                     </Label>
                     <Input
                       id="vendorName"
-                      value={vendor.vendorName}
-                      onChange={(e) => setVendor({ ...vendor, vendorName: e.target.value })}
+                      value={formData.vendorName}
+                      onChange={(e) => setFormData({ ...formData, vendorName: e.target.value })}
                       className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                       placeholder="Enter your business name"
                     />
@@ -186,11 +244,11 @@ export default function EditVendorProfile() {
                       Vendor Type *
                     </Label>
                     <Select
-                      value={vendor.vendorType}
+                      value={formData.vendorType}
                       onValueChange={(value) =>
-                        setVendor({
-                          ...vendor,
-                          vendorType: value as "FarmHouse" | "Venue" | "Catering" | "Photography",
+                        setFormData({
+                          ...formData,
+                          vendorType: value as Vendor['vendorType'],
                         })
                       }
                     >
@@ -213,13 +271,13 @@ export default function EditVendorProfile() {
                   </Label>
                   <Textarea
                     id="description"
-                    value={vendor.vendorProfileDescription}
-                    onChange={(e) => setVendor({ ...vendor, vendorProfileDescription: e.target.value })}
+                    value={formData.vendorProfileDescription}
+                    onChange={(e) => setFormData({ ...formData, vendorProfileDescription: e.target.value })}
                     rows={4}
                     className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                     placeholder="Describe your business, services, and what makes you unique..."
                   />
-                  <p className="text-xs text-gray-500">{vendor.vendorProfileDescription.length}/500 characters</p>
+                  <p className="text-xs text-gray-500">{formData.vendorProfileDescription.length}/500 characters</p>
                 </div>
 
                 <div className="space-y-2">
@@ -228,8 +286,8 @@ export default function EditVendorProfile() {
                   </Label>
                   <Textarea
                     id="address"
-                    value={vendor.vendorAddress}
-                    onChange={(e) => setVendor({ ...vendor, vendorAddress: e.target.value })}
+                    value={formData.vendorAddress}
+                    onChange={(e) => setFormData({ ...formData, vendorAddress: e.target.value })}
                     rows={2}
                     className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                     placeholder="Enter your complete business address..."
@@ -252,8 +310,8 @@ export default function EditVendorProfile() {
                     <Input
                       id="email"
                       type="email"
-                      value={vendor.vendorEmail}
-                      onChange={(e) => setVendor({ ...vendor, vendorEmail: e.target.value })}
+                      value={formData.vendorEmail}
+                      onChange={(e) => setFormData({ ...formData, vendorEmail: e.target.value })}
                       className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                       placeholder="your@email.com"
                     />
@@ -264,8 +322,8 @@ export default function EditVendorProfile() {
                     </Label>
                     <Input
                       id="phone"
-                      value={vendor.vendorPhone}
-                      onChange={(e) => setVendor({ ...vendor, vendorPhone: e.target.value })}
+                      value={formData.vendorPhone}
+                      onChange={(e) => setFormData({ ...formData, vendorPhone: e.target.value })}
                       className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                       placeholder="+1 (555) 123-4567"
                     />
@@ -278,8 +336,8 @@ export default function EditVendorProfile() {
                   </Label>
                   <Input
                     id="website"
-                    value={vendor.vendorWebsite}
-                    onChange={(e) => setVendor({ ...vendor, vendorWebsite: e.target.value })}
+                    value={formData.vendorWebsite}
+                    onChange={(e) => setFormData({ ...formData, vendorWebsite: e.target.value })}
                     className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                     placeholder="https://yourwebsite.com"
                   />
@@ -300,7 +358,7 @@ export default function EditVendorProfile() {
                     </Button>
                   </div>
                   <div className="space-y-2">
-                    {vendor.vendorSocialLinks.map((link, index) => (
+                    {formData.vendorSocialLinks.map((link, index) => (
                       <div key={index} className="flex gap-2">
                         <Input
                           value={link}
@@ -335,11 +393,11 @@ export default function EditVendorProfile() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Account Status</span>
-                    <Badge className="bg-green-50 text-green-700 border-green-200">{vendor.vendorStatus}</Badge>
+                    <Badge className="bg-green-50 text-green-700 border-green-200">{vendor?.vendorStatus || 'Pending'}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Vendor Type</span>
-                    <Badge className="bg-orange-100 text-orange-700 border-orange-200">{vendor.vendorType}</Badge>
+                    <Badge className="bg-orange-100 text-orange-700 border-orange-200">{vendor?.vendorType || 'Venue'}</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -353,12 +411,12 @@ export default function EditVendorProfile() {
                 <div className="space-y-3">
                   <Button
                     onClick={handleSave}
-                    disabled={isLoading}
+                    disabled={updating}
                     className="w-full bg-orange-500 hover:bg-orange-600"
                   >
-                    {isLoading ? (
+                    {updating ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Saving...
                       </>
                     ) : (
@@ -371,7 +429,7 @@ export default function EditVendorProfile() {
                   <Button
                     variant="outline"
                     onClick={handleCancel}
-                    disabled={isLoading}
+                    disabled={updating}
                     className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 bg-transparent"
                   >
                     <X className="h-4 w-4 mr-2" />

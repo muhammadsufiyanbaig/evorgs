@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,80 +24,16 @@ import {
   MessageSquare,
 } from "lucide-react"
 
-// Mock service data
-const mockService = {
-  id: "venue1",
-  type: "venue" as const,
-  name: "Grand Ballroom",
-  location: "Downtown Convention Center, New York",
-  description:
-    "Elegant ballroom perfect for weddings and corporate events with stunning chandeliers and marble floors. This magnificent venue offers a timeless setting for your special occasions with its classic architecture and modern amenities.",
-  imageUrl: [
-    "/placeholder.svg?height=400&width=600&text=Grand+Ballroom+Main",
-    "/placeholder.svg?height=300&width=400&text=Ballroom+Interior",
-    "/placeholder.svg?height=300&width=400&text=Chandelier+Detail",
-    "/placeholder.svg?height=300&width=400&text=Dance+Floor",
-  ],
-  price: "$2,500",
-  tags: ["Wedding", "Corporate", "Elegant", "Indoor"],
-  amenities: [
-    "Air Conditioning",
-    "Sound System",
-    "Professional Lighting",
-    "Catering Kitchen",
-    "Valet Parking",
-    "Bridal Suite",
-    "Dance Floor",
-    "Stage Area",
-  ],
-  minPersonLimit: 50,
-  maxPersonLimit: 300,
-  isAvailable: true,
-  rating: 4.8,
-  reviewCount: 45,
-  createdAt: "2024-01-01T00:00:00Z",
-  updatedAt: "2024-01-15T00:00:00Z",
-}
+// TODO: Replace with GraphQL data from useQuery based on service ID
+const mockService: any = null
 
-const mockReviews = [
-  {
-    id: "1",
-    userName: "Sarah Johnson",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 5,
-    reviewText:
-      "Absolutely stunning venue! The Grand Ballroom exceeded all our expectations for our wedding. The staff was incredibly helpful and the decorations were perfect. Our guests are still talking about how beautiful everything was.",
-    createdAt: "2024-01-15T10:30:00Z",
-    isVerified: true,
-    images: ["/placeholder.svg?height=100&width=100&text=Wedding+Photo"],
-  },
-  {
-    id: "2",
-    userName: "Michael Chen",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 4,
-    reviewText:
-      "Great venue for our corporate gala. Professional service and beautiful ambiance. The sound system was excellent and the lighting created the perfect atmosphere. Would definitely recommend for business events.",
-    createdAt: "2024-01-12T14:20:00Z",
-    isVerified: false,
-    images: [],
-  },
-  {
-    id: "3",
-    userName: "Emily Rodriguez",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 5,
-    reviewText:
-      "Perfect venue for our anniversary celebration. The chandeliers are breathtaking and the dance floor was spacious. The bridal suite was a nice touch for getting ready. Highly recommend!",
-    createdAt: "2024-01-10T16:45:00Z",
-    isVerified: true,
-    images: [],
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockReviews: any[] = []
 
+// TODO: Replace with GraphQL data from useQuery
 const mockAvailability = {
-  bookedDates: [new Date(2024, 1, 14), new Date(2024, 1, 21), new Date(2024, 1, 28)],
-  availableDates: [new Date(2024, 1, 7), new Date(2024, 1, 15), new Date(2024, 1, 22)],
+  bookedDates: [],
+  availableDates: [],
 }
 
 export default function ServiceDetailPage() {
@@ -107,6 +43,32 @@ export default function ServiceDetailPage() {
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [date, setDate] = useState<Date | undefined>(new Date())
+
+  // TODO: Replace with GraphQL query to fetch service by ID
+  if (!mockService) {
+    return (
+      <div className="min-h-screen bg-orange-50 p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/vendor/services")}
+              className="border-orange-200 text-orange-700 hover:bg-orange-50"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Services
+            </Button>
+          </div>
+          <Card className="border-orange-200 bg-white">
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-600">Service not found. Please connect to GraphQL to load service data.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   const getServiceIcon = (type: string) => {
     switch (type) {
@@ -183,7 +145,7 @@ export default function ServiceDetailPage() {
               </div>
               <div className="p-4">
                 <div className="flex gap-2 overflow-x-auto">
-                  {mockService.imageUrl.map((image, index) => (
+                  {mockService.imageUrl.map((image: any, index: number) => (
                     <img
                       key={index}
                       src={image || "/placeholder.svg"}
@@ -265,7 +227,7 @@ export default function ServiceDetailPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">Tags</h3>
                   <div className="flex flex-wrap gap-2">
-                    {mockService.tags.map((tag, index) => (
+                    {mockService.tags.map((tag: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, index: Key | null | undefined) => (
                       <Badge key={index} variant="outline" className="border-orange-200 text-orange-700">
                         {tag}
                       </Badge>
@@ -276,7 +238,7 @@ export default function ServiceDetailPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">Amenities & Features</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {mockService.amenities.map((amenity, index) => (
+                    {mockService.amenities.map((amenity: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, index: Key | null | undefined) => (
                       <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
                         <CheckCircle className="w-4 h-4 text-green-500" />
                         {amenity}
@@ -313,7 +275,7 @@ export default function ServiceDetailPage() {
                       <AvatarFallback className="bg-orange-100 text-orange-700">
                         {review.userName
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: any[]) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
@@ -333,7 +295,7 @@ export default function ServiceDetailPage() {
                       <p className="text-sm text-gray-600">{review.reviewText}</p>
                       {review.images && review.images.length > 0 && (
                         <div className="flex gap-2">
-                          {review.images.map((image, index) => (
+                          {review.images.map((image: any, index: number) => (
                             <img
                               key={index}
                               src={image || "/placeholder.svg"}

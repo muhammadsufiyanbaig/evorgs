@@ -26,7 +26,7 @@ export function ProtectedRoute({ children, allowedUserTypes, redirectTo = '/logi
         // Redirect to appropriate dashboard based on user type
         switch (userType) {
           case 'User':
-            router.push('/dashboard');
+            router.push('/my-bookings');
             break;
           case 'Vendor':
             router.push('/vendor');
