@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
-import type { UserType } from "@/utils/graphql/auth";
+
+type UserType = 'User' | 'Vendor' | 'Admin';
 
 interface UnifiedLoginFormProps {
   defaultUserType?: UserType;
@@ -17,7 +17,6 @@ interface UnifiedLoginFormProps {
 }
 
 export function UnifiedLoginForm({ defaultUserType = 'User' }: UnifiedLoginFormProps) {
-  const { loginUser, loginVendor, loginAdmin, isLoading, error, clearError } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -25,10 +24,26 @@ export function UnifiedLoginForm({ defaultUserType = 'User' }: UnifiedLoginFormP
     userType: defaultUserType,
   });
   const [showPassword, setShowPassword] = useState(false);
-
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) clearError();
+    if (error) setError(null);
+  };
+  const loginUser = async (credentials: { email: string; password: string }) => {
+    // Implement user login logic here
+    console.log('User login:', credentials);
+  };
+
+  const loginVendor = async (credentials: { vendorEmail: string; password: string }) => {
+    // Implement vendor login logic here
+    console.log('Vendor login:', credentials);
+  };
+
+  const loginAdmin = async (credentials: { email: string; password: string }) => {
+    // Implement admin login logic here
+    console.log('Admin login:', credentials);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,8 +52,12 @@ export function UnifiedLoginForm({ defaultUserType = 'User' }: UnifiedLoginFormP
     const { email, password, userType } = formData;
     
     if (!email || !password) {
+      setError('Please fill in all fields');
       return;
     }
+
+    setIsLoading(true);
+    setError(null);
 
     try {
       switch (userType) {
@@ -53,12 +72,13 @@ export function UnifiedLoginForm({ defaultUserType = 'User' }: UnifiedLoginFormP
           break;
       }
     } catch (err) {
-      // Error is handled by the auth context
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
+    setShowPassword((prev: any) => !prev);
   };
 
   const getUserTypeLabel = (type: UserType) => {
@@ -260,25 +280,23 @@ export function UnifiedLoginForm({ defaultUserType = 'User' }: UnifiedLoginFormP
               </Link>
             </p>
           </div>
+          </div>
         </div>
-      </div>
-
-      {/* Right Side - Image */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-        <div className="text-center text-white p-8">
-          <Image
-            src="/hero-bg.jpg"
-            alt="Authentication Background"
-            width={500}
-            height={400}
-            className="rounded-lg shadow-lg opacity-90"
-          />
-          <h2 className="text-3xl font-bold mt-6 mb-4">Welcome to Evorgs</h2>
-          <p className="text-lg opacity-90">
-            Your one-stop platform for event management and vendor services
-          </p>
+        <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
+          <div className="text-center text-white p-8">
+            <Image
+              src="/hero-bg.jpg"
+              alt="Authentication Background"
+              width={500}
+              height={400}
+              className="rounded-lg shadow-lg opacity-90"
+            />
+            <h2 className="text-3xl font-bold mt-6 mb-4">Welcome to Evorgs</h2>
+            <p className="text-lg opacity-90">
+              Your one-stop platform for event management and vendor services
+            </p>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

@@ -7,34 +7,49 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Edit, Mail, Phone, MapPin, Calendar, User, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useAuth, useAuthUser, useAuthLoading, useAuthUserType } from "@/hooks/useAuth"
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import type { User as UserType } from "@/utils/graphql/auth"
+import { useEffect, useState } from "react"
+
+interface UserProfile {
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  address?: string
+  dateOfBirth?: string
+  gender?: string
+  profileImage?: string
+  isVerified: boolean
+  createdAt: string
+}
 
 export default function ProfilePage() {
-  const router = useRouter()
-  const { refreshUserData } = useAuth()
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
-  const isLoading = useAuthLoading()
-  
-  // Ensure we're dealing with a User type
-  const user = (userType === 'User' ? authUser : null) as UserType | null
+  const [user, setUser] = useState<UserProfile | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Refresh user data when component mounts
   useEffect(() => {
-    if (userType === 'User' && !user) {
-      refreshUserData()
+    // TODO: Fetch user data from API
+    // For now, setting mock user data
+    const mockUser: UserProfile = {
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      phone: "+1 (555) 123-4567",
+      address: "123 Main St, City, State 12345",
+      dateOfBirth: "1990-01-01",
+      gender: "Male",
+      profileImage: "/placeholder.svg",
+      isVerified: true,
+      createdAt: "2023-01-01"
     }
-  }, [userType, user, refreshUserData])
+    
+    setTimeout(() => {
+      setUser(mockUser)
+      setIsLoading(false)
+    }, 1000)
+  }, [])
 
   // Redirect if not a user
-  useEffect(() => {
-    if (userType && userType !== 'User') {
-      router.push('/login')
-    }
-  }, [userType, router])
 
   if (isLoading || !user) {
     return (
@@ -87,7 +102,7 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Member since {new Date(user.createdAt).toLocaleDateString()}
+                  Member since {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
                 </p>
               </div>
             </CardContent>

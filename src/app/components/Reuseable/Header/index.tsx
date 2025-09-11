@@ -16,14 +16,19 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { useAuth, useAuthUser, useIsAuthenticated } from "@/hooks/useAuth"
 
 export default function Header() {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { logout } = useAuth()
-  const isLoggedIn = useIsAuthenticated()
-  const user = useAuthUser()
+  
+  // Mock authentication state - replace with your actual auth logic
+  const isLoggedIn = false
+  const user = {
+    name: "John Doe",
+    email: "john@example.com",
+    avatar: "/placeholder.svg",
+    notifications: 3
+  }
 
   const handleLogin = () => {
     router.push('/login')
@@ -36,7 +41,6 @@ export default function Header() {
   }
 
   const handleLogout = async () => {
-    logout()
     setMenuOpen(false)
     router.push('/')
   }

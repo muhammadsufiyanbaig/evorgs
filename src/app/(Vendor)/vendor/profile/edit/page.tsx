@@ -11,31 +11,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Camera, Save, X, ArrowLeft, Plus, Trash2, Loader2 } from "lucide-react"
-import { useQuery } from "@apollo/client/react"
-import { GET_VENDOR_PROFILE, type Vendor } from '@/utils/graphql/auth'
-import { useAuthUser, useAuthUserType } from "@/hooks/useAuth"
 import { useToast } from "@/hooks/use-toast"
+import { Vendor } from "@/utils/interfaces"
 
 export default function EditVendorProfile() {
-  const router = useRouter()
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
   const { toast } = useToast()
+  const router = useRouter()
 
-  // GraphQL query for vendor profile
-  const { 
-    data: vendorProfileData, 
-    loading: profileLoading, 
-    error: profileError,
-    refetch 
-  } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
-    skip: userType !== 'Vendor' || !authUser,
-    errorPolicy: 'all'
-  })
-
-  // Use GraphQL data if available, fallback to auth data
-  const vendor = vendorProfileData?.vendorProfile || (userType === 'Vendor' ? authUser : null) as Vendor | null
-
+  const [vendor, setVendor] = useState<Vendor | null>(null)
   const [formData, setFormData] = useState({
     vendorName: '',
     vendorEmail: '',
@@ -49,28 +32,58 @@ export default function EditVendorProfile() {
     vendorType: 'Venue' as Vendor['vendorType']
   })
 
-  // Update form data when vendor data is loaded
+  // Fetch vendor data on component mount
   useEffect(() => {
-    if (vendor) {
-      setFormData({
-        vendorName: vendor.vendorName || '',
-        vendorEmail: vendor.vendorEmail || '',
-        vendorPhone: vendor.vendorPhone || '',
-        vendorAddress: vendor.vendorAddress || '',
-        vendorProfileDescription: vendor.vendorProfileDescription || '',
-        vendorWebsite: vendor.vendorWebsite || '',
-        vendorSocialLinks: vendor.vendorSocialLinks || [],
-        profileImage: vendor.profileImage || '',
-        bannerImage: vendor.bannerImage || '',
-        vendorType: vendor.vendorType || 'Venue'
-      })
+    const fetchVendorData = async () => {
+      try {
+        // TODO: Replace with actual API call to fetch vendor data
+        // const response = await fetch('/api/vendor/profile')
+        // const vendorData = await response.json()
+        
+        // Mock vendor data for now
+        const mockVendor: Vendor = {
+          id: '1',
+          vendorName: 'Sample Business',
+          vendorEmail: 'business@example.com',
+          vendorPhone: '+1234567890',
+          vendorAddress: '123 Business St, City, State',
+          vendorProfileDescription: 'Sample business description',
+          vendorSocialLinks: [],
+          profileImage: '',
+          bannerImage: '',
+          vendorType: 'Venue',
+          vendorWebsite: "",
+          businessName: "",
+          email: "",
+          businessType: "",
+          isActive: false,
+          isVerified: false,
+          vendorStatus: ""
+        }
+        
+        setVendor(mockVendor)
+        setFormData({
+          vendorName: mockVendor.vendorName,
+          vendorEmail: mockVendor.vendorEmail,
+          vendorPhone: mockVendor.vendorPhone,
+          vendorAddress: mockVendor.vendorAddress,
+          vendorProfileDescription: mockVendor.vendorProfileDescription,
+          vendorWebsite: '',
+          vendorSocialLinks: mockVendor.vendorSocialLinks || [],
+          profileImage: mockVendor.profileImage || '',
+          bannerImage: mockVendor.bannerImage || '',
+          vendorType: mockVendor.vendorType
+        })
+      } catch (error) {
+        console.error('Error fetching vendor data:', error)
+      }
     }
-  }, [vendor])
+    fetchVendorData()
+  }, [])
 
   const [updating, setUpdating] = useState(false)
 
   const handleSave = async () => {
-    if (!vendor?.id) return
 
     setUpdating(true)
     
@@ -116,28 +129,16 @@ export default function EditVendorProfile() {
     })
   }
 
-  // Loading state
-  if (profileLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-orange-500 mb-4" />
-          <p className="text-gray-600">Loading vendor profile...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state
-  if (profileError || !vendor) {
+  // Error state - redirect to profile if no vendor
+  if (!vendor) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-            <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Profile</h3>
-            <p className="text-red-600 mb-4">{profileError?.message || 'No vendor data available'}</p>
-            <Button onClick={() => router.push('/vendor/profile')} className="bg-red-500 hover:bg-red-600">
-              Back to Profile
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Access Denied</h3>
+            <p className="text-red-600 mb-4">Please login as vendor to access this page.</p>
+            <Button onClick={() => router.push('/login')} className="bg-red-500 hover:bg-red-600">
+              Go to Login
             </Button>
           </div>
         </div>

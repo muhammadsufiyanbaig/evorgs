@@ -9,16 +9,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
-import type { UserType } from "@/utils/graphql/auth";
+
+type UserType = 'User' | 'Vendor' | 'Admin';
 
 interface UnifiedRegistrationFormProps {
   defaultUserType?: UserType;
 }
-
 export function UnifiedRegistrationForm({ defaultUserType = 'User' }: UnifiedRegistrationFormProps) {
-  const { registerUser, registerVendor, registerAdmin, isLoading, error, clearError } = useAuth();
+  // Import useAuth hook - uncomment the line below when useAuth is available
+  // const { registerUser, registerVendor, registerAdmin, isLoading, error, clearError } = useAuth();
   
+  // Temporary mock values for development
+  const registerUser = async (_data: any) => {};
+  const registerVendor = async (_data: any) => {};
+  const registerAdmin = async (_data: any) => {};
+  const isLoading = false;
+  const error = null;
+  const clearError = () => {};
+
   const [formData, setFormData] = useState({
     userType: defaultUserType,
     // Common fields

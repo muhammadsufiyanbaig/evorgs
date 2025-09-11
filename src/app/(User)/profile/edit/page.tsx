@@ -12,24 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Upload, Save, ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useAuth, useAuthUser, useAuthLoading, useAuthError, useAuthUserType } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import type { User } from "@/utils/graphql/auth"
 
 export default function EditProfilePage() {
   const router = useRouter()
-  const { updateUserProfile, changeUserPassword } = useAuth()
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
-  const isLoading = useAuthLoading()
-  const error = useAuthError()
   
   // Ensure we're dealing with a User type
-  const user = (userType === 'User' ? authUser : null) as User | null
-  
+ 
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [profileImage, setProfileImage] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,29 +33,14 @@ export default function EditProfilePage() {
   })
 
   // Initialize form with user data
-  useEffect(() => {
-    if (user && 'firstName' in user) { // Type guard for User type
-      setFormData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        address: user.address || "",
-        gender: user.gender || "Male",
-      })
-      setProfileImage(user.profileImage || "")
-      if (user.dateOfBirth) {
-        setDate(new Date(user.dateOfBirth))
-      }
-    }
-  }, [user])
+  
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     
     try {
       const updateInput = {
@@ -72,14 +50,14 @@ export default function EditProfilePage() {
         address: formData.address,
         gender: formData.gender,
         profileImage,
-        dateOfBirth: date?.toISOString(),
       }
-
-      await updateUserProfile(updateInput)
+      
       toast.success("Profile updated successfully!")
       router.push("/profile")
     } catch (error: any) {
       toast.error(error.message || "Failed to update profile")
+    } finally {
+      setIsLoading(false)
     }
   }
 

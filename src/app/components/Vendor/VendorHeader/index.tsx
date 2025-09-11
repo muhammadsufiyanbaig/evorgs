@@ -14,24 +14,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useAuthUser, useAuthUserType, useAuth } from "@/hooks/useAuth"
-import { type Vendor } from "@/utils/graphql/auth"
 import Image from "next/image"
+import { Vendor } from "@/utils/interfaces"
 
 export default function VendorHeader() {
   const router = useRouter()
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
-  const { logout } = useAuth()
 
-  // Debug logs
-  console.log('=== VENDOR HEADER DEBUG ===')
-  console.log('Auth User:', authUser)
-  console.log('User Type:', userType)
-  console.log('============================')
+  // TODO: Replace with actual auth context or state management
+  const userType = 'Vendor' // Temporary hardcoded value
+  const authUser = null // Temporary - replace with actual user data
 
   // Cast user to vendor if userType is Vendor
-  const vendor = userType === 'Vendor' ? authUser as Vendor : null
+  const vendor = userType === 'Vendor' ? authUser as unknown as Vendor : null
   
   // Fallback vendor data when authUser is null but userType is Vendor (common after page refresh)
   const fallbackVendor = {
@@ -44,7 +38,6 @@ export default function VendorHeader() {
   const displayVendor = vendor || (userType === 'Vendor' ? fallbackVendor : null)
 
   const handleLogout = () => {
-    logout()
     router.push('/login')
   }
 

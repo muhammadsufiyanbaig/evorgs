@@ -1,55 +1,64 @@
 "use client";
 
 import React, { useState } from "react";
+
+type UserType = 'User' | 'Vendor' | 'Admin';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
-import type { UserType } from "@/utils/graphql/auth";
 
 export function OtpVerificationForm() {
-  const { verifyUserOtp, verifyVendorOtp, verifyAdminOtp, isLoading, error, clearError } = useAuth();
-  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     email: '',
     otp: '',
     userType: 'User' as UserType,
     purpose: 'registration' as 'registration' | 'password_reset',
   });
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) clearError();
+    if (error) setError(null);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const { email, otp, userType, purpose } = formData;
     
     if (!email || !otp) {
+      setError('Please fill in all required fields');
       return;
     }
 
+    setIsLoading(true);
+    setError(null);
+
     try {
+      // Replace these with actual API calls
       switch (userType) {
         case 'User':
-          await verifyUserOtp({ email, otp, purpose, userType });
+          // await verifyUserOtp({ email, otp, purpose, userType });
+          console.log('Verifying user OTP', { email, otp, purpose, userType });
           break;
         case 'Vendor':
-          await verifyVendorOtp({ vendorEmail: email, otp, purpose, userType });
+          // await verifyVendorOtp({ vendorEmail: email, otp, purpose, userType });
+          console.log('Verifying vendor OTP', { vendorEmail: email, otp, purpose, userType });
           break;
         case 'Admin':
-          await verifyAdminOtp({ email, otp, purpose });
+          // await verifyAdminOtp({ email, otp, purpose });
+          console.log('Verifying admin OTP', { email, otp, purpose });
           break;
       }
     } catch (err) {
-      // Error is handled by the auth context
+      setError('Verification failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+      setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Form */}
@@ -181,9 +190,8 @@ export function OtpVerificationForm() {
             alt="Verification Background"
             width={500}
             height={400}
-            className="rounded-lg shadow-lg opacity-90"
+            className="mb-6 rounded-lg"
           />
-          <h2 className="text-3xl font-bold mt-6 mb-4">Almost There!</h2>
           <p className="text-lg opacity-90">
             Just one more step to complete your registration
           </p>
@@ -192,3 +200,4 @@ export function OtpVerificationForm() {
     </div>
   );
 }
+

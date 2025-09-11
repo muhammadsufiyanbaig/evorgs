@@ -19,27 +19,27 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react"
-import { useQuery } from "@apollo/client/react"
-import { GET_VENDOR_PROFILE, type Vendor } from '@/utils/graphql/auth'
-import { useAuthUser, useAuthUserType } from "@/hooks/useAuth"
+
+// Simple vendor type
+type Vendor = {
+  id?: string
+  vendorName: string
+  vendorEmail: string
+  vendorStatus: string
+  vendorType?: string
+  profileImage?: string
+  rating?: number
+  reviewCount?: number
+  createdAt: string
+}
 
 export default function VendorStatus() {
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
+  // Mock vendor data - replace with actual auth context/hook
+  const authUser = null // Replace with your auth hook
+  const userType = null // Replace with your auth context
 
-  // GraphQL query for vendor profile
-  const { 
-    data: vendorProfileData, 
-    loading: profileLoading, 
-    error: profileError,
-    refetch 
-  } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
-    skip: userType !== 'Vendor' || !authUser,
-    errorPolicy: 'all'
-  })
-
-  // Use GraphQL data if available, fallback to auth data
-  const vendor = vendorProfileData?.vendorProfile || (userType === 'Vendor' ? authUser : null) as Vendor | null
+  // Use auth data as vendor
+  const vendor = (userType === 'Vendor' && authUser) ? authUser as Vendor : null
 
   // Mock data for features not yet in GraphQL schema
   const mockData = {
@@ -55,37 +55,23 @@ export default function VendorStatus() {
     lastUpdated: "2024-03-18",
   }
 
-  // Loading state
-  if (profileLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-orange-500 mb-4" />
-          <p className="text-gray-600">Loading vendor status...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state
-  if (profileError || !vendor) {
+  // Error state - redirect if not vendor
+  if (!vendor) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-            <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Status</h3>
-            <p className="text-red-600 mb-4">{profileError?.message || 'No vendor data available'}</p>
-            <div className="flex gap-2 justify-center">
-              <Button onClick={() => refetch()} className="bg-red-500 hover:bg-red-600">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Retry
-              </Button>
-            </div>
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Access Denied</h3>
+            <p className="text-red-600 mb-4">Please login as vendor to access this page.</p>
+            <Button onClick={() => window.location.href = '/login'} className="bg-red-500 hover:bg-red-600">
+              Go to Login
+            </Button>
           </div>
         </div>
       </div>
     )
   }
+  
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Approved":
@@ -300,7 +286,7 @@ export default function VendorStatus() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Application ID</span>
-                    <span className="text-sm font-mono text-gray-900">#{vendor.id.slice(-8)}</span>
+                    <span className="text-sm font-mono text-gray-900">#{vendor.id?.slice(-8) || 'N/A'}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Vendor Type</span>

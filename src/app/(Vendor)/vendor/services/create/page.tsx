@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Building, Home, ChefHat, Camera, Upload, X } from "lucide-react"
-import { useServiceCreation, transformVenueData, transformCateringData, transformPhotographyData, transformFarmhouseData } from "@/hooks/useServiceCreation"
 import { useToast } from "@/hooks/use-toast"
 
 type ServiceType = "venue" | "farmhouse" | "catering" | "photography"
@@ -56,7 +55,7 @@ export default function CreateServicePage() {
       })
       router.push("/vendor/services")
     },
-    onError: (errorMessage) => {
+    onError: (errorMessage: any) => {
       toast({
         title: "Error",
         description: errorMessage,
@@ -92,6 +91,26 @@ export default function CreateServicePage() {
   const removeImage = (index: number) => {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index))
   }
+
+  const transformVenueData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformCateringData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformPhotographyData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformFarmhouseData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
 
   const handleSubmit = async () => {
     try {
@@ -404,3 +423,7 @@ export default function CreateServicePage() {
     </div>
   )
 }
+function useServiceCreation(arg0: { serviceType: ServiceType; onSuccess: () => void; onError: (errorMessage: any) => void }): { createService: any; isLoading: any; error: any; clearError: any } {
+  throw new Error("Function not implemented.")
+}
+

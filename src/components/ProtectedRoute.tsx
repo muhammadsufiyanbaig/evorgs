@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import type { UserType } from '@/utils/graphql/auth';
+
+type UserType = 'User' | 'Vendor' | 'Admin';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,34 +12,41 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, allowedUserTypes, redirectTo = '/login' }: ProtectedRouteProps) {
-  const { isAuthenticated, userType, isLoading } = useAuth();
+
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userType, setUserType] = useState<UserType | null>(null);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.push(redirectTo);
-        return;
+    // Add your authentication logic here
+    // This is a placeholder - replace with your actual auth logic
+    const checkAuth = async () => {
+      try {
+        // Example: check token, call API, etc.
+        // const token = localStorage.getItem('token');
+        // const response = await fetch('/api/auth/me');
+        // const userData = await response.json();
+        
+        // For now, setting default values
+        setIsAuthenticated(false);
+        setUserType(null);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setUserType(null);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      if (userType && !allowedUserTypes.includes(userType)) {
-        // Redirect to appropriate dashboard based on user type
-        switch (userType) {
-          case 'User':
-            router.push('/my-bookings');
-            break;
-          case 'Vendor':
-            router.push('/vendor');
-            break;
-          case 'Admin':
-            router.push('/admin');
-            break;
-          default:
-            router.push('/login');
-        }
-      }
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || (userType && !allowedUserTypes.includes(userType)))) {
+      router.push(redirectTo);
     }
-  }, [isAuthenticated, userType, isLoading, allowedUserTypes, redirectTo, router]);
+  }, [isLoading, isAuthenticated, userType, allowedUserTypes, router, redirectTo]);
 
   // Show loading spinner while checking authentication
   if (isLoading) {

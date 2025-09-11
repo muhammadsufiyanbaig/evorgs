@@ -532,6 +532,14 @@ export interface User {
 }
 
 export interface Vendor {
+  vendorStatus: string;
+  bannerImage: string;
+  bannerImage: string;
+  vendorSocialLinks: never[];
+  vendorWebsite: string;
+  vendorProfileDescription: string;
+  vendorAddress: string;
+  vendorPhone: string;
   id: string
   businessName: string
   email: string

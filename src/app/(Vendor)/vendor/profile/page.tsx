@@ -6,53 +6,27 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Star, MapPin, Phone, Globe, Edit, Mail, Loader2, RefreshCw } from "lucide-react"
-import { useAuthUser, useAuthUserType, useAuthLoading, useAuthError } from "@/hooks/useAuth"
-import { useQuery } from "@apollo/client/react"
-import { GET_VENDOR_PROFILE, type Vendor } from '@/utils/graphql/auth'
+import { Star, MapPin, Phone, Globe, Edit, Mail, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Vendor } from "@/utils/interfaces"
+
+// Extended Vendor interface to include missing properties
+interface ExtendedVendor extends Vendor {
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export default function VendorProfile() {
-  const authUser = useAuthUser()
-  const userType = useAuthUserType()
-  const isAuthLoading = useAuthLoading()
-  const authError = useAuthError()
+
   const { toast } = useToast()
-  // GraphQL query for complete vendor profile (disabled for now as it's causing issues)
-  const { 
-    data: vendorProfileData, 
-    loading: profileLoading, 
-    error: profileError,
-    refetch: refetchProfile 
-  } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
-    skip: true, // Skip this query for now - use auth data instead
-    errorPolicy: 'all'
-  })
 
-  // Handle query completion and errors with useEffect
-  React.useEffect(() => {
-    if (vendorProfileData) {
-      console.log('GraphQL Vendor Profile Data:', vendorProfileData)
-    }
-    if (profileError) {
-      console.error('GraphQL Vendor Profile Error:', profileError)
-    }
-  }, [vendorProfileData, profileError])
-
-  // Debug logs
-  console.log('=== VENDOR PROFILE DEBUG ===')
-  console.log('Auth User:', authUser)
-  console.log('User Type:', userType)
-  console.log('Is Auth Loading:', isAuthLoading)
-  console.log('Auth Error:', authError)
-  console.log('Vendor Profile Data from GraphQL:', vendorProfileData)
-  console.log('Profile Error:', profileError)
-  console.log('=============================')
-
-  // Use auth data as primary source (since GraphQL query is problematic)
-  const vendor = (userType === 'Vendor' && authUser) ? authUser as Vendor : null
+  // Mock/default values - replace with actual auth hook or context
+  const authUser = null
+  const userType = 'Vendor' // Add this line to define userType
+  const vendor = null // Add this line to define vendor
+  const isAuthLoading = false // Add this line to define isAuthLoading
+  const authError = null // Add this line to define authError
   
-  // If we have userType as Vendor but no authUser data, create a fallback vendor
   const fallbackVendor = userType === 'Vendor' && !authUser ? {
     id: 'temp',
     vendorName: 'Vendor Profile',
@@ -66,22 +40,17 @@ export default function VendorProfile() {
     bannerImage: undefined,
     vendorType: 'Other',
     vendorStatus: 'Pending',
-    vendorTypeId: '',
-    rating: 0,
-    reviewCount: 0,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    fcmToken: []
-  } as unknown as Vendor : null
+    updatedAt: new Date().toISOString()
+  } as unknown as ExtendedVendor : null
   
   // Use real vendor data, fallback data, or null
   const displayVendor = vendor || fallbackVendor
   
-  // Use only auth loading state for now
+  // Use auth loading and error states
   const isLoading = isAuthLoading
-  
-  // Use only auth error for now
   const error = authError
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -125,19 +94,19 @@ export default function VendorProfile() {
             <p className="text-red-600 mb-4">{error}</p>
             <div className="flex gap-2 justify-center">
               <Button 
-                onClick={() => refetchProfile()} 
-                className="bg-red-500 hover:bg-red-600"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Retry
-              </Button>
-              <Button 
                 onClick={() => window.location.reload()} 
-                variant="outline"
-                className="border-red-200 text-red-600 hover:bg-red-50"
+                className="bg-red-500 hover:bg-red-600"
               >
                 Reload Page
               </Button>
+              <Link href="/login">
+                <Button 
+                  variant="outline"
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  Go to Login
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -196,6 +165,7 @@ export default function VendorProfile() {
                   </AvatarFallback>
                 </Avatar>
               </div>
+              </div>
 
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -212,14 +182,12 @@ export default function VendorProfile() {
                     <div className="flex items-center gap-1 mt-2">
                       <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                       <span className="font-medium text-gray-900">
-                        {displayVendor?.rating ? displayVendor?.rating.toFixed(1) : 'No rating'}
+                        No rating
                       </span>
                       <span className="text-gray-500">
-                        ({displayVendor?.reviewCount || 0} reviews)
+                        (0 reviews)
                       </span>
                     </div>
-                  </div>
-
                   <Link href="/vendor/profile/edit">
                     <Button className="bg-orange-500 hover:bg-orange-600">
                       <Edit className="h-4 w-4 mr-2" />
@@ -324,7 +292,7 @@ export default function VendorProfile() {
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-gray-700">Social Media</h3>
                     <div className="space-y-2">
-                      {displayVendor?.vendorSocialLinks.map((link, index) => (
+                      {displayVendor?.vendorSocialLinks.map((link: string, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <div className="h-2 w-2 bg-orange-400 rounded-full"></div>
                           <span className="text-gray-900">{link}</span>
@@ -397,13 +365,13 @@ export default function VendorProfile() {
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                       <span className="font-medium text-gray-900">
-                        {displayVendor?.rating ? displayVendor?.rating.toFixed(1) : 'N/A'}
+                        N/A
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Reviews</span>
-                    <span className="font-medium text-gray-900">{displayVendor?.reviewCount || 0}</span>
+                    <span className="font-medium text-gray-900">0</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Member Since</span>
