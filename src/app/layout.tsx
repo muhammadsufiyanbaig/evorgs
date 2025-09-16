@@ -1,22 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/utils/provider";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
 export const metadata: Metadata = {
-  title: "Evorgs",
-  description: "Your Event Organization Platform",
+  title: "Evorgs - Event Management Platform",
+  description: "Your one-stop solution for event planning and management",
 };
 
 export default function RootLayout({
@@ -26,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body 
+        className="antialiased"
+        suppressHydrationWarning={true}
+      >
         <Providers>
           {children}
         </Providers>

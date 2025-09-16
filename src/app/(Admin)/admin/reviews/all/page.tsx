@@ -39,15 +39,18 @@ const mockReviews: Review[] = [
     vendor: {
       id: "vendor-1",
       vendorName: "Sunset Gardens Venue",
-      email: "info@sunsetgardens.com",
-      logo: "/placeholder.svg?height=32&width=32",
-      businessType: "Wedding Venue",
-      isActive: true,
+      vendorEmail: "info@sunsetgardens.com",
+      // profileImage: "/placeholder.svg?height=32&width=32",
+      vendorType: "Venue",
       isVerified: true,
-      businessName: "",
-      vendorEmail: "",
-      vendorType: ""
-    },
+      // vendorPhone: "+1234567890",
+      // vendorAddress: "123 Garden Street",
+      // vendorProfileDescription: "Beautiful wedding venue",
+      // vendorWebsite: "https://sunsetgardens.com",
+      // vendorSocialLinks: [],
+      // bannerImage: "/placeholder.svg?height=200&width=400",
+      // createdAt: new Date().toISOString(),
+    } as any,
     response: {
       id: "response-1",
       responseText: "Thank you so much for your wonderful review! We're thrilled that your wedding day was perfect.",
@@ -85,15 +88,10 @@ const mockReviews: Review[] = [
     vendor: {
       id: "vendor-2",
       vendorName: "Gourmet Catering Co",
-      email: "info@gourmetcatering.com",
-      logo: "/placeholder.svg?height=32&width=32",
-      businessType: "Catering Service",
-      isActive: true,
+      vendorEmail: "info@gourmetcatering.com",
+      vendorType: "Catering",
       isVerified: true,
-      businessName: "",
-      vendorEmail: "",
-      vendorType: ""
-    },
+    } as any,
   },
   {
     id: "3",
@@ -123,15 +121,10 @@ const mockReviews: Review[] = [
     vendor: {
       id: "vendor-3",
       vendorName: "Capture Moments Photography",
-      email: "info@capturemoments.com",
-      logo: "/placeholder.svg?height=32&width=32",
-      businessType: "Photography Service",
-      isActive: true,
+      vendorEmail: "info@capturemoments.com",
+      vendorType: "Photography",
       isVerified: true,
-      businessName: "",
-      vendorEmail: "",
-      vendorType: ""
-    },
+    } as any,
   },
   {
     id: "4",
@@ -161,15 +154,10 @@ const mockReviews: Review[] = [
     vendor: {
       id: "vendor-4",
       vendorName: "Countryside Farmhouse",
-      email: "info@countrysidefarhouse.com",
-      logo: "/placeholder.svg?height=32&width=32",
-      businessType: "Farmhouse Rental",
-      isActive: true,
+      vendorEmail: "info@countrysidefarhouse.com",
+      vendorType: "FarmHouse",
       isVerified: true,
-      businessName: "",
-      vendorEmail: "",
-      vendorType: ""
-    },
+    } as any,
   },
 ]
 

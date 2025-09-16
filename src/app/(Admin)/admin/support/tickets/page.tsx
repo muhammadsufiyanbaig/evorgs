@@ -104,14 +104,10 @@ const mockTickets: SupportTicket[] = [
     creator: {
       id: "vendor-1",
       vendorEmail: "support@techcorp.com",
-      email: "support@techcorp.com",
-      isActive: true,
       vendorName: "TechCorp Solutions",
-      businessName: "TechCorp Solutions",
-      vendorType: "Technology Partner",
-      businessType: "Technology Partner",
+      vendorType: "Technology",
       isVerified: true,
-    },
+    } as any,
   },
   {
     id: "TK-005",

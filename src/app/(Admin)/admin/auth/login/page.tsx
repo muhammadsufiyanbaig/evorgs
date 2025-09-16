@@ -1,7 +1,7 @@
 "use client";
 
-import { UnifiedLoginForm } from "@/components/auth/UnifiedLoginForm";
+import { AdminLoginForm } from "@/components/auth/AdminLoginForm";
 
 export default function AdminLoginPage() {
-  return <UnifiedLoginForm defaultUserType="Admin" />;
+  return <AdminLoginForm />;
 }

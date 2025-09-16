@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Settings, LogOut, Bell, Heart, Calendar } from "lucide-react"
+import { Menu, X, User, Settings, LogOut, Bell, Heart, Calendar, Store } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
@@ -16,31 +16,26 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/hooks/useAuth"
+import type { User as UserType } from "@/stores/authStore"
 
 export default function Header() {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
-  
-  // Mock authentication state - replace with your actual auth logic
-  const isLoggedIn = false
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "/placeholder.svg",
-    notifications: 3
-  }
+  const { user, userType, isAuthenticated, logout } = useAuth()
 
   const handleLogin = () => {
-    router.push('/login')
+    router.push('/auth/login')
     setMenuOpen(false)
   }
 
   const handleRegister = () => {
-    router.push('/register')
+    router.push('/auth/register')
     setMenuOpen(false)
   }
 
   const handleLogout = async () => {
+    logout()
     setMenuOpen(false)
     router.push('/')
   }
@@ -48,6 +43,72 @@ export default function Header() {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen)
   }
+
+  // Get user display information based on user type
+  const getUserDisplayInfo = () => {
+    if (!user) return null
+
+    switch (userType) {
+      case 'User':
+        const userData = user as UserType
+        return {
+          name: userData.name,
+          email: userData.email,
+          avatar: "/placeholder.svg",
+          initials: userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        }
+      case 'Vendor':
+        const vendorData = user as UserType
+        return {
+          name: vendorData.name,
+          email: vendorData.email,
+          avatar: "/placeholder.svg",
+          initials: vendorData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        }
+      default:
+        return null
+    }
+  }
+
+  const userDisplayInfo = getUserDisplayInfo()
+
+  // Get dashboard link based on user type
+  const getDashboardLink = () => {
+    switch (userType) {
+      case 'User':
+        return '/profile'
+      case 'Vendor':
+        return '/vendor'
+      case 'Admin':
+        return '/admin'
+      default:
+        return '/'
+    }
+  }
+
+  // Get navigation items based on user type
+  const getNavigationItems = () => {
+    switch (userType) {
+      case 'User':
+        return [
+          { href: '/profile', label: 'Profile', icon: User },
+          { href: '/profile/my-bookings', label: 'My Bookings', icon: Calendar },
+          { href: '/favourite', label: 'Favorites', icon: Heart },
+          { href: '/profile/settings', label: 'Settings', icon: Settings },
+        ]
+      case 'Vendor':
+        return [
+          { href: '/vendor/profile', label: 'Profile', icon: User },
+          { href: '/vendor/bookings', label: 'Bookings', icon: Calendar },
+          { href: '/vendor/services', label: 'Services', icon: Store },
+          { href: '/vendor/profile/settings', label: 'Settings', icon: Settings },
+        ]
+      default:
+        return []
+    }
+  }
+
+  const navigationItems = getNavigationItems()
 
   const closeMenu = () => {
     setMenuOpen(false)
@@ -90,7 +151,7 @@ export default function Header() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
               </Link>
               <Link
-                href="/blog"
+                href="/blogs"
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200 relative group"
               >
                 Blog
@@ -107,12 +168,12 @@ export default function Header() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <>
                   {/* Notifications */}
                   <Button variant="ghost" size="icon" className="relative hover:bg-orange-50 rounded-full">
                     <Bell className="h-5 w-5 text-gray-600" />
-                    {(user as any)?.notifications && (user as any).notifications > 0 && (
+                    {user && (user as any)?.notifications && (user as any).notifications > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-orange-500 text-xs">
                         {(user as any).notifications}
                       </Badge>
@@ -124,14 +185,9 @@ export default function Header() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-orange-50">
                         <Avatar className="h-10 w-10 ring-2 ring-orange-200 hover:ring-orange-300 transition-all">
-                          <AvatarImage src={(user as any)?.avatar || "/placeholder.svg"} alt={(user as any)?.name || "User"} />
+                          <AvatarImage src={userDisplayInfo?.avatar || "/placeholder.svg"} alt={userDisplayInfo?.name || "User"} />
                           <AvatarFallback className="bg-orange-500 text-white">
-                            {(user as any)?.name
-                              ? (user as any).name
-                                  .split(" ")
-                                  .map((n: string) => n[0])
-                                  .join("")
-                              : "U"}
+                            {userDisplayInfo?.initials || "U"}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
@@ -139,27 +195,21 @@ export default function Header() {
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                       <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{(user as any)?.name || "User"}</p>
-                          <p className="text-xs leading-none text-muted-foreground">{(user as any)?.email || "user@example.com"}</p>
+                          <p className="text-sm font-medium leading-none">{userDisplayInfo?.name || "User"}</p>
+                          <p className="text-xs leading-none text-muted-foreground">{userDisplayInfo?.email || "user@example.com"}</p>
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/profile')}>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/my-bookings')}>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>Booking</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/favorites')}>
-                        <Heart className="mr-2 h-4 w-4" />
-                        <span>Favorites</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/settings')}>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
+                      {navigationItems.map((item) => (
+                        <DropdownMenuItem 
+                          key={item.href}
+                          className="cursor-pointer" 
+                          onClick={() => router.push(item.href)}
+                        >
+                          <item.icon className="mr-2 h-4 w-4" />
+                          <span>{item.label}</span>
+                        </DropdownMenuItem>
+                      ))}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
                         <LogOut className="mr-2 h-4 w-4" />
@@ -224,23 +274,18 @@ export default function Header() {
           </div>
 
           {/* User Section (if logged in) */}
-          {isLoggedIn && (
+          {isAuthenticated && (
             <div className="p-4 border-b bg-orange-50">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-12 w-12 ring-2 ring-orange-200">
-                  <AvatarImage src={(user as any)?.avatar || "/placeholder.svg"} alt={(user as any)?.name || "User"} />
+                  <AvatarImage src={userDisplayInfo?.avatar || "/placeholder.svg"} alt={userDisplayInfo?.name || "User"} />
                   <AvatarFallback className="bg-orange-500 text-white">
-                    {(user as any)?.name
-                      ? (user as any).name
-                          .split(" ")
-                          .map((n: string) => n[0])
-                          .join("")
-                      : "U"}
+                    {userDisplayInfo?.initials || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-gray-900">{(user as any)?.name || "User"}</p>
-                  <p className="text-sm text-gray-500">{(user as any)?.email || "user@example.com"}</p>
+                  <p className="font-medium text-gray-900">{userDisplayInfo?.name || "User"}</p>
+                  <p className="text-sm text-gray-500">{userDisplayInfo?.email || "user@example.com"}</p>
                 </div>
               </div>
             </div>
@@ -263,7 +308,7 @@ export default function Header() {
               Services
             </Link>
             <Link
-              href="/blog"
+              href="/blogs"
               onClick={closeMenu}
               className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
             >
@@ -277,48 +322,27 @@ export default function Header() {
               Contact
             </Link>
 
-            {isLoggedIn && (
+            {isAuthenticated && (
               <>
                 <div className="border-t my-4"></div>
-                <Link
-                  href="/profile"
-                  onClick={closeMenu}
-                  className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
-                >
-                  <User className="mr-3 h-5 w-5" />
-                  Profile
-                </Link>
-                <Link
-                  href="/my-bookings"
-                  onClick={closeMenu}
-                  className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
-                >
-                  <Calendar className="mr-3 h-5 w-5" />
-                  My Bookings
-                </Link>
-                <Link
-                  href="/favorites"
-                  onClick={closeMenu}
-                  className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
-                >
-                  <Heart className="mr-3 h-5 w-5" />
-                  Favorites
-                </Link>
-                <Link
-                  href="/settings"
-                  onClick={closeMenu}
-                  className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
-                >
-                  <Settings className="mr-3 h-5 w-5" />
-                  Settings
-                </Link>
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className="flex items-center px-3 py-3 text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors font-medium"
+                  >
+                    <item.icon className="mr-3 h-5 w-5" />
+                    {item.label}
+                  </Link>
+                ))}
               </>
             )}
           </nav>
 
           {/* Mobile Actions */}
           <div className="p-4 border-t space-y-3">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 <Button
                   variant="outline"
