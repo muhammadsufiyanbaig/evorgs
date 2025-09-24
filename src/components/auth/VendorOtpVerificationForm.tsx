@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useGraphQLAuth } from "@/hooks/useGraphQLAuth";
 import { toast } from "sonner";
 
-export function OtpVerificationForm() {
+export function VendorOtpVerificationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyRegistration, verifyLoginOtp, resendOtp, isLoading, pendingVerification } = useGraphQLAuth();
@@ -49,12 +49,12 @@ export function OtpVerificationForm() {
       if (verificationType === 'registration') {
         const result = await verifyRegistration(otp);
         if (result.success) {
-          router.push('/profile/my-bookings');
+          router.push('/vendor/services');
         }
       } else if (verificationType === 'login') {
         const result = await verifyLoginOtp(otp);
         if (result.success) {
-          router.push('/profile/my-bookings');
+          router.push('/vendor/services');
         }
       }
     } catch (err) {
@@ -79,9 +79,9 @@ export function OtpVerificationForm() {
   const getTitle = () => {
     switch (verificationType) {
       case 'registration':
-        return 'Verify Your Email';
+        return 'Verify Your Vendor Email';
       case 'login':
-        return 'Enter Login OTP';
+        return 'Enter Vendor Login OTP';
       case 'password-reset':
         return 'Verify Password Reset';
       default:
@@ -93,9 +93,9 @@ export function OtpVerificationForm() {
     const maskedEmail = email ? `${email.slice(0, 3)}***@${email.split('@')[1]}` : '';
     switch (verificationType) {
       case 'registration':
-        return `We've sent a 6-digit verification code to ${maskedEmail}. Please enter it below to complete your registration.`;
+        return `We've sent a 6-digit verification code to ${maskedEmail}. Please enter it below to complete your vendor registration.`;
       case 'login':
-        return `We've sent a 6-digit login code to ${maskedEmail}. Please enter it below to sign in.`;
+        return `We've sent a 6-digit login code to ${maskedEmail}. Please enter it below to sign in to your vendor account.`;
       case 'password-reset':
         return `We've sent a 6-digit verification code to ${maskedEmail}. Please enter it below to reset your password.`;
       default:
@@ -105,13 +105,13 @@ export function OtpVerificationForm() {
 
   if (!email || !verificationType) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Invalid Request</h2>
           <p className="text-gray-600 mb-6">The verification link is invalid or expired.</p>
-          <Link href="/auth/login">
-            <Button className="bg-orange-600 hover:bg-orange-700">
-              Back to Login
+          <Link href="/vendor/auth/login">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              Back to Vendor Login
             </Button>
           </Link>
         </div>
@@ -120,17 +120,17 @@ export function OtpVerificationForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+          <div className="mx-auto h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
             <Image
               src="/logo.svg"
               alt="Logo"
               width={24}
               height={24}
-              className="text-orange-600"
+              className="text-blue-600"
             />
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -177,7 +177,7 @@ export function OtpVerificationForm() {
                     type="button"
                     onClick={handleResendOtp}
                     disabled={isLoading}
-                    className="text-orange-600 hover:text-orange-500 font-medium disabled:opacity-50"
+                    className="text-blue-600 hover:text-blue-500 font-medium disabled:opacity-50"
                   >
                     Resend OTP
                   </button>
@@ -190,7 +190,7 @@ export function OtpVerificationForm() {
           <Button
             type="submit"
             disabled={isLoading || otp.length !== 6}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
           >
             {isLoading ? "Verifying..." : "Verify OTP"}
           </Button>
@@ -198,11 +198,11 @@ export function OtpVerificationForm() {
           {/* Back Button */}
           <div className="text-center">
             <Link
-              href="/auth/login"
+              href="/vendor/auth/login"
               className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to Login
+              Back to Vendor Login
             </Link>
           </div>
         </form>
