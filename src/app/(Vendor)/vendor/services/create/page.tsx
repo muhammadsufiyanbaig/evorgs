@@ -14,6 +14,40 @@ import { useToast } from "@/hooks/use-toast"
 
 type ServiceType = "venue" | "farmhouse" | "catering" | "photography"
 
+// Mock implementation of useServiceCreation hook
+function useServiceCreation({ serviceType, onSuccess, onError }: {
+  serviceType: ServiceType
+  onSuccess: () => void
+  onError: (errorMessage: string) => void
+}) {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const createService = async (data: any) => {
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mock success response
+      console.log('Service created:', { serviceType, data })
+      onSuccess()
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create service'
+      setError(errorMessage)
+      onError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const clearError = () => setError(null)
+
+  return { createService, isLoading, error, clearError }
+}
+
 export default function CreateServicePage() {
   const router = useRouter()
   const { toast } = useToast()
@@ -55,7 +89,7 @@ export default function CreateServicePage() {
       })
       router.push("/vendor/services")
     },
-    onError: (errorMessage: any) => {
+    onError: (errorMessage: string) => {
       toast({
         title: "Error",
         description: errorMessage,
@@ -423,7 +457,3 @@ export default function CreateServicePage() {
     </div>
   )
 }
-function useServiceCreation(arg0: { serviceType: ServiceType; onSuccess: () => void; onError: (errorMessage: any) => void }): { createService: any; isLoading: any; error: any; clearError: any } {
-  throw new Error("Function not implemented.")
-}
-
