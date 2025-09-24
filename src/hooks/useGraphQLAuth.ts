@@ -217,7 +217,7 @@ export const useGraphQLAuth = () => {
   };
 
   // Reset password (request)
-  const resetPassword = async (email: string, otp: string, email: string,) => {
+  const resetPassword = async (email: string, otp: string) => {
     try {
       setLoading(true);
       const input: ResetPasswordInput = {

@@ -66,7 +66,7 @@ export function AdminResetPasswordForm() {
 
     try {
       // Reset the password with OTP verification
-      await resetPassword(formData.newPassword, formData.otp, email);
+      await resetPassword(formData.newPassword, formData.otp);
       
       toast.success('Password reset successfully!');
       router.push('/admin/auth/login');
