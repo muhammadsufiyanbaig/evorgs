@@ -16,9 +16,45 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/useAuth"
+import { useGraphQLAuth } from "@/hooks/useGraphQLAuth"
+import { toast } from "sonner"
 
 export function AdminHeader() {
+  const router = useRouter()
   const [unreadCount] = useState(5) // This would come from getUnreadCount API
+  
+  // Get auth state from Zustand store (includes persisted adminData)
+  const { adminData } = useAuth()
+  
+  // Get admin-specific data from GraphQL (fallback/refresh)
+  const { currentAdmin, logout: graphqlLogout } = useGraphQLAuth()
+  
+  // Use multi-source strategy: Zustand (primary) + GraphQL (fallback)
+  const admin = adminData || currentAdmin
+  
+  // Generate initials from admin name
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+  }
+  
+  // Extract admin info with fallback values
+  const adminName = admin ? `${admin.firstName} ${admin.lastName}` : 'Admin User'
+  const adminEmail = admin?.email || 'admin@example.com'
+  const adminImage = admin?.profileImage || null
+  const adminPhone = admin?.phone || null
+  
+  const handleLogout = async () => {
+    try {
+      await graphqlLogout()
+      toast.success("Logged out successfully")
+      router.push('/admin/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error("Logout failed. Please try again.")
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-950/95 dark:supports-[backdrop-filter]:bg-gray-950/60">
@@ -92,26 +128,36 @@ export function AdminHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 h-9 px-2">
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Admin" />
-                  <AvatarFallback className="bg-orange-100 text-orange-700">AD</AvatarFallback>
+                  <AvatarImage src={adminImage || "/placeholder.svg?height=32&width=32"} alt={adminName} />
+                  <AvatarFallback className="bg-orange-100 text-orange-700">
+                    {admin ? getInitials(admin.firstName, admin.lastName) : 'AD'}
+                  </AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:block text-sm font-medium">Admin User</span>
+                <span className="hidden sm:block text-sm font-medium">{adminName}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{adminName}</p>
+                  <p className="text-xs leading-none text-muted-foreground">{adminEmail}</p>
+                  {adminPhone && (
+                    <p className="text-xs leading-none text-muted-foreground">{adminPhone}</p>
+                  )}
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/admin/profile')}>
                 <User className="mr-2 h-4 w-4" />
                 View Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/admin/profile/change-password')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Change Password
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </DropdownMenuItem>

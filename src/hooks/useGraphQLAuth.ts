@@ -52,6 +52,30 @@ import {
   type Vendor
 } from '@/lib/graphQL/auth/vendor';
 
+import {
+  ADMIN_LOGIN,
+  ADMIN_SIGNUP,
+  ADMIN_REQUEST_OTP,
+  ADMIN_VERIFY_OTP,
+  ADMIN_RESEND_OTP,
+  ADMIN_RESET_PASSWORD,
+  ADMIN_SET_NEW_PASSWORD,
+  ADMIN_CHANGE_PASSWORD,
+  ADMIN_UPDATE_PROFILE,
+  ADMIN_ME,
+  type AdminLoginInput,
+  type AdminSignupInput,
+  type AdminRequestOtpInput,
+  type AdminVerifyOtpInput,
+  type AdminResendOtpInput,
+  type AdminResetPasswordInput,
+  type AdminSetNewPasswordInput,
+  type AdminChangePasswordInput,
+  type AdminUpdateProfileInput,
+  type AdminAuthResponse,
+  type Admin
+} from '@/lib/graphQL/auth/admin';
+
 export const useGraphQLAuth = () => {
   const { setAuthenticatedUser, logout: zustandLogout, setLoading } = useAuth();
   const [pendingVerification, setPendingVerification] = useState<{
@@ -84,12 +108,27 @@ export const useGraphQLAuth = () => {
   const [changeVendorPasswordMutation, { loading: changeVendorPasswordLoading }] = useMutation<{ vendorChangePassword: string }>(CHANGE_VENDOR_PASSWORD);
   const [resendVendorOtpMutation, { loading: resendVendorOtpLoading }] = useMutation<{ vendorResendOtp: string }>(RESEND_VENDOR_OTP);
 
+  // Admin Mutations
+  const [adminLoginMutation, { loading: adminLoginLoading }] = useMutation<{ adminLogin: AdminAuthResponse }>(ADMIN_LOGIN);
+  const [adminSignupMutation, { loading: adminSignupLoading }] = useMutation<{ adminSignup: AdminAuthResponse }>(ADMIN_SIGNUP);
+  const [adminRequestOtpMutation, { loading: adminRequestOtpLoading }] = useMutation(ADMIN_REQUEST_OTP);
+  const [adminVerifyOtpMutation, { loading: adminVerifyOtpLoading }] = useMutation(ADMIN_VERIFY_OTP);
+  const [adminResendOtpMutation, { loading: adminResendOtpLoading }] = useMutation(ADMIN_RESEND_OTP);
+  const [adminResetPasswordMutation, { loading: adminResetPasswordLoading }] = useMutation<{ adminResetPassword: AdminAuthResponse }>(ADMIN_RESET_PASSWORD);
+  const [adminSetNewPasswordMutation, { loading: adminSetNewPasswordLoading }] = useMutation<{ adminSetNewPassword: AdminAuthResponse }>(ADMIN_SET_NEW_PASSWORD);
+  const [adminChangePasswordMutation, { loading: adminChangePasswordLoading }] = useMutation(ADMIN_CHANGE_PASSWORD);
+  const [adminUpdateProfileMutation, { loading: adminUpdateProfileLoading }] = useMutation<{ adminUpdateAdminProfile: Admin }>(ADMIN_UPDATE_PROFILE);
+
   // Queries
   const { data: currentUserData, loading: currentUserLoading, refetch: refetchCurrentUser } = useQuery<{ me: User }>(GET_CURRENT_USER, {
     skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
   });
 
   const { data: currentVendorData, loading: currentVendorLoading, refetch: refetchCurrentVendor, error: vendorQueryError } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
+    skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
+  });
+
+  const { data: currentAdminData, loading: currentAdminLoading, refetch: refetchCurrentAdmin, error: adminQueryError } = useQuery<{ adminMe: Admin }>(ADMIN_ME, {
     skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
   });
   
@@ -112,19 +151,52 @@ export const useGraphQLAuth = () => {
   }, [currentVendorLoading, currentVendorData, vendorQueryError]);
 
   // Helper to store auth token and update Zustand store
-  const handleAuthSuccess = (authPayload: AuthPayload | VendorAuthPayload, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
+  const handleAuthSuccess = (authPayload: AuthPayload | VendorAuthPayload | AdminAuthResponse, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
     console.log('🎯 handleAuthSuccess called');
     console.log('🎯 authPayload:', authPayload);
     console.log('🎯 userType:', userType);
     console.log('🎯 Token:', authPayload.token);
     
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && authPayload.token) {
       localStorage.setItem('auth_token', authPayload.token);
       console.log('✅ Token stored in localStorage:', localStorage.getItem('auth_token'));
     }
     
     // Handle different auth payload types and update Zustand store
-    if (userType === 'Vendor' && 'vendor' in authPayload) {
+    if (userType === 'Admin' && 'admin' in authPayload) {
+      const adminPayload = authPayload as AdminAuthResponse;
+      console.log('🎯 Admin Payload:', adminPayload.admin);
+      
+      if (adminPayload.admin) {
+        // Prepare admin data for Zustand
+        const adminData = {
+          id: adminPayload.admin.id,
+          firstName: adminPayload.admin.firstName,
+          lastName: adminPayload.admin.lastName,
+          email: adminPayload.admin.email,
+          phone: adminPayload.admin.phone,
+          profileImage: adminPayload.admin.profileImage,
+          createdAt: adminPayload.admin.createdAt,
+          updatedAt: adminPayload.admin.updatedAt,
+        };
+        
+        console.log('📦 Prepared Admin Data for Zustand:', adminData);
+        
+        setAuthenticatedUser(
+          {
+            id: adminPayload.admin.id,
+            name: `${adminPayload.admin.firstName} ${adminPayload.admin.lastName}`.trim(),
+            email: adminPayload.admin.email,
+          },
+          authPayload.token || '',
+          userType,
+          undefined, // No vendor data for admin
+          adminData // Pass admin data to Zustand
+        );
+        
+        console.log('✅ Admin data stored in Zustand');
+      }
+    } else if (userType === 'Vendor' && 'vendor' in authPayload) {
       const vendorPayload = authPayload as VendorAuthPayload;
       console.log('🎯 Vendor Payload:', vendorPayload.vendor);
       
@@ -177,11 +249,28 @@ export const useGraphQLAuth = () => {
   };
 
   // Login with email/password (with optional user type)
-  const login = async (input: LoginInput | VendorLoginInput, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
+  const login = async (input: LoginInput | VendorLoginInput | AdminLoginInput, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
     try {
       setLoading(true);
       
-      if (userType === 'Vendor') {
+      if (userType === 'Admin') {
+        const adminInput = input as AdminLoginInput;
+        console.log('🔐 Admin Login Mutation Input:', adminInput);
+        
+        const { data } = await adminLoginMutation({ variables: { input: adminInput } });
+        
+        console.log('🔐 Admin Login Mutation Response:', data);
+        console.log('🔐 adminLogin data:', data?.adminLogin);
+        
+        if (data?.adminLogin) {
+          console.log('✅ Calling handleAuthSuccess with:', data.adminLogin);
+          handleAuthSuccess(data.adminLogin, userType);
+          toast.success('Admin login successful!');
+          return { success: true, data: data.adminLogin };
+        } else {
+          console.error('❌ No adminLogin data in response');
+        }
+      } else if (userType === 'Vendor') {
         const vendorInput = input as VendorLoginInput;
         console.log('🔐 Vendor Login Mutation Input:', vendorInput);
         
@@ -643,6 +732,7 @@ export const useGraphQLAuth = () => {
     // State
     currentUser: currentUserData?.me,
     currentVendor: currentVendorData?.vendorProfile,
+    currentAdmin: currentAdminData?.adminMe,
     pendingVerification,
     
     // Loading states
@@ -653,6 +743,10 @@ export const useGraphQLAuth = () => {
                vendorRegisterLoading || verifyVendorRegistrationLoading || 
                vendorRequestOtpLoading || verifyVendorOtpLoading || resetVendorPasswordLoading || 
                setNewVendorPasswordLoading || updateVendorProfileLoading || 
-               changeVendorPasswordLoading || resendVendorOtpLoading || currentVendorLoading
+               changeVendorPasswordLoading || resendVendorOtpLoading || currentVendorLoading ||
+               adminLoginLoading || adminSignupLoading || adminRequestOtpLoading ||
+               adminVerifyOtpLoading || adminResendOtpLoading || adminResetPasswordLoading ||
+               adminSetNewPasswordLoading || adminChangePasswordLoading || adminUpdateProfileLoading ||
+               currentAdminLoading
   };
 };

@@ -6,6 +6,7 @@ export const useAuth = () => {
   return {
     user: store.user,
     vendorData: store.vendorData,
+    adminData: store.adminData,
     userType: store.userType,
     token: store.token,
     isAuthenticated: store.isAuthenticated,

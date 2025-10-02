@@ -27,9 +27,21 @@ export interface VendorData {
   updatedAt?: string
 }
 
+export interface AdminData {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  profileImage?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface AuthState {
   user: User | null
   vendorData: VendorData | null
+  adminData: AdminData | null
   userType: 'User' | 'Vendor' | 'Admin' | null
   isAuthenticated: boolean
   isLoading: boolean
@@ -38,7 +50,7 @@ interface AuthState {
   
   // Actions
   login: (email: string, password: string, userType: 'User' | 'Vendor' | 'Admin') => Promise<boolean>
-  setAuthenticatedUser: (user: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData) => void
+  setAuthenticatedUser: (user: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData, adminData?: AdminData) => void
   logout: () => void
   clearError: () => void
   setLoading: (loading: boolean) => void
@@ -57,6 +69,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       vendorData: null,
+      adminData: null,
       userType: null,
       isAuthenticated: false,
       isLoading: false,
@@ -100,7 +113,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      setAuthenticatedUser: (userData: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData) => {
+      setAuthenticatedUser: (userData: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData, adminData?: AdminData) => {
         const user: User = {
           id: userData.id || `${userType.toLowerCase()}-${Date.now()}`,
           name: userData.name || userData.email || 'Unknown User',
@@ -113,10 +126,12 @@ export const useAuthStore = create<AuthState>()(
         console.log('  - Token:', token);
         console.log('  - UserType:', userType);
         console.log('  - VendorData:', vendorData);
+        console.log('  - AdminData:', adminData);
         
         set({ 
           user,
           vendorData: vendorData || null,
+          adminData: adminData || null,
           userType,
           token,
           isAuthenticated: true,
@@ -132,6 +147,7 @@ export const useAuthStore = create<AuthState>()(
         set({ 
           user: null,
           vendorData: null,
+          adminData: null,
           userType: null, 
           isAuthenticated: false,
           token: null,
@@ -175,6 +191,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({ 
         user: state.user,
         vendorData: state.vendorData,
+        adminData: state.adminData,
         userType: state.userType, 
         isAuthenticated: state.isAuthenticated,
         token: state.token
