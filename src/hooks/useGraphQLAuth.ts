@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -28,15 +28,39 @@ import {
   type User
 } from '@/lib/graphQL/auth/user';
 
+import {
+  VENDOR_LOGIN,
+  VENDOR_REGISTER,
+  VERIFY_VENDOR_REGISTRATION,
+  VENDOR_REQUEST_LOGIN_OTP,
+  VERIFY_VENDOR_LOGIN_OTP,
+  RESET_VENDOR_PASSWORD,
+  SET_NEW_VENDOR_PASSWORD,
+  UPDATE_VENDOR_PROFILE,
+  CHANGE_VENDOR_PASSWORD,
+  RESEND_VENDOR_OTP,
+  GET_VENDOR_PROFILE,
+  type VendorLoginInput,
+  type VendorRegisterInput,
+  type VendorVerifyOtpInput,
+  type VendorResetPasswordInput,
+  type VendorSetNewPasswordInput,
+  type VendorUpdateProfileInput,
+  type VendorChangePasswordInput,
+  type VendorResendOtpInput,
+  type VendorAuthPayload,
+  type Vendor
+} from '@/lib/graphQL/auth/vendor';
+
 export const useGraphQLAuth = () => {
-  const { login: zustandLogin, logout: zustandLogout, setLoading } = useAuth();
+  const { setAuthenticatedUser, logout: zustandLogout, setLoading } = useAuth();
   const [pendingVerification, setPendingVerification] = useState<{
     email: string;
     purpose: 'registration' | 'password_reset';
     userType: 'User' | 'Vendor' | 'Admin';
   } | null>(null);
 
-  // Mutations
+  // User Mutations
   const [loginMutation, { loading: loginLoading }] = useMutation<{ login: AuthPayload }>(LOGIN_USER);
   const [registerMutation, { loading: registerLoading }] = useMutation<{ register: string }>(REGISTER_USER);
   const [verifyRegistrationMutation, { loading: verifyRegistrationLoading }] = useMutation<{ verifyRegistration: AuthPayload }>(VERIFY_USER_REGISTRATION);
@@ -48,37 +72,141 @@ export const useGraphQLAuth = () => {
   const [changePasswordMutation, { loading: changePasswordLoading }] = useMutation<{ changePassword: string }>(CHANGE_USER_PASSWORD);
   const [resendOtpMutation, { loading: resendOtpLoading }] = useMutation<{ resendOtp: string }>(RESEND_USER_OTP);
 
+  // Vendor Mutations
+  const [vendorLoginMutation, { loading: vendorLoginLoading }] = useMutation<{ vendorLogin: VendorAuthPayload }>(VENDOR_LOGIN);
+  const [vendorRegisterMutation, { loading: vendorRegisterLoading }] = useMutation<{ vendorRegister: string }>(VENDOR_REGISTER);
+  const [verifyVendorRegistrationMutation, { loading: verifyVendorRegistrationLoading }] = useMutation<{ vendorVerifyRegistration: VendorAuthPayload }>(VERIFY_VENDOR_REGISTRATION);
+  const [vendorRequestLoginOtpMutation, { loading: vendorRequestOtpLoading }] = useMutation<{ vendorRequestLoginOtp: string }>(VENDOR_REQUEST_LOGIN_OTP);
+  const [verifyVendorLoginOtpMutation, { loading: verifyVendorOtpLoading }] = useMutation<{ vendorVerifyLoginOtp: VendorAuthPayload }>(VERIFY_VENDOR_LOGIN_OTP);
+  const [resetVendorPasswordMutation, { loading: resetVendorPasswordLoading }] = useMutation<{ vendorResetPassword: string }>(RESET_VENDOR_PASSWORD);
+  const [setNewVendorPasswordMutation, { loading: setNewVendorPasswordLoading }] = useMutation<{ vendorSetNewPassword: string }>(SET_NEW_VENDOR_PASSWORD);
+  const [updateVendorProfileMutation, { loading: updateVendorProfileLoading }] = useMutation<{ vendorUpdateProfile: Vendor }>(UPDATE_VENDOR_PROFILE);
+  const [changeVendorPasswordMutation, { loading: changeVendorPasswordLoading }] = useMutation<{ vendorChangePassword: string }>(CHANGE_VENDOR_PASSWORD);
+  const [resendVendorOtpMutation, { loading: resendVendorOtpLoading }] = useMutation<{ vendorResendOtp: string }>(RESEND_VENDOR_OTP);
+
   // Queries
   const { data: currentUserData, loading: currentUserLoading, refetch: refetchCurrentUser } = useQuery<{ me: User }>(GET_CURRENT_USER, {
     skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
   });
 
+  const { data: currentVendorData, loading: currentVendorLoading, refetch: refetchCurrentVendor, error: vendorQueryError } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
+    skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
+  });
+  
+  // Log vendor query state changes
+  useEffect(() => {
+    console.log('🔍 GET_VENDOR_PROFILE Query State:');
+    console.log('  - Loading:', currentVendorLoading);
+    console.log('  - Has Data:', !!currentVendorData);
+    console.log('  - Vendor Profile:', currentVendorData?.vendorProfile);
+    console.log('  - Error:', vendorQueryError);
+    console.log('  - Token exists:', typeof window !== 'undefined' ? !!localStorage.getItem('auth_token') : 'N/A');
+    
+    if (currentVendorData?.vendorProfile) {
+      console.log('✅ Vendor Profile Loaded Successfully:', currentVendorData.vendorProfile);
+    }
+    
+    if (vendorQueryError) {
+      console.error('❌ Vendor Query Error:', vendorQueryError);
+    }
+  }, [currentVendorLoading, currentVendorData, vendorQueryError]);
+
   // Helper to store auth token and update Zustand store
-  const handleAuthSuccess = (authPayload: AuthPayload) => {
-    localStorage.setItem('auth_token', authPayload.token);
+  const handleAuthSuccess = (authPayload: AuthPayload | VendorAuthPayload, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
+    console.log('🎯 handleAuthSuccess called');
+    console.log('🎯 authPayload:', authPayload);
+    console.log('🎯 userType:', userType);
+    console.log('🎯 Token:', authPayload.token);
     
-    // Update Zustand store with user data
-    const zustandUser = {
-      id: authPayload.user.id,
-      name: `${authPayload.user.firstName} ${authPayload.user.lastName}`,
-      email: authPayload.user.email,
-      userType: 'User' as const
-    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', authPayload.token);
+      console.log('✅ Token stored in localStorage:', localStorage.getItem('auth_token'));
+    }
     
-    // Manually update the store state
-    zustandLogin(authPayload.user.email, '', 'User');
+    // Handle different auth payload types and update Zustand store
+    if (userType === 'Vendor' && 'vendor' in authPayload) {
+      const vendorPayload = authPayload as VendorAuthPayload;
+      console.log('🎯 Vendor Payload:', vendorPayload.vendor);
+      
+      // Prepare vendor data for Zustand
+      const vendorData = {
+        id: vendorPayload.vendor.id,
+        vendorName: vendorPayload.vendor.vendorName,
+        vendorEmail: vendorPayload.vendor.vendorEmail,
+        vendorPhone: vendorPayload.vendor.vendorPhone,
+        vendorAddress: vendorPayload.vendor.vendorAddress,
+        vendorProfileDescription: vendorPayload.vendor.vendorProfileDescription,
+        vendorWebsite: vendorPayload.vendor.vendorWebsite,
+        vendorSocialLinks: vendorPayload.vendor.vendorSocialLinks,
+        profileImage: vendorPayload.vendor.profileImage,
+        bannerImage: vendorPayload.vendor.bannerImage,
+        vendorType: vendorPayload.vendor.vendorType,
+        vendorStatus: vendorPayload.vendor.vendorStatus,
+        rating: vendorPayload.vendor.rating,
+        reviewCount: vendorPayload.vendor.reviewCount,
+        createdAt: vendorPayload.vendor.createdAt,
+        updatedAt: vendorPayload.vendor.updatedAt,
+      };
+      
+      console.log('📦 Prepared Vendor Data for Zustand:', vendorData);
+      
+      setAuthenticatedUser(
+        {
+          id: vendorPayload.vendor.id,
+          name: vendorPayload.vendor.vendorName,
+          email: vendorPayload.vendor.vendorEmail,
+        },
+        authPayload.token,
+        userType,
+        vendorData // Pass vendor data to Zustand
+      );
+      
+      console.log('✅ Vendor data stored in Zustand');
+    } else if ('user' in authPayload) {
+      const userPayload = authPayload as AuthPayload;
+      setAuthenticatedUser(
+        {
+          id: userPayload.user.id,
+          name: `${userPayload.user.firstName} ${userPayload.user.lastName}`.trim(),
+          email: userPayload.user.email,
+        },
+        authPayload.token,
+        userType
+      );
+    }
   };
 
-  // Login with email/password
-  const login = async (input: LoginInput) => {
+  // Login with email/password (with optional user type)
+  const login = async (input: LoginInput | VendorLoginInput, userType: 'User' | 'Vendor' | 'Admin' = 'User') => {
     try {
       setLoading(true);
-      const { data } = await loginMutation({ variables: { input } });
       
-      if (data?.login) {
-        handleAuthSuccess(data.login);
-        toast.success('Login successful!');
-        return { success: true, data: data.login };
+      if (userType === 'Vendor') {
+        const vendorInput = input as VendorLoginInput;
+        console.log('🔐 Vendor Login Mutation Input:', vendorInput);
+        
+        const { data } = await vendorLoginMutation({ variables: { input: vendorInput } });
+        
+        console.log('🔐 Vendor Login Mutation Response:', data);
+        console.log('🔐 vendorLogin data:', data?.vendorLogin);
+        
+        if (data?.vendorLogin) {
+          console.log('✅ Calling handleAuthSuccess with:', data.vendorLogin);
+          handleAuthSuccess(data.vendorLogin, userType);
+          toast.success('Vendor login successful!');
+          return { success: true, data: data.vendorLogin };
+        } else {
+          console.error('❌ No vendorLogin data in response');
+        }
+      } else {
+        const userInput = input as LoginInput;
+        const { data } = await loginMutation({ variables: { input: userInput } });
+        
+        if (data?.login) {
+          handleAuthSuccess(data.login, userType);
+          toast.success('Login successful!');
+          return { success: true, data: data.login };
+        }
       }
       
       throw new Error('Login failed');
@@ -91,22 +219,41 @@ export const useGraphQLAuth = () => {
     }
   };
 
-  // Register user
-  const register = async (input: RegisterInput) => {
+  // Register user or vendor
+  const register = async (input: RegisterInput | VendorRegisterInput, userType: 'User' | 'Vendor' = 'User') => {
     try {
       setLoading(true);
-      const { data } = await registerMutation({ variables: { input } });
       
-      if (data?.register) {
-        // Store registration info for OTP verification
-        setPendingVerification({
-          email: input.email,
-          purpose: 'registration',
-          userType: 'User'
-        });
+      if (userType === 'Vendor') {
+        const vendorInput = input as VendorRegisterInput;
+        const { data } = await vendorRegisterMutation({ variables: { input: vendorInput } });
         
-        toast.success('Registration successful! Please check your email for OTP verification.');
-        return { success: true, message: 'OTP sent to your email' };
+        if (data?.vendorRegister) {
+          // Store registration info for OTP verification
+          setPendingVerification({
+            email: vendorInput.vendorEmail,
+            purpose: 'registration',
+            userType: 'Vendor'
+          });
+          
+          toast.success('Vendor registration successful! Please check your email for OTP verification.');
+          return { success: true, message: 'OTP sent to your email' };
+        }
+      } else {
+        const userInput = input as RegisterInput;
+        const { data } = await registerMutation({ variables: { input: userInput } });
+        
+        if (data?.register) {
+          // Store registration info for OTP verification
+          setPendingVerification({
+            email: userInput.email,
+            purpose: 'registration',
+            userType: 'User'
+          });
+          
+          toast.success('Registration successful! Please check your email for OTP verification.');
+          return { success: true, message: 'OTP sent to your email' };
+        }
       }
       
       throw new Error('Registration failed');
@@ -127,25 +274,44 @@ export const useGraphQLAuth = () => {
 
     try {
       setLoading(true);
-      const input: VerifyOtpInput = {
-        email: pendingVerification.email,
-        otp,
-        purpose: 'registration',
-        userType: pendingVerification.userType
-      };
-
-      const { data } = await verifyRegistrationMutation({ variables: { input } });
       
-      if (data?.verifyRegistration) {
-        handleAuthSuccess(data.verifyRegistration);
-        setPendingVerification(null);
-        toast.success('Registration verified successfully!');
-        return { success: true, data: data.verifyRegistration };
+      if (pendingVerification.userType === 'Vendor') {
+        const input: VendorVerifyOtpInput = {
+          vendorEmail: pendingVerification.email,
+          otp,
+          purpose: 'registration',
+          userType: pendingVerification.userType
+        };
+
+        const { data } = await verifyVendorRegistrationMutation({ variables: { input } });
+        
+        if (data?.vendorVerifyRegistration) {
+          handleAuthSuccess(data.vendorVerifyRegistration, 'Vendor');
+          setPendingVerification(null);
+          toast.success('Vendor registration verified successfully!');
+          return { success: true, data: data.vendorVerifyRegistration };
+        }
+      } else {
+        const input: VerifyOtpInput = {
+          email: pendingVerification.email,
+          otp,
+          purpose: 'registration',
+          userType: pendingVerification.userType
+        };
+
+        const { data } = await verifyRegistrationMutation({ variables: { input } });
+        
+        if (data?.verifyRegistration) {
+          handleAuthSuccess(data.verifyRegistration, pendingVerification.userType);
+          setPendingVerification(null);
+          toast.success('Registration verified successfully!');
+          return { success: true, data: data.verifyRegistration };
+        }
       }
       
-      throw new Error('Verification failed');
+      throw new Error('OTP verification failed');
     } catch (error: any) {
-      const errorMessage = error.message || 'Verification failed';
+      const errorMessage = error.message || 'OTP verification failed';
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -154,22 +320,40 @@ export const useGraphQLAuth = () => {
   };
 
   // Request login OTP (for OTP-based login)
-  const requestLoginOtp = async (email: string) => {
+  const requestLoginOtp = async (email: string, userType: 'User' | 'Vendor' = 'User') => {
     try {
       setLoading(true);
-      const { data } = await requestLoginOtpMutation({ 
-        variables: { email, userType: 'User' } 
-      });
       
-      if (data?.requestLoginOtp) {
-        setPendingVerification({
-          email,
-          purpose: 'registration', // Using same type for OTP login
-          userType: 'User'
+      if (userType === 'Vendor') {
+        const { data } = await vendorRequestLoginOtpMutation({ 
+          variables: { vendorEmail: email, userType } 
         });
         
-        toast.success('OTP sent to your email!');
-        return { success: true };
+        if (data?.vendorRequestLoginOtp) {
+          setPendingVerification({
+            email,
+            purpose: 'registration', // Using same type for OTP login
+            userType: 'Vendor'
+          });
+          
+          toast.success('OTP sent to your vendor email!');
+          return { success: true };
+        }
+      } else {
+        const { data } = await requestLoginOtpMutation({ 
+          variables: { email, userType: 'User' } 
+        });
+        
+        if (data?.requestLoginOtp) {
+          setPendingVerification({
+            email,
+            purpose: 'registration', // Using same type for OTP login
+            userType: 'User'
+          });
+          
+          toast.success('OTP sent to your email!');
+          return { success: true };
+        }
       }
       
       throw new Error('Failed to send OTP');
@@ -190,20 +374,39 @@ export const useGraphQLAuth = () => {
 
     try {
       setLoading(true);
-      const input: VerifyOtpInput = {
-        email: pendingVerification.email,
-        otp,
-        purpose: 'registration', // Using for login OTP
-        userType: pendingVerification.userType
-      };
-
-      const { data } = await verifyLoginOtpMutation({ variables: { input } });
       
-      if (data?.verifyLoginOtp) {
-        handleAuthSuccess(data.verifyLoginOtp);
-        setPendingVerification(null);
-        toast.success('Login successful!');
-        return { success: true, data: data.verifyLoginOtp };
+      if (pendingVerification.userType === 'Vendor') {
+        const input: VendorVerifyOtpInput = {
+          vendorEmail: pendingVerification.email,
+          otp,
+          purpose: 'registration', // Using for login OTP
+          userType: 'Vendor'
+        };
+
+        const { data } = await verifyVendorLoginOtpMutation({ variables: { input } });
+        
+        if (data?.vendorVerifyLoginOtp) {
+          handleAuthSuccess(data.vendorVerifyLoginOtp, 'Vendor');
+          setPendingVerification(null);
+          toast.success('Vendor login successful!');
+          return { success: true, data: data.vendorVerifyLoginOtp };
+        }
+      } else {
+        const input: VerifyOtpInput = {
+          email: pendingVerification.email,
+          otp,
+          purpose: 'registration', // Using for login OTP
+          userType: pendingVerification.userType
+        };
+
+        const { data } = await verifyLoginOtpMutation({ variables: { input } });
+        
+        if (data?.verifyLoginOtp) {
+          handleAuthSuccess(data.verifyLoginOtp, pendingVerification.userType);
+          setPendingVerification(null);
+          toast.success('Login successful!');
+          return { success: true, data: data.verifyLoginOtp };
+        }
       }
       
       throw new Error('OTP verification failed');
@@ -217,25 +420,46 @@ export const useGraphQLAuth = () => {
   };
 
   // Reset password (request)
-  const resetPassword = async (email: string, otp: string) => {
+  const resetPassword = async (email: string, newPassword: string, otp: string, userType: 'User' | 'Vendor' = 'User') => {
     try {
       setLoading(true);
-      const input: ResetPasswordInput = {
-        email,
-        userType: 'User'
-      };
-
-      const { data } = await resetPasswordMutation({ variables: { input } });
       
-      if (data?.resetPassword) {
-        setPendingVerification({
-          email,
-          purpose: 'password_reset',
-          userType: 'User'
-        });
+      if (userType === 'Vendor') {
+        const input: VendorResetPasswordInput = {
+          vendorEmail: email,
+          userType: 'Vendor'
+        };
+
+        const { data } = await resetVendorPasswordMutation({ variables: { input } });
         
-        toast.success('Password reset OTP sent to your email!');
-        return { success: true };
+        if (data?.vendorResetPassword) {
+          setPendingVerification({
+            email,
+            purpose: 'password_reset',
+            userType: 'Vendor'
+          });
+          
+          toast.success('Password reset OTP sent to your vendor email!');
+          return { success: true };
+        }
+      } else {
+        const input: ResetPasswordInput = {
+          email,
+          userType: 'User'
+        };
+
+        const { data } = await resetPasswordMutation({ variables: { input } });
+        
+        if (data?.resetPassword) {
+          setPendingVerification({
+            email,
+            purpose: 'password_reset',
+            userType: 'User'
+          });
+          
+          toast.success('Password reset OTP sent to your email!');
+          return { success: true };
+        }
       }
       
       throw new Error('Failed to send reset OTP');
@@ -256,19 +480,37 @@ export const useGraphQLAuth = () => {
 
     try {
       setLoading(true);
-      const input: SetNewPasswordInput = {
-        email: pendingVerification.email,
-        otp,
-        newPassword,
-        userType: pendingVerification.userType
-      };
-
-      const { data } = await setNewPasswordMutation({ variables: { input } });
       
-      if (data?.setNewPassword) {
-        setPendingVerification(null);
-        toast.success('Password updated successfully!');
-        return { success: true };
+      if (pendingVerification.userType === 'Vendor') {
+        const input: VendorSetNewPasswordInput = {
+          vendorEmail: pendingVerification.email,
+          otp,
+          newPassword,
+          userType: 'Vendor'
+        };
+
+        const { data } = await setNewVendorPasswordMutation({ variables: { input } });
+        
+        if (data?.vendorSetNewPassword) {
+          setPendingVerification(null);
+          toast.success('Vendor password updated successfully!');
+          return { success: true };
+        }
+      } else {
+        const input: SetNewPasswordInput = {
+          email: pendingVerification.email,
+          otp,
+          newPassword,
+          userType: pendingVerification.userType
+        };
+
+        const { data } = await setNewPasswordMutation({ variables: { input } });
+        
+        if (data?.setNewPassword) {
+          setPendingVerification(null);
+          toast.success('Password updated successfully!');
+          return { success: true };
+        }
       }
       
       throw new Error('Failed to update password');
@@ -332,17 +574,33 @@ export const useGraphQLAuth = () => {
 
     try {
       setLoading(true);
-      const input: ResendOtpInput = {
-        email: pendingVerification.email,
-        purpose: pendingVerification.purpose,
-        userType: pendingVerification.userType
-      };
-
-      const { data } = await resendOtpMutation({ variables: { input } });
       
-      if (data?.resendOtp) {
-        toast.success('OTP sent to your email!');
-        return { success: true };
+      if (pendingVerification.userType === 'Vendor') {
+        const input: VendorResendOtpInput = {
+          vendorEmail: pendingVerification.email,
+          purpose: pendingVerification.purpose,
+          userType: 'Vendor'
+        };
+
+        const { data } = await resendVendorOtpMutation({ variables: { input } });
+        
+        if (data?.vendorResendOtp) {
+          toast.success('OTP sent to your vendor email!');
+          return { success: true };
+        }
+      } else {
+        const input: ResendOtpInput = {
+          email: pendingVerification.email,
+          purpose: pendingVerification.purpose,
+          userType: pendingVerification.userType
+        };
+
+        const { data } = await resendOtpMutation({ variables: { input } });
+        
+        if (data?.resendOtp) {
+          toast.success('OTP sent to your email!');
+          return { success: true };
+        }
       }
       
       throw new Error('Failed to resend OTP');
@@ -357,7 +615,9 @@ export const useGraphQLAuth = () => {
 
   // Logout
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+    }
     zustandLogout();
     toast.success('Logged out successfully');
   };
@@ -382,12 +642,17 @@ export const useGraphQLAuth = () => {
 
     // State
     currentUser: currentUserData?.me,
+    currentVendor: currentVendorData?.vendorProfile,
     pendingVerification,
     
     // Loading states
     isLoading: loginLoading || registerLoading || verifyRegistrationLoading || 
                requestOtpLoading || verifyOtpLoading || resetPasswordLoading || 
                setNewPasswordLoading || updateProfileLoading || changePasswordLoading || 
-               resendOtpLoading || currentUserLoading
+               resendOtpLoading || currentUserLoading || vendorLoginLoading || 
+               vendorRegisterLoading || verifyVendorRegistrationLoading || 
+               vendorRequestOtpLoading || verifyVendorOtpLoading || resetVendorPasswordLoading || 
+               setNewVendorPasswordLoading || updateVendorProfileLoading || 
+               changeVendorPasswordLoading || resendVendorOtpLoading || currentVendorLoading
   };
 };

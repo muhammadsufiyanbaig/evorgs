@@ -8,10 +8,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star, MapPin, Phone, Globe, Edit, Mail, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { Vendor } from "@/utils/interfaces"
+import { useAuth } from "@/hooks/useAuth"
+import { useGraphQLAuth } from "@/hooks/useGraphQLAuth"
 
-// Extended Vendor interface to include missing properties
-interface ExtendedVendor extends Vendor {
+// Vendor profile display interface
+interface VendorProfileData {
+  id: string;
+  vendorName: string;
+  vendorEmail: string;
+  vendorPhone?: string;
+  vendorAddress?: string;
+  vendorProfileDescription?: string;
+  vendorWebsite?: string;
+  vendorSocialLinks?: string[];
+  profileImage?: string;
+  bannerImage?: string;
+  vendorType: string;
+  vendorStatus: string;
+  rating?: number;
+  reviewCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -20,36 +35,47 @@ export default function VendorProfile() {
 
   const { toast } = useToast()
 
-  // Mock/default values - replace with actual auth hook or context
-  const authUser = null
-  const userType = 'Vendor' // Add this line to define userType
-  const vendor = null // Add this line to define vendor
-  const isAuthLoading = false // Add this line to define isAuthLoading
-  const authError = null // Add this line to define authError
+  // Get authenticated vendor data from Zustand (primary source) and GraphQL (fallback)
+  const { currentVendor, isLoading: vendorLoading } = useGraphQLAuth()
+  const { isAuthenticated, userType, vendorData } = useAuth()
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('=== VENDOR PROFILE DEBUG ===');
+    console.log('isAuthenticated:', isAuthenticated);
+    console.log('userType:', userType);
+    console.log('vendorLoading:', vendorLoading);
+    console.log('vendorData (from Zustand):', vendorData);
+    console.log('currentVendor (from GraphQL):', currentVendor);
+    console.log('localStorage auth_token:', typeof window !== 'undefined' ? localStorage.getItem('auth_token') : 'N/A');
+    console.log('===========================');
+  }, [isAuthenticated, userType, vendorLoading, currentVendor, vendorData]);
+
+  // Use vendorData from Zustand first (persisted from login), then fall back to GraphQL query
+  const vendorSource = vendorData || currentVendor;
   
-  const fallbackVendor = userType === 'Vendor' && !authUser ? {
-    id: 'temp',
-    vendorName: 'Vendor Profile',
-    vendorEmail: 'Loading...',
-    vendorPhone: '',
-    vendorAddress: '',
-    vendorProfileDescription: 'Profile information is being loaded...',
-    vendorWebsite: '',
-    vendorSocialLinks: [],
-    profileImage: undefined,
-    bannerImage: undefined,
-    vendorType: 'Other',
-    vendorStatus: 'Pending',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  } as unknown as ExtendedVendor : null
-  
-  // Use real vendor data, fallback data, or null
-  const displayVendor = vendor || fallbackVendor
-  
-  // Use auth loading and error states
-  const isLoading = isAuthLoading
-  const error = authError
+  // Map vendor data to VendorProfileData interface
+  const displayVendor: VendorProfileData | null = vendorSource ? {
+    id: vendorSource.id,
+    vendorName: vendorSource.vendorName,
+    vendorEmail: vendorSource.vendorEmail,
+    vendorPhone: vendorSource.vendorPhone || '',
+    vendorAddress: vendorSource.vendorAddress || '',
+    vendorProfileDescription: vendorSource.vendorProfileDescription || '',
+    vendorWebsite: vendorSource.vendorWebsite || '',
+    vendorSocialLinks: vendorSource.vendorSocialLinks || [],
+    profileImage: vendorSource.profileImage,
+    bannerImage: vendorSource.bannerImage,
+    vendorType: vendorSource.vendorType,
+    vendorStatus: vendorSource.vendorStatus,
+    createdAt: vendorSource.createdAt,
+    updatedAt: vendorSource.updatedAt,
+    rating: vendorSource.rating,
+    reviewCount: vendorSource.reviewCount,
+  } : null
+
+  const isLoading = vendorLoading
+  const error = !isAuthenticated ? 'Not authenticated' : null
 
 
   const getStatusColor = (status: string) => {
@@ -182,10 +208,10 @@ export default function VendorProfile() {
                     <div className="flex items-center gap-1 mt-2">
                       <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                       <span className="font-medium text-gray-900">
-                        No rating
+                        {displayVendor?.rating ? displayVendor.rating.toFixed(1) : 'No rating'}
                       </span>
                       <span className="text-gray-500">
-                        (0 reviews)
+                        ({displayVendor?.reviewCount || 0} reviews)
                       </span>
                     </div>
                   <Link href="/vendor/profile/edit">
@@ -365,13 +391,13 @@ export default function VendorProfile() {
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-orange-400 text-orange-400" />
                       <span className="font-medium text-gray-900">
-                        N/A
+                        {displayVendor?.rating ? displayVendor.rating.toFixed(1) : 'N/A'}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Reviews</span>
-                    <span className="font-medium text-gray-900">0</span>
+                    <span className="font-medium text-gray-900">{displayVendor?.reviewCount || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Member Since</span>

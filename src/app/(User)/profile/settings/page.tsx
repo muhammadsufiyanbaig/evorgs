@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -21,8 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
-export default function SettingsPage() {
+function SettingsPageContent() {
   const router = useRouter()
 
   const [preferences, setPreferences] = useState({
@@ -31,11 +31,24 @@ export default function SettingsPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<{ isVerified: boolean } | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     // Replace this with your actual user fetching logic
     setUser({ isVerified: true })
   }, [])
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Loading settings...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handlePreferenceChange = (key: keyof typeof preferences, value: boolean) => {
     setPreferences((prev) => ({ ...prev, [key]: value }))
@@ -249,3 +262,7 @@ const handleDeleteAccount = async () => {
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(SettingsPageContent), {
+  ssr: false
+})

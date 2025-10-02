@@ -31,12 +31,12 @@ export function VendorForgotPasswordForm() {
     }
 
     try {
-      await resetPassword(email, "");
+      await resetPassword(email, 'Vendor', '');
       // Redirect to OTP verification page
       router.push(`/vendor/auth/reset-password?email=${encodeURIComponent(email)}&type=password-reset`);
     } catch (err) {
       // Error handling is done in the hook
-      console.error('Password reset error:', err);
+      console.error('Vendor password reset error:', err);
     }
   };
 

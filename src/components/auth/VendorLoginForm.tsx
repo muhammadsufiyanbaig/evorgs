@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
+import { useGraphQLAuth } from "@/hooks/useGraphQLAuth";
 import { toast } from "sonner";
 
 export function VendorLoginForm() {
   const router = useRouter();
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, isLoading } = useGraphQLAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -24,7 +24,6 @@ export function VendorLoginForm() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) clearError();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,10 +35,25 @@ export function VendorLoginForm() {
     }
 
     try {
-      await login(formData.email, formData.password, 'Vendor');
+      console.log('=== VENDOR LOGIN ATTEMPT ===');
+      console.log('Email:', formData.email);
+      
+      const result = await login({ 
+        vendorEmail: formData.email, 
+        password: formData.password 
+      }, 'Vendor');
+      
+      console.log('=== VENDOR LOGIN SUCCESS ===');
+      console.log('Login Result:', result);
+      console.log('Token stored:', localStorage.getItem('auth_token'));
+      console.log('===========================');
+      
       toast.success('Successfully logged in as Vendor');
       router.push('/vendor');
     } catch (err) {
+      console.error('=== VENDOR LOGIN ERROR ===');
+      console.error('Error:', err);
+      console.error('========================');
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       toast.error(errorMessage);
     }
@@ -66,12 +80,6 @@ export function VendorLoginForm() {
 
         <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Vendor Email Address

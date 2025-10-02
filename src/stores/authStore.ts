@@ -8,8 +8,28 @@ export interface User {
   userType: 'User' | 'Vendor' | 'Admin'
 }
 
+export interface VendorData {
+  id: string
+  vendorName: string
+  vendorEmail: string
+  vendorPhone?: string
+  vendorAddress?: string
+  vendorProfileDescription?: string
+  vendorWebsite?: string
+  vendorSocialLinks?: string[]
+  profileImage?: string
+  bannerImage?: string
+  vendorType: string
+  vendorStatus: string
+  rating?: number
+  reviewCount?: number
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface AuthState {
   user: User | null
+  vendorData: VendorData | null
   userType: 'User' | 'Vendor' | 'Admin' | null
   isAuthenticated: boolean
   isLoading: boolean
@@ -18,9 +38,11 @@ interface AuthState {
   
   // Actions
   login: (email: string, password: string, userType: 'User' | 'Vendor' | 'Admin') => Promise<boolean>
+  setAuthenticatedUser: (user: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData) => void
   logout: () => void
   clearError: () => void
   setLoading: (loading: boolean) => void
+  initializeAuth: () => void
 }
 
 // Test credentials
@@ -34,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
+      vendorData: null,
       userType: null,
       isAuthenticated: false,
       isLoading: false,
@@ -77,11 +100,41 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
+      setAuthenticatedUser: (userData: Partial<User>, token: string, userType: 'User' | 'Vendor' | 'Admin', vendorData?: VendorData) => {
+        const user: User = {
+          id: userData.id || `${userType.toLowerCase()}-${Date.now()}`,
+          name: userData.name || userData.email || 'Unknown User',
+          email: userData.email || 'unknown@example.com',
+          userType
+        }
+        
+        console.log('💾 setAuthenticatedUser - Storing in Zustand:');
+        console.log('  - User:', user);
+        console.log('  - Token:', token);
+        console.log('  - UserType:', userType);
+        console.log('  - VendorData:', vendorData);
+        
         set({ 
-          user: null, 
+          user,
+          vendorData: vendorData || null,
+          userType,
+          token,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null 
+        })
+        
+        console.log('✅ Zustand state updated');
+      },
+
+      logout: () => {
+        console.log('🚪 Logging out - Clearing Zustand state');
+        set({ 
+          user: null,
+          vendorData: null,
           userType: null, 
-          isAuthenticated: false, 
+          isAuthenticated: false,
+          token: null,
           error: null 
         })
       },
@@ -89,13 +142,42 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => {
         set({ error: null })
       },
+
+      initializeAuth: () => {
+        // Check if there's an existing auth token in localStorage
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('auth_token')
+          if (token) {
+            // If token exists, restore authentication state
+            const existingState = get()
+            if (!existingState.isAuthenticated) {
+              // Create a minimal user object if we don't have user data
+              const user: User = existingState.user || {
+                id: 'restored-user',
+                name: 'User',
+                email: 'user@restored.com',
+                userType: 'User'
+              }
+              
+              set({ 
+                isAuthenticated: true,
+                token: token,
+                user: user,
+                userType: user.userType
+              })
+            }
+          }
+        }
+      },
     }),
     {
       name: 'auth-storage',
       partialize: (state) => ({ 
-        user: state.user, 
+        user: state.user,
+        vendorData: state.vendorData,
         userType: state.userType, 
-        isAuthenticated: state.isAuthenticated 
+        isAuthenticated: state.isAuthenticated,
+        token: state.token
       }),
     }
   )

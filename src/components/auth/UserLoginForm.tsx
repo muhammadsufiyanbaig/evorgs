@@ -39,10 +39,10 @@ export function UserLoginForm() {
       const result = await login({
         email: formData.email,
         password: formData.password
-      });
+      }, 'User');
 
       if (result.success) {
-        router.push('/profile/my-bookings');
+        router.push('/profile');
       }
     } catch (err) {
       // Error handling is done in the hook

@@ -2,7 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -28,8 +29,7 @@ const priorities = [
   { value: "High", label: "High", color: "bg-orange-100 text-orange-800" },
   { value: "Urgent", label: "Urgent", color: "bg-red-100 text-red-800" },
 ]
-
-export default function CreateSupportTicket() {
+function CreateSupportTicketComponent() {
   const [formData, setFormData] = useState({
     subject: "",
     description: "",
@@ -39,6 +39,22 @@ export default function CreateSupportTicket() {
   const [attachments, setAttachments] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Loading support form...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -283,3 +299,8 @@ export default function CreateSupportTicket() {
     </div>
   )
 }
+
+const CreateSupportTicket = dynamic(() => Promise.resolve(CreateSupportTicketComponent), {
+  ssr: false,
+})
+export default CreateSupportTicket

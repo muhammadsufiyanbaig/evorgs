@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar, Clock, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +21,11 @@ const bookings = [
 export default function MyBooking() {
   const [filter, setFilter] = useState<"all" | "upcoming" | "completed">("all")
   const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const filteredBookings = bookings.filter(booking => 
     filter === "all" || booking.status === filter
@@ -28,6 +33,10 @@ export default function MyBooking() {
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id)
+  }
+
+  if (!isClient) {
+    return null
   }
 
   return (

@@ -31,7 +31,7 @@ export function AdminForgotPasswordForm() {
     }
 
     try {
-      await resetPassword(email, "");
+      await resetPassword(email, "", "");
       // Redirect to OTP verification page
       router.push(`/admin/auth/reset-password?email=${encodeURIComponent(email)}&type=password-reset`);
     } catch (err) {

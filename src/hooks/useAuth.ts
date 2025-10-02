@@ -5,15 +5,18 @@ export const useAuth = () => {
   
   return {
     user: store.user,
+    vendorData: store.vendorData,
     userType: store.userType,
     token: store.token,
     isAuthenticated: store.isAuthenticated,
     isLoading: store.isLoading,
     error: store.error,
     login: store.login,
+    setAuthenticatedUser: store.setAuthenticatedUser,
     logout: store.logout,
     clearError: store.clearError,
     setLoading: store.setLoading,
+    initializeAuth: store.initializeAuth,
   }
 }
 
