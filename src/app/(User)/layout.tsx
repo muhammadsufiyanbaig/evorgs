@@ -1,39 +1,19 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "@/app/globals.css";
-import ActiveSectionContextProvider from "../context/active-section-context";
-import HeaderFooterWrapper from "@/app/components/Home/HeaderFooterWrapper";
-
-const geistSans = localFont({
-  src: "../fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import UserRouteWrapper from "./UserRouteWrapper";
 
 export const metadata: Metadata = {
-  title: "Evorgs",
-  description: "",
+  title: "Evorgs - User Dashboard",
+  description: "Manage your bookings, favorites, and profile on Evorgs",
 };
 
-export default function RootLayout({
+export default function UserLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ActiveSectionContextProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <HeaderFooterWrapper>{children}</HeaderFooterWrapper>
-        </body>
-      </ActiveSectionContextProvider>
-    </html>
+    <UserRouteWrapper>
+      {children}
+    </UserRouteWrapper>
   );
 }

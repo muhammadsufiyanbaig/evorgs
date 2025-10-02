@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Metadata } from "next";
-import "@/app/globals.css";
-import AdminWrapper from "@/app/components/Admin/Wrapper";
+import AdminRouteWrapper from "./AdminRouteWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -28,15 +27,10 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        <AdminWrapper>
-          {children}
-        </AdminWrapper>
-      </body>
-    </html>
+    <AdminRouteWrapper>
+      {children}
+    </AdminRouteWrapper>
   );
 }

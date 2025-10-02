@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Bell, MessageSquare, Settings, User } from "lucide-react"
+import { Bell, MessageSquare, Settings, User, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
@@ -15,9 +15,51 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
+import { useAuth } from "@/hooks/useAuth"
+import { useGraphQLAuth } from "@/hooks/useGraphQLAuth"
+import { useEffect } from "react"
+import { toast } from "sonner"
 
 export default function VendorHeader() {
   const router = useRouter()
+  
+  // Get auth state from Zustand store (includes persisted vendorData)
+  const { isAuthenticated, userType, vendorData } = useAuth()
+  
+  // Get vendor-specific data from GraphQL (fallback/refresh)
+  const { currentVendor, logout: graphqlLogout } = useGraphQLAuth()
+
+  const handleLogout = async () => {
+    try {
+      await graphqlLogout()
+      toast.success("Logged out successfully")
+      router.push('/vendor/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error("Logout failed. Please try again.")
+    }
+  }
+
+  // Generate initials from vendor name
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
+
+  // Use vendorData from Zustand first (immediate), fallback to GraphQL query
+  const vendorSource = vendorData || currentVendor
+  
+  // Extract vendor info with fallback values
+  const vendorName = vendorSource?.vendorName || 'Vendor User'
+  const vendorEmail = vendorSource?.vendorEmail || 'Loading...'
+  const vendorImage = vendorSource?.profileImage || null
+  const vendorType = vendorSource?.vendorType || null
+  const vendorStatus = vendorSource?.vendorStatus || null
+  const vendorRating = vendorSource?.rating || null
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200">
@@ -66,18 +108,41 @@ export default function VendorHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:ring-2 hover:ring-orange-500 transition">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="/placeholder.svg?height=36&width=36" />
+                  <AvatarImage src={vendorImage || "/placeholder.svg?height=36&width=36"} alt={vendorName} />
                   <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-                    JD
+                    {getInitials(vendorName)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 shadow-xl" align="end" forceMount>
+            <DropdownMenuContent className="w-64 shadow-xl" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-semibold leading-none">John Doe</p>
-                  <p className="text-xs text-muted-foreground">john@example.com</p>
+                <div className="flex flex-col space-y-2">
+                  <p className="text-sm font-semibold leading-none text-gray-900">
+                    {vendorName}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {vendorEmail}
+                  </p>
+                  {vendorType && (
+                    <Badge variant="outline" className="w-fit text-xs capitalize">
+                      {vendorType}
+                    </Badge>
+                  )}
+                  {vendorStatus && (
+                    <Badge 
+                      variant={vendorStatus === 'Approved' ? 'default' : vendorStatus === 'Pending' ? 'secondary' : 'destructive'} 
+                      className="w-fit text-xs"
+                    >
+                      {vendorStatus}
+                    </Badge>
+                  )}
+                  {vendorRating && (
+                    <div className="flex items-center gap-1 text-xs text-yellow-600">
+                      <span>⭐</span>
+                      <span>{vendorRating.toFixed(1)}</span>
+                    </div>
+                  )}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -90,7 +155,8 @@ export default function VendorHeader() {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 hover:bg-red-100">
+              <DropdownMenuItem className="text-red-600 hover:bg-red-100" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

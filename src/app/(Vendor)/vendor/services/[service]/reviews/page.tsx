@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Key, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -35,64 +35,25 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-// Mock service data
-const mockService = {
-  id: "venue1",
-  name: "Grand Ballroom",
-  type: "venue",
-  rating: 4.8,
-  reviewCount: 45,
-}
+// TODO: Replace with GraphQL data from useQuery based on service ID
+const mockService: any = null
 
-// Mock reviews data
-const mockReviews = [
-  {
-    id: "1",
-    userName: "Sarah Johnson",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 5,
-    reviewText:
-      "Absolutely stunning venue! The Grand Ballroom exceeded all our expectations for our wedding. The staff was incredibly helpful and the decorations were perfect. Our guests are still talking about how beautiful everything was. The chandeliers created such a romantic atmosphere.",
-    createdAt: "2024-01-15T10:30:00Z",
-    isVerified: true,
-    isPublished: true,
-    images: ["/placeholder.svg?height=100&width=100&text=Wedding+Photo"],
-    bookingId: "booking123",
-    response: {
-      id: "resp1",
-      responseText:
-        "Thank you so much for your wonderful review, Sarah! We're thrilled that your wedding day was magical. It was our pleasure to be part of your special day at the Grand Ballroom.",
-      createdAt: "2024-01-16T09:15:00Z",
-    },
-  },
-  {
-    id: "2",
-    userName: "Michael Chen",
-    userAvatar: "/placeholder-user.jpg",
-    rating: 4,
-    reviewText:
-      "Great venue for our corporate gala. Professional service and beautiful ambiance. The sound system was excellent and the lighting created the perfect atmosphere. Would definitely recommend for business events. Only minor issue was the parking situation during peak hours.",
-    createdAt: "2024-01-12T14:20:00Z",
-    isVerified: false,
-    isPublished: true,
-    images: [],
-    bookingId: "booking124",
-    response: null,
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const mockReviews: any[] = []
 
+// TODO: Replace with GraphQL data from useQuery
 const mockReviewStats = {
-  totalReviews: 45,
-  averageRating: 4.8,
+  totalReviews: 0,
+  averageRating: 0,
   ratingDistribution: {
-    5: 28,
-    4: 12,
-    3: 3,
-    2: 1,
-    1: 1,
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
   },
-  responseRate: 67,
-  verifiedReviews: 38,
+  responseRate: 0,
+  verifiedReviews: 0,
 }
 
 export default function ServiceReviewsPage() {
@@ -225,7 +186,7 @@ export default function ServiceReviewsPage() {
                             <AvatarFallback className="bg-orange-100 text-orange-700">
                               {review.userName
                                 .split(" ")
-                                .map((n) => n[0])
+                                .map((n: any[]) => n[0])
                                 .join("")}
                             </AvatarFallback>
                           </Avatar>
@@ -285,7 +246,7 @@ export default function ServiceReviewsPage() {
                         {/* Review Images */}
                         {review.images && review.images.length > 0 && (
                           <div className="flex gap-2">
-                            {review.images.map((image, index) => (
+                            {review.images.map((image: any, index: number) => (
                               <img
                                 key={index}
                                 src={image || "/placeholder.svg"}

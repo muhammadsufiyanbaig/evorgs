@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -20,6 +21,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Loader2, Upload, Trash2 } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useGraphQLAuth } from "@/hooks/useGraphQLAuth"
+import { useMutation } from "@apollo/client/react"
+import { ADMIN_UPDATE_PROFILE, ADMIN_DELETE_ACCOUNT } from "@/lib/graphQL/auth/admin"
+import { toast } from "sonner"
 
 interface AdminProfile {
   id: string
@@ -31,6 +37,17 @@ interface AdminProfile {
 }
 
 export default function AdminProfile() {
+  const router = useRouter()
+  
+  // Get auth state from Zustand (primary source)
+  const { adminData, isAuthenticated, userType } = useAuth()
+  
+  // Get admin from GraphQL (fallback/refresh)
+  const { currentAdmin, logout } = useGraphQLAuth()
+  
+  // Multi-source strategy: Zustand first, GraphQL fallback
+  const adminSource = adminData || currentAdmin
+  
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -43,42 +60,58 @@ export default function AdminProfile() {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  
+  // GraphQL Mutations
+  const [updateProfileMutation] = useMutation<{
+    adminUpdateAdminProfile: {
+      id: string
+      firstName: string
+      lastName: string
+      email: string
+      phone?: string
+      profileImage?: string
+    }
+  }>(ADMIN_UPDATE_PROFILE)
+  const [deleteAccountMutation] = useMutation(ADMIN_DELETE_ACCOUNT)
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // GraphQL query call would go here
-        // const result = await adminMe()
-
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Mock data
-        const mockProfile = {
-          id: "1",
-          firstName: "John",
-          lastName: "Doe",
-          email: "john.doe@admin.com",
-          phone: "+1 (555) 123-4567",
-          profileImage: "/placeholder.svg?height=100&width=100",
-        }
-
-        setProfile(mockProfile)
-        setFormData({
-          firstName: mockProfile.firstName,
-          lastName: mockProfile.lastName,
-          email: mockProfile.email,
-          phone: mockProfile.phone || "",
-        })
-      } catch (error) {
-        setError("Failed to load profile")
-      } finally {
-        setLoading(false)
-      }
+    console.log('=== ADMIN PROFILE DEBUG ===')
+    console.log('isAuthenticated:', isAuthenticated)
+    console.log('userType:', userType)
+    console.log('adminData (from Zustand):', adminData)
+    console.log('currentAdmin (from GraphQL):', currentAdmin)
+    console.log('adminSource (final):', adminSource)
+    
+    // Check authentication
+    if (!isAuthenticated || userType !== 'Admin') {
+      toast.error('Please login as admin to access this page')
+      router.push('/admin/auth/login')
+      return
     }
-
-    fetchProfile()
-  }, [])
+    
+    // Load profile data
+    if (adminSource) {
+      const profileData = {
+        id: adminSource.id,
+        firstName: adminSource.firstName,
+        lastName: adminSource.lastName,
+        email: adminSource.email,
+        phone: adminSource.phone || "",
+        profileImage: adminSource.profileImage || "",
+      }
+      
+      setProfile(profileData)
+      setFormData({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        phone: profileData.phone,
+      })
+      setLoading(false)
+    } else {
+      setLoading(false)
+    }
+  }, [adminData, currentAdmin, isAuthenticated, userType, router, adminSource])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -94,24 +127,38 @@ export default function AdminProfile() {
     setSuccess("")
 
     try {
-      // GraphQL mutation call would go here
-      // const result = await adminUpdateAdminProfile({ input: formData })
-      console.log("Updating profile:", formData)
+      console.log("Updating admin profile:", formData)
+      
+      // Call GraphQL mutation
+      const { data } = await updateProfileMutation({
+        variables: {
+          input: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            phone: formData.phone || undefined,
+          }
+        }
+      })
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      setSuccess("Profile updated successfully!")
-
-      // Update local profile state
-      if (profile) {
-        setProfile({
-          ...profile,
-          ...formData,
-        })
+      if (data?.adminUpdateAdminProfile) {
+        setSuccess("Profile updated successfully!")
+        toast.success("Profile updated successfully!")
+        
+        // Update local profile state
+        if (profile) {
+          setProfile({
+            ...profile,
+            firstName: data.adminUpdateAdminProfile.firstName,
+            lastName: data.adminUpdateAdminProfile.lastName,
+            phone: data.adminUpdateAdminProfile.phone || "",
+          })
+        }
       }
-    } catch (err) {
-      setError("Failed to update profile. Please try again.")
+    } catch (err: any) {
+      const errorMessage = err.message || "Failed to update profile. Please try again."
+      setError(errorMessage)
+      toast.error(errorMessage)
+      console.error('Update profile error:', err)
     } finally {
       setSaving(false)
     }
@@ -122,17 +169,21 @@ export default function AdminProfile() {
     setError("")
 
     try {
-      // GraphQL mutation call would go here
-      // const result = await adminDeleteAccount()
-      console.log("Deleting account...")
+      console.log("Deleting admin account...")
+      
+      // Call GraphQL mutation
+      await deleteAccountMutation()
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Redirect to login after successful deletion
-      // router.push('/admin/login')
-    } catch (err) {
-      setError("Failed to delete account. Please try again.")
+      toast.success("Account deleted successfully")
+      
+      // Logout and redirect to login
+      await logout()
+      router.push('/admin/auth/login')
+    } catch (err: any) {
+      const errorMessage = err.message || "Failed to delete account. Please try again."
+      setError(errorMessage)
+      toast.error(errorMessage)
+      console.error('Delete account error:', err)
     } finally {
       setDeleting(false)
     }
@@ -146,12 +197,18 @@ export default function AdminProfile() {
     )
   }
 
-  if (!profile) {
+  if (!profile && !loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">Failed to load profile</p>
+            <div className="text-center space-y-4">
+              <p className="text-muted-foreground">No Admin Profile Found</p>
+              <p className="text-sm text-gray-500">Please login to access your profile</p>
+              <Button onClick={() => router.push('/admin/auth/login')}>
+                Go to Login
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -182,12 +239,12 @@ export default function AdminProfile() {
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src={profile.profileImage || "/placeholder.svg"}
-                    alt={`${profile.firstName} ${profile.lastName}`}
+                    src={profile?.profileImage || "/placeholder.svg"}
+                    alt={profile ? `${profile.firstName} ${profile.lastName}` : "Admin"}
                   />
                   <AvatarFallback className="text-lg">
-                    {profile.firstName[0]}
-                    {profile.lastName[0]}
+                    {profile?.firstName?.[0] || 'A'}
+                    {profile?.lastName?.[0] || 'D'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-x-2">

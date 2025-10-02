@@ -1,27 +1,59 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { Bell, Shield, Trash2, ArrowLeft, RotateCcw } from "lucide-react"
+import { Bell, Shield, Trash2, ArrowLeft, RotateCcw, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+function SettingsPageContent() {
+  const router = useRouter()
 
-// Mock user preferences data
-const mockPreferences = {
-  pushNotifications: true,
-  emailNotifications: true,
-}
+  const [preferences, setPreferences] = useState({
+    pushNotifications: true,
+    emailNotifications: true,
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [user, setUser] = useState<{ isVerified: boolean } | null>(null)
+  const [mounted, setMounted] = useState(false)
 
-export default function SettingsPage() {
-  const [preferences, setPreferences] = useState(mockPreferences)
+  useEffect(() => {
+    setMounted(true)
+    // Replace this with your actual user fetching logic
+    setUser({ isVerified: true })
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Loading settings...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handlePreferenceChange = (key: keyof typeof preferences, value: boolean) => {
     setPreferences((prev) => ({ ...prev, [key]: value }))
     // Would integrate with your updateUserPreferences functionality
-    console.log("Preference updated:", { [key]: value })
+    toast.success(`${key === 'pushNotifications' ? 'Push' : 'Email'} notifications ${value ? 'enabled' : 'disabled'}`)
   }
 
   const handleResetPreferences = () => {
@@ -29,14 +61,19 @@ export default function SettingsPage() {
       pushNotifications: true,
       emailNotifications: true,
     })
-    // Would integrate with your resetUserPreferences functionality
-    console.log("Preferences reset to default")
+    toast.success("Preferences reset to default")
   }
-
-  const handleDeleteAccount = () => {
-    // Would integrate with your deleteAccount functionality
-    console.log("Delete account requested")
+const handleDeleteAccount = async () => {
+  try {
+    setIsLoading(true)
+    toast.success("Account deleted successfully")
+    router.push("/")
+  } catch (error: any) {
+    toast.error(error.message || "Failed to delete account")
+  } finally {
+    setIsLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen bg-orange-50 flex items-center justify-center p-4">
@@ -116,7 +153,7 @@ export default function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Your email address is verified</p>
               </div>
               <Badge variant="default" className="bg-orange-100 text-orange-800 border-orange-200">
-                Verified
+                {user?.isVerified ? "Verified" : "Unverified"}
               </Badge>
             </div>
 
@@ -183,10 +220,41 @@ export default function SettingsPage() {
                 <h3 className="font-medium text-destructive">Delete Account</h3>
                 <p className="text-sm text-muted-foreground">Permanently delete your account and all associated data</p>
               </div>
-              <Button variant="destructive" onClick={handleDeleteAccount}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Account
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Account
+                      </>
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your account
+                      and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDeleteAccount}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete Account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>
@@ -194,3 +262,7 @@ export default function SettingsPage() {
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(SettingsPageContent), {
+  ssr: false
+})

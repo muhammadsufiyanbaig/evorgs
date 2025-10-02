@@ -10,74 +10,8 @@ import type { Service } from "../../Service"
 
 type Category = keyof typeof categoryConfig;
 
-const services: (Service & { category: Category })[] = [
-  {
-    id: "1",
-    name: "Grand Royale Hotel",
-    location: "Karachi",
-    rating: 4.2,
-    price: 240,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "venue",
-    description: "Luxury venue perfect for weddings and corporate events with stunning architecture",
-    reviews: 156,
-  },
-  {
-    id: "2",
-    name: "Sunset Photography Studio",
-    location: "Lahore",
-    rating: 4.8,
-    price: 150,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "photography",
-    description: "Professional wedding and portrait photography services with creative expertise",
-    reviews: 89,
-  },
-  {
-    id: "3",
-    name: "Royal Catering Services",
-    location: "Islamabad",
-    rating: 4.5,
-    price: 80,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "catering",
-    description: "Exquisite catering for all types of events with international cuisine",
-    reviews: 234,
-  },
-  {
-    id: "4",
-    name: "orange Valley Farmhouse",
-    location: "Karachi",
-    rating: 4.6,
-    price: 200,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "farmhouse",
-    description: "Beautiful farmhouse with scenic views and modern amenities for perfect getaways",
-    reviews: 67,
-  },
-  {
-    id: "5",
-    name: "Elite Event Venue",
-    location: "Lahore",
-    rating: 4.4,
-    price: 300,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "venue",
-    description: "Premium venue space for luxury events with state-of-the-art facilities",
-    reviews: 198,
-  },
-  {
-    id: "6",
-    name: "Artistic Lens Photography",
-    location: "Islamabad",
-    rating: 4.9,
-    price: 180,
-    imageUrl: "/placeholder.svg?height=400&width=600",
-    category: "photography",
-    description: "Creative photography with artistic touch and professional equipment",
-    reviews: 145,
-  },
-]
+// TODO: Replace with GraphQL data from useQuery
+const services: (Service & { category: Category })[] = []
 
 const categoryConfig = {
   venue: {

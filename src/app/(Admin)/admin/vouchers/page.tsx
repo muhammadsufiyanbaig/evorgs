@@ -58,57 +58,14 @@ const voucherTypeData = [
     { type: "Free Shipping", count: 254, value: 7, color: "#fed7aa" }, // orange-200
 ]
 
-const topVendors = [
-    { name: "Restaurant ABC", vouchers: 45, usage: 892, revenue: "$12,450", performance: 89 },
-    { name: "Shop XYZ", vouchers: 38, usage: 756, revenue: "$9,870", performance: 82 },
-    { name: "Service 123", vouchers: 32, usage: 634, revenue: "$8,230", performance: 76 },
-    { name: "Store DEF", vouchers: 28, usage: 521, revenue: "$6,890", performance: 71 },
-    { name: "Cafe GHI", vouchers: 24, usage: 445, revenue: "$5,670", performance: 68 },
-]
+// TODO: Replace with GraphQL data from useQuery
+const topVendors: any[] = []
 
-const recentActivities = [
-    {
-        action: "New voucher created",
-        vendor: "Restaurant ABC",
-        time: "2 minutes ago",
-        type: "create",
-        status: "success",
-    },
-    {
-        action: "Voucher usage spike detected",
-        vendor: "Shop XYZ",
-        time: "15 minutes ago",
-        type: "alert",
-        status: "warning",
-    },
-    {
-        action: "Vendor account suspended",
-        vendor: "Service 123",
-        time: "1 hour ago",
-        type: "suspend",
-        status: "error",
-    },
-    {
-        action: "Bulk voucher import completed",
-        vendor: "Store DEF",
-        time: "2 hours ago",
-        type: "import",
-        status: "success",
-    },
-    {
-        action: "Fraudulent usage blocked",
-        vendor: "Unknown",
-        time: "3 hours ago",
-        type: "security",
-        status: "error",
-    },
-]
+// TODO: Replace with GraphQL data from useQuery  
+const recentActivities: any[] = []
 
-const systemAlerts = [
-    { message: "3 vouchers expiring in 24 hours", severity: "warning", count: 3 },
-    { message: "Database cleanup recommended", severity: "info", count: 1 },
-    { message: "Suspicious activity detected", severity: "error", count: 2 },
-]
+// TODO: Replace with GraphQL data from useQuery
+const systemAlerts: any[] = []
 
 export default function AdminDashboard() {
     return (

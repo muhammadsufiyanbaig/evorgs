@@ -11,33 +11,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Building, Upload, X, Save } from "lucide-react"
 
-// Mock service data for editing
-const mockServiceData = {
-  id: "venue1",
-  type: "venue" as const,
-  name: "Grand Ballroom",
-  location: "Downtown Convention Center, New York",
-  description:
-    "Elegant ballroom perfect for weddings and corporate events with stunning chandeliers and marble floors.",
-  imageUrl: [
-    "/placeholder.svg?height=200&width=300&text=Grand+Ballroom+Main",
-    "/placeholder.svg?height=300&width=400&text=Ballroom+Interior",
-    "/placeholder.svg?height=300&width=400&text=Chandelier+Detail",
-  ],
-  price: "$2,500",
-  tags: ["Wedding", "Corporate", "Elegant", "Indoor"],
-  amenities: [
-    "Air Conditioning",
-    "Sound System",
-    "Professional Lighting",
-    "Catering Kitchen",
-    "Valet Parking",
-    "Bridal Suite",
-  ],
-  minPersonLimit: 50,
-  maxPersonLimit: 300,
-  isAvailable: true,
-}
+// TODO: Replace with GraphQL data from useQuery based on service ID
+const mockServiceData: any = null
 
 export default function EditServicePage() {
   const router = useRouter()
@@ -45,18 +20,21 @@ export default function EditServicePage() {
   const serviceId = params.id as string
 
   const [formData, setFormData] = useState({
-    name: mockServiceData.name,
-    location: mockServiceData.location,
-    description: mockServiceData.description,
-    price: mockServiceData.price,
-    minPersonLimit: mockServiceData.minPersonLimit.toString(),
-    maxPersonLimit: mockServiceData.maxPersonLimit.toString(),
-    tags: mockServiceData.tags.join(", "),
-    amenities: mockServiceData.amenities.join(", "),
-    isAvailable: mockServiceData.isAvailable,
+    name: "",
+    location: "",
+    description: "",
+    price: "",
+    minPersonLimit: "",
+    maxPersonLimit: "",
+    tags: "",
+    amenities: "",
+    isAvailable: false,
   })
 
-  const [uploadedImages, setUploadedImages] = useState<string[]>(mockServiceData.imageUrl)
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
+
+  // TODO: Replace with GraphQL query to fetch service data based on serviceId
+  // Then populate the form data with the fetched service data
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

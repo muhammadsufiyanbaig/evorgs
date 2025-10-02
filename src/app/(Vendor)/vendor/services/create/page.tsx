@@ -10,11 +10,47 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Building, Home, ChefHat, Camera, Upload, X } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 type ServiceType = "venue" | "farmhouse" | "catering" | "photography"
 
+// Mock implementation of useServiceCreation hook
+function useServiceCreation({ serviceType, onSuccess, onError }: {
+  serviceType: ServiceType
+  onSuccess: () => void
+  onError: (errorMessage: string) => void
+}) {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const createService = async (data: any) => {
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mock success response
+      console.log('Service created:', { serviceType, data })
+      onSuccess()
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create service'
+      setError(errorMessage)
+      onError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const clearError = () => setError(null)
+
+  return { createService, isLoading, error, clearError }
+}
+
 export default function CreateServicePage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [serviceType, setServiceType] = useState<ServiceType>("venue")
   const [formData, setFormData] = useState({
     name: "",
@@ -44,6 +80,24 @@ export default function CreateServicePage() {
 
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
 
+  const { createService, isLoading, error, clearError } = useServiceCreation({
+    serviceType,
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: `${serviceType} service created successfully.`,
+      })
+      router.push("/vendor/services")
+    },
+    onError: (errorMessage: string) => {
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      })
+    },
+  })
+
   const getServiceIcon = (type: ServiceType) => {
     switch (type) {
       case "venue":
@@ -59,6 +113,7 @@ export default function CreateServicePage() {
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    if (error) clearError()
   }
 
   const handleImageUpload = () => {
@@ -71,10 +126,62 @@ export default function CreateServicePage() {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log("Creating service:", { serviceType, formData, uploadedImages })
-    router.push("/vendor/services")
+  const transformVenueData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformCateringData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformPhotographyData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const transformFarmhouseData = (data: typeof formData) => ({
+    ...data,
+    images: uploadedImages
+  })
+
+  const handleSubmit = async () => {
+    try {
+      // Validate required fields
+      if (!formData.name || !formData.location || !formData.description) {
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Transform form data based on service type
+      let transformedData
+      switch (serviceType) {
+        case 'venue':
+          transformedData = transformVenueData(formData)
+          break
+        case 'catering':
+          transformedData = transformCateringData(formData)
+          break
+        case 'photography':
+          transformedData = transformPhotographyData(formData)
+          break
+        case 'farmhouse':
+          transformedData = transformFarmhouseData(formData)
+          break
+        default:
+          throw new Error('Invalid service type')
+      }
+
+      console.log("Creating service:", { serviceType, transformedData, uploadedImages })
+      await createService(transformedData)
+    } catch (err) {
+      console.error("Failed to submit service:", err)
+    }
   }
 
   return (
@@ -322,12 +429,22 @@ export default function CreateServicePage() {
             {/* Action Buttons */}
             <Card className="border-orange-200 bg-white">
               <CardContent className="pt-6 space-y-3">
-                <Button onClick={handleSubmit} className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                  Create Service
+                {error && (
+                  <div className="p-3 bg-red-100 border border-red-300 rounded text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isLoading}
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50"
+                >
+                  {isLoading ? "Creating..." : "Create Service"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/vendor/services")}
+                  disabled={isLoading}
                   className="w-full border-orange-200 text-orange-700 hover:bg-orange-50"
                 >
                   Cancel
