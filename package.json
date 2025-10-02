@@ -47,6 +47,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "recharts": "^2.15.4",
+    "rxjs": "^7.8.2",
     "sonner": "^2.0.6",
     "tailwind-merge": "^2.5.4",
     "xlsx": "^0.18.5",
