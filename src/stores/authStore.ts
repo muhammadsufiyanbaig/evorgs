@@ -160,29 +160,15 @@ export const useAuthStore = create<AuthState>()(
       },
 
       initializeAuth: () => {
-        // Check if there's an existing auth token in localStorage
-        if (typeof window !== 'undefined') {
-          const token = localStorage.getItem('auth_token')
-          if (token) {
-            // If token exists, restore authentication state
-            const existingState = get()
-            if (!existingState.isAuthenticated) {
-              // Create a minimal user object if we don't have user data
-              const user: User = existingState.user || {
-                id: 'restored-user',
-                name: 'User',
-                email: 'user@restored.com',
-                userType: 'User'
-              }
-              
-              set({ 
-                isAuthenticated: true,
-                token: token,
-                user: user,
-                userType: user.userType
-              })
-            }
-          }
+        // Auth state is automatically restored by Zustand persist middleware
+        // This function is called on app startup to ensure state is initialized
+        const state = get()
+        
+        if (state.isAuthenticated && state.token) {
+          console.log('🔑 Auth initialized - User authenticated as:', state.userType)
+          console.log('📝 Token present:', state.token ? 'Yes' : 'No')
+        } else {
+          console.log('⚠️ Auth initialized - No active session')
         }
       },
     }),

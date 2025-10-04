@@ -2,50 +2,104 @@
 
 import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect } from "react"
+import { useVendorCatering } from "@/hooks/useGraphQLServices"
+import { useToast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
 import {
-  Star,
-  Edit,
   ArrowLeft,
+  Building,
+  Home,
+  ChefHat,
+  Camera,
+  Edit,
   MapPin,
   Users,
-  Camera,
-  ChefHat,
-  Home,
-  Building,
-  CheckCircle,
-  CalendarIcon,
-  DollarSign,
+  Star,
+  Calendar as CalendarIcon,
   MessageSquare,
+  DollarSign,
+  Clock,
+  Eye,
+  CheckCircle,
 } from "lucide-react"
-
-// TODO: Replace with GraphQL data from useQuery based on service ID
-const mockService: any = null
-
-// TODO: Replace with GraphQL data from useQuery
-const mockReviews: any[] = []
-
-// TODO: Replace with GraphQL data from useQuery
-const mockAvailability = {
-  bookedDates: [],
-  availableDates: [],
-}
 
 export default function ServiceDetailPage() {
   const router = useRouter()
   const params = useParams()
-  const serviceId = params.id as string
+  const { toast } = useToast()
+  const serviceId = params.service as string
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [date, setDate] = useState<Date | undefined>(new Date())
+  
+  // GraphQL Hook Integration
+  const { getPackageDetails, togglePackageStatus, deletePackage, loading, data } = useVendorCatering()
+  const [cateringPackage, setCateringPackage] = useState<any>(null)
 
-  // TODO: Replace with GraphQL query to fetch service by ID
-  if (!mockService) {
+  // Load package details on mount
+  useEffect(() => {
+    if (serviceId) {
+      console.log('🔄 Loading package details for ID:', serviceId)
+      getPackageDetails(serviceId)
+    }
+  }, [serviceId])
+
+  // Update local state when GraphQL data changes
+  useEffect(() => {
+    if (data?.package) {
+      console.log('✅ Package details loaded:', data.package)
+      setCateringPackage(data.package)
+    }
+  }, [data])
+
+  // Handle toggle status
+  const handleToggleStatus = async () => {
+    try {
+      await togglePackageStatus(serviceId)
+      toast({
+        title: "Success",
+        description: "Package status updated successfully",
+      })
+      // Reload package details
+      getPackageDetails(serviceId)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update package status",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this package?")) return
+    
+    try {
+      await deletePackage(serviceId)
+      toast({
+        title: "Success",
+        description: "Package deleted successfully",
+      })
+      router.push("/vendor/services")
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete package",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Show loading state
+  if (loading && !cateringPackage) {
     return (
       <div className="min-h-screen bg-orange-50 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -62,12 +116,68 @@ export default function ServiceDetailPage() {
           </div>
           <Card className="border-orange-200 bg-white">
             <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Service not found. Please connect to GraphQL to load service data.</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading package details...</p>
             </CardContent>
           </Card>
         </div>
       </div>
     )
+  }
+
+  // Show not found state
+  if (!loading && !cateringPackage) {
+    return (
+      <div className="min-h-screen bg-orange-50 p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/vendor/services")}
+              className="border-orange-200 text-orange-700 hover:bg-orange-50"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Services
+            </Button>
+          </div>
+          <Card className="border-orange-200 bg-white">
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-600">Package not found.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  // Transform package data for display
+  const mockService = cateringPackage ? {
+    type: 'catering',
+    name: cateringPackage.packageName,
+    description: cateringPackage.description,
+    imageUrl: cateringPackage.images || ['/placeholder.svg'],
+    isAvailable: cateringPackage.isActive,
+    rating: cateringPackage.rating || 0,
+    reviewCount: cateringPackage.reviewCount || 0,
+    price: cateringPackage.pricePerPerson,
+    minGuests: cateringPackage.minGuests,
+    maxGuests: cateringPackage.maxGuests,
+    menuItems: cateringPackage.menuItems || [],
+    dietaryOptions: cateringPackage.dietaryOptions || [],
+    serviceArea: cateringPackage.serviceArea || [],
+    amenities: cateringPackage.amenities || [],
+    tags: [], // Not in GraphQL schema yet
+  } : null
+
+  const mockReviews: any[] = [] // TODO: Implement reviews fetching
+  const mockAvailability = {
+    bookedDates: [],
+    availableDates: [],
+  }
+
+  if (!mockService) {
+    return null
   }
 
   const getServiceIcon = (type: string) => {
@@ -186,16 +296,18 @@ export default function ServiceDetailPage() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-orange-600" />
-                        <span className="text-sm text-gray-600">{mockService.location}</span>
+                        <span className="text-sm text-gray-600">
+                          {mockService.serviceArea?.join(', ') || 'Service area not specified'}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-orange-600" />
-                        <span className="text-sm text-gray-600">{mockService.price}</span>
+                        <span className="text-sm text-gray-600">${mockService.price}/person</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-orange-600" />
                         <span className="text-sm text-gray-600">
-                          {mockService.minPersonLimit}-{mockService.maxPersonLimit} guests
+                          {mockService.minGuests}-{mockService.maxGuests} guests
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -215,10 +327,14 @@ export default function ServiceDetailPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Service Available</span>
-                        <Switch checked={mockService.isAvailable} className="data-[state=checked]:bg-orange-600" />
+                        <Switch 
+                          checked={mockService.isAvailable} 
+                          onCheckedChange={handleToggleStatus}
+                          className="data-[state=checked]:bg-orange-600" 
+                        />
                       </div>
                       <div className="text-xs text-gray-500">
-                        Last updated: {new Date(mockService.updatedAt).toLocaleDateString()}
+                        Last updated: {cateringPackage.updatedAt ? new Date(cateringPackage.updatedAt).toLocaleDateString() : 'N/A'}
                       </div>
                     </div>
                   </div>
@@ -331,7 +447,7 @@ export default function ServiceDetailPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Capacity</span>
                   <span className="font-semibold text-gray-900">
-                    {mockService.minPersonLimit}-{mockService.maxPersonLimit}
+                    {mockService.minGuests}-{mockService.maxGuests} guests
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

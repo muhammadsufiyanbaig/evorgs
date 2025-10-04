@@ -2,6 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useVendorCatering } from "@/hooks/useGraphQLServices"
+import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/hooks/useAuth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,12 +12,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, Building, Home, ChefHat, Camera, Upload, X } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { ArrowLeft, Building, Home, ChefHat, Camera, Upload, X, AlertCircle } from "lucide-react"
+import { AuthDebugPanel } from "@/components/AuthDebugPanel"
 
 type ServiceType = "venue" | "farmhouse" | "catering" | "photography"
 
-// Mock implementation of useServiceCreation hook
+// Mock implementation of useServiceCreation hook (kept for non-catering services)
 function useServiceCreation({ serviceType, onSuccess, onError }: {
   serviceType: ServiceType
   onSuccess: () => void
@@ -51,7 +54,8 @@ function useServiceCreation({ serviceType, onSuccess, onError }: {
 export default function CreateServicePage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [serviceType, setServiceType] = useState<ServiceType>("venue")
+  const auth = useAuth()
+  const [serviceType, setServiceType] = useState<ServiceType>("catering")
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -79,7 +83,11 @@ export default function CreateServicePage() {
   })
 
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  
+  // GraphQL Hook for Catering
+  const { createPackage, loading: cateringLoading } = useVendorCatering()
 
+  // Mock hook for other service types (kept for future implementation)
   const { createService, isLoading, error, clearError } = useServiceCreation({
     serviceType,
     onSuccess: () => {
@@ -148,8 +156,30 @@ export default function CreateServicePage() {
 
   const handleSubmit = async () => {
     try {
+      // Debug: Check auth state
+      console.log('🔐 Auth State Check:', {
+        isAuthenticated: auth.isAuthenticated,
+        userType: auth.userType,
+        hasToken: !!auth.token,
+        tokenPreview: auth.token ? auth.token.substring(0, 50) + '...' : 'NO TOKEN'
+      })
+
+      // Check localStorage
+      const authStorage = localStorage.getItem('auth-storage')
+      if (authStorage) {
+        const parsed = JSON.parse(authStorage)
+        console.log('📦 localStorage auth-storage:', {
+          hasToken: !!parsed.state?.token,
+          tokenPreview: parsed.state?.token ? parsed.state.token.substring(0, 50) + '...' : 'NO TOKEN',
+          isAuthenticated: parsed.state?.isAuthenticated,
+          userType: parsed.state?.userType
+        })
+      } else {
+        console.error('❌ No auth-storage in localStorage!')
+      }
+
       // Validate required fields
-      if (!formData.name || !formData.location || !formData.description) {
+      if (!formData.name || !formData.description) {
         toast({
           title: "Validation Error",
           description: "Please fill in all required fields.",
@@ -158,34 +188,74 @@ export default function CreateServicePage() {
         return
       }
 
-      // Transform form data based on service type
-      let transformedData
-      switch (serviceType) {
-        case 'venue':
-          transformedData = transformVenueData(formData)
-          break
-        case 'catering':
-          transformedData = transformCateringData(formData)
-          break
-        case 'photography':
-          transformedData = transformPhotographyData(formData)
-          break
-        case 'farmhouse':
-          transformedData = transformFarmhouseData(formData)
-          break
-        default:
-          throw new Error('Invalid service type')
-      }
+      if (serviceType === 'catering') {
+        // Validate required imageUrl field
+        if (uploadedImages.length === 0) {
+          toast({
+            title: "Validation Error",
+            description: "Please upload at least one image for your catering package.",
+            variant: "destructive",
+          })
+          return
+        }
 
-      console.log("Creating service:", { serviceType, transformedData, uploadedImages })
-      await createService(transformedData)
+        // Use GraphQL for catering - FIXED to match actual backend schema
+        const cateringInput = {
+          packageName: formData.name,
+          description: formData.description,
+          price: parseFloat(formData.pricePerPerson) || 50,
+          minGuests: parseInt(formData.minGuests) || 10,
+          maxGuests: parseInt(formData.maxGuests) || 100,
+          imageUrl: uploadedImages, // REQUIRED FIELD - array of image URLs
+          menuItems: formData.menuItems ? formData.menuItems.split(',').map(item => item.trim()) : undefined,
+          dietaryOptions: formData.dietaryOptions ? formData.dietaryOptions.split(',').map(item => item.trim()) : undefined,
+          serviceArea: formData.serviceArea ? formData.serviceArea.split(',').map(item => item.trim()) : undefined,
+          amenities: formData.amenities ? formData.amenities.split(',').map(item => item.trim()) : undefined,
+        }
+
+        console.log("Creating catering package with GraphQL:", cateringInput)
+        const result = await createPackage(cateringInput)
+        
+        if (result) {
+          toast({
+            title: "Success!",
+            description: "Catering package created successfully.",
+          })
+          router.push("/vendor/services")
+        }
+      } else {
+        // Use mock implementation for other service types
+        let transformedData
+        switch (serviceType) {
+          case 'venue':
+            transformedData = transformVenueData(formData)
+            break
+          case 'photography':
+            transformedData = transformPhotographyData(formData)
+            break
+          case 'farmhouse':
+            transformedData = transformFarmhouseData(formData)
+            break
+          default:
+            throw new Error('Invalid service type')
+        }
+
+        console.log("Creating service:", { serviceType, transformedData, uploadedImages })
+        await createService(transformedData)
+      }
     } catch (err) {
       console.error("Failed to submit service:", err)
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to create service",
+        variant: "destructive",
+      })
     }
   }
 
   return (
     <div className="min-h-screen bg-orange-50 p-6">
+      <AuthDebugPanel />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -315,6 +385,115 @@ export default function CreateServicePage() {
               </CardContent>
             </Card>
 
+            {/* Catering-Specific Fields */}
+            {serviceType === "catering" && (
+              <Card className="border-orange-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="text-gray-900">Catering Details</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Provide specific details about your catering package
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="pricePerPerson" className="text-gray-700">
+                        Price per Person ($)
+                      </Label>
+                      <Input
+                        id="pricePerPerson"
+                        type="number"
+                        placeholder="50"
+                        value={formData.pricePerPerson}
+                        onChange={(e) => handleInputChange("pricePerPerson", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="minGuests" className="text-gray-700">
+                        Min Guests
+                      </Label>
+                      <Input
+                        id="minGuests"
+                        type="number"
+                        placeholder="10"
+                        value={formData.minGuests}
+                        onChange={(e) => handleInputChange("minGuests", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxGuests" className="text-gray-700">
+                        Max Guests
+                      </Label>
+                      <Input
+                        id="maxGuests"
+                        type="number"
+                        placeholder="100"
+                        value={formData.maxGuests}
+                        onChange={(e) => handleInputChange("maxGuests", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="duration" className="text-gray-700">
+                      Duration (hours)
+                    </Label>
+                    <Input
+                      id="duration"
+                      type="number"
+                      placeholder="4"
+                      value={formData.duration}
+                      onChange={(e) => handleInputChange("duration", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="menuItems" className="text-gray-700">
+                      Menu Items
+                    </Label>
+                    <Textarea
+                      id="menuItems"
+                      placeholder="Appetizers, Main Course, Desserts (comma separated)"
+                      rows={3}
+                      value={formData.menuItems}
+                      onChange={(e) => handleInputChange("menuItems", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="dietaryOptions" className="text-gray-700">
+                      Dietary Options
+                    </Label>
+                    <Input
+                      id="dietaryOptions"
+                      placeholder="Vegetarian, Vegan, Halal (comma separated)"
+                      value={formData.dietaryOptions}
+                      onChange={(e) => handleInputChange("dietaryOptions", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="amenities" className="text-gray-700">
+                      Features/Amenities
+                    </Label>
+                    <Input
+                      id="amenities"
+                      placeholder="Tables, Chairs, Servers (comma separated)"
+                      value={formData.amenities}
+                      onChange={(e) => handleInputChange("amenities", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Image Upload */}
             <Card className="border-orange-200 bg-white">
               <CardHeader>
@@ -436,15 +615,15 @@ export default function CreateServicePage() {
                 )}
                 <Button 
                   onClick={handleSubmit} 
-                  disabled={isLoading}
+                  disabled={isLoading || cateringLoading}
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50"
                 >
-                  {isLoading ? "Creating..." : "Create Service"}
+                  {(isLoading || cateringLoading) ? "Creating..." : "Create Service"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/vendor/services")}
-                  disabled={isLoading}
+                  disabled={isLoading || cateringLoading}
                   className="w-full border-orange-200 text-orange-700 hover:bg-orange-50"
                 >
                   Cancel

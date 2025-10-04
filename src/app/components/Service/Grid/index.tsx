@@ -3,15 +3,15 @@
 import { Heart, MapPin, Star, Award, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Service } from "../../Service"
+import { useUserCatering } from "@/hooks/useGraphQLServices"
 
 type Category = keyof typeof categoryConfig;
 
-// TODO: Replace with GraphQL data from useQuery
-const services: (Service & { category: Category })[] = []
+// GraphQL data will be loaded from useUserCatering hook
 
 const categoryConfig = {
   venue: {
@@ -48,6 +48,55 @@ interface GridProps {
 
 const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) => {
   const [likedServices, setLikedServices] = useState<Set<string>>(new Set())
+  
+  // GraphQL Hook Integration
+  const { getCateringPackages, searchCateringPackages, loading, data } = useUserCatering()
+  const [cateringPackages, setCateringPackages] = useState<any[]>([])
+
+  // Load catering packages on component mount or when category changes
+  useEffect(() => {
+    if (selectedCategory === 'catering' || selectedCategory === '' || selectedCategory === 'all') {
+      console.log('🔄 Loading catering packages...')
+      
+      // If there's a search query, use search, otherwise get all packages
+      if (searchQuery && searchQuery.trim() !== '') {
+        searchCateringPackages(
+          searchQuery,
+          { isActive: true },
+          { page: 1, limit: 20 }
+        )
+      } else {
+        getCateringPackages(
+          { isActive: true },
+          { page: 1, limit: 20 },
+          { field: 'rating', direction: 'DESC' }
+        )
+      }
+    }
+  }, [selectedCategory, searchQuery])
+
+  // Update local state when GraphQL data changes
+  useEffect(() => {
+    if (data?.packages) {
+      console.log('✅ Catering packages loaded:', data.packages.length)
+      setCateringPackages(data.packages)
+    }
+  }, [data])
+
+  // Convert GraphQL catering packages to Service format
+  const cateringServices: (Service & { category: Category })[] = useMemo(() => {
+    return cateringPackages.map((pkg: any) => ({
+      id: pkg.id,
+      name: pkg.packageName,
+      location: pkg.vendor?.vendorAddress || 'Location not specified',
+      rating: pkg.rating || 0,
+      price: pkg.pricePerPerson,
+      imageUrl: pkg.images?.[0] || '/placeholder.svg',
+      category: 'catering' as Category,
+      description: pkg.description || 'Delicious catering package',
+      reviews: pkg.reviewCount || 0,
+    }))
+  }, [cateringPackages])
 
   const toggleLike = (serviceId: string) => {
     setLikedServices((prev) => {
@@ -61,8 +110,15 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
     })
   }
 
+  // Combine services (for now just catering, can add other services later)
+  const allServices = useMemo(() => {
+    // For now, we only have catering data from GraphQL
+    // TODO: Add photography, venue, farmhouse when their hooks are ready
+    return [...cateringServices]
+  }, [cateringServices])
+
   const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+    return allServices.filter((service) => {
       const matchesCategory = !selectedCategory || selectedCategory === "all" || service.category === selectedCategory
       const matchesSearch =
         !searchQuery ||
@@ -71,11 +127,25 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
       const matchesLocation =
         !selectedLocation ||
         selectedLocation === "all" ||
-        service.location.toLowerCase() === selectedLocation.toLowerCase()
+        service.location.toLowerCase().includes(selectedLocation.toLowerCase())
 
       return matchesCategory && matchesSearch && matchesLocation
     })
-  }, [selectedCategory, searchQuery, selectedLocation])
+  }, [allServices, selectedCategory, searchQuery, selectedLocation])
+
+  // Show loading state
+  if (loading && cateringPackages.length === 0) {
+    return (
+      <div className="w-full">
+        <div className="flex justify-center items-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading catering packages...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full">
@@ -91,6 +161,7 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
             <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
             <p className="text-gray-600 font-medium">
               {filteredServices.length} premium {filteredServices.length === 1 ? "service" : "services"} available
+              {loading && <span className="ml-2 text-orange-500">(refreshing...)</span>}
             </p>
           </div>
         </div>

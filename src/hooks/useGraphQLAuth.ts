@@ -119,17 +119,29 @@ export const useGraphQLAuth = () => {
   const [adminChangePasswordMutation, { loading: adminChangePasswordLoading }] = useMutation(ADMIN_CHANGE_PASSWORD);
   const [adminUpdateProfileMutation, { loading: adminUpdateProfileLoading }] = useMutation<{ adminUpdateAdminProfile: Admin }>(ADMIN_UPDATE_PROFILE);
 
-  // Queries
+  // Queries - Check for token in Zustand persist storage
+  const getAuthToken = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (!authStorage) return null;
+      const parsed = JSON.parse(authStorage);
+      return parsed.state?.token || null;
+    } catch {
+      return null;
+    }
+  };
+
   const { data: currentUserData, loading: currentUserLoading, refetch: refetchCurrentUser } = useQuery<{ me: User }>(GET_CURRENT_USER, {
-    skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
+    skip: !getAuthToken(),
   });
 
   const { data: currentVendorData, loading: currentVendorLoading, refetch: refetchCurrentVendor, error: vendorQueryError } = useQuery<{ vendorProfile: Vendor }>(GET_VENDOR_PROFILE, {
-    skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
+    skip: !getAuthToken(),
   });
 
   const { data: currentAdminData, loading: currentAdminLoading, refetch: refetchCurrentAdmin, error: adminQueryError } = useQuery<{ adminMe: Admin }>(ADMIN_ME, {
-    skip: typeof window === 'undefined' || !localStorage.getItem('auth_token'),
+    skip: !getAuthToken(),
   });
   
   // Log vendor query state changes
@@ -157,10 +169,9 @@ export const useGraphQLAuth = () => {
     console.log('🎯 userType:', userType);
     console.log('🎯 Token:', authPayload.token);
     
-    if (typeof window !== 'undefined' && authPayload.token) {
-      localStorage.setItem('auth_token', authPayload.token);
-      console.log('✅ Token stored in localStorage:', localStorage.getItem('auth_token'));
-    }
+    // NOTE: Token is stored by Zustand persist in 'auth-storage' key
+    // Apollo Client reads from there, so we don't need to store separately
+    console.log('✅ Token will be stored by Zustand in auth-storage');
     
     // Handle different auth payload types and update Zustand store
     if (userType === 'Admin' && 'admin' in authPayload) {
@@ -704,9 +715,7 @@ export const useGraphQLAuth = () => {
 
   // Logout
   const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('auth_token');
-    }
+    // Zustand will handle clearing auth-storage
     zustandLogout();
     toast.success('Logged out successfully');
   };
