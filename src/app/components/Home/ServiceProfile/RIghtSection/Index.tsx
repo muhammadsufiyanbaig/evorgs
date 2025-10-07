@@ -23,7 +23,12 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Calendar from "../../Calender/calender";
 
-const RightSection = () => {
+interface RightSectionProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
+
+const RightSection = ({ serviceData, serviceType }: RightSectionProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);

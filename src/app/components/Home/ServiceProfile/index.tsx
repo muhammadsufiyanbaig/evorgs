@@ -7,11 +7,17 @@ import Amenities from "./Amenities";
 import Reviews from "./Reviews";
 import Grid from "./Grid";
 
-const Details = () => {
+interface ServiceProfileProps {
+  serviceId?: string;
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
+
+const Details = ({ serviceId, serviceData, serviceType }: ServiceProfileProps) => {
   return (
     <div className="px-4 lg:px-10">
-      <Gallery />
-      <Grid />
+      <Gallery serviceData={serviceData} serviceType={serviceType} />
+      <Grid serviceId={serviceId} serviceData={serviceData} serviceType={serviceType} />
     </div>
   );
 };

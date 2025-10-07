@@ -10,16 +10,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { CalendarDays, Star } from "lucide-react";
 import { useState } from "react";
 
-const PersonRating = {
-  rating: 4,
-  author: "Demo Test",
-  timestamp: "2 years ago",
-  organization: "Nice Music Brands",
-  content:
-    "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Egestas Id Gravida Libero, Convallis. Diam Vulputate Et Vulputat Risus Amet Dolor",
-};
+interface RatingProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
 
-export default function Rating() {
+export default function Rating({ serviceData, serviceType }: RatingProps) {
+  const reviews = serviceData?.reviews || [];
+  
+  const PersonRating = reviews.length > 0 ? reviews[0] : {
+    rating: 4,
+    author: "Demo Test",
+    timestamp: "2 years ago",
+    organization: "Nice Music Brands",
+    content:
+      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Egestas Id Gravida Libero, Convallis. Diam Vulputate Et Vulputat Risus Amet Dolor",
+  };
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
 

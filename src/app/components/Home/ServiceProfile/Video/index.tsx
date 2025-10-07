@@ -1,4 +1,11 @@
-export default function Video() {
+interface VideoProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
+
+export default function Video({ serviceData, serviceType }: VideoProps) {
+  const videoUrl = serviceData?.video || serviceData?.videoUrl || "https://www.youtube.com/embed/RiXdDGk_XCU";
+  
   return (
     <section className="bg-white rounded-lg px-6">
       <h2 className="py-6 text-xl font-bold">Video</h2>
@@ -8,8 +15,8 @@ export default function Video() {
           <iframe
             width="100%"
             height="500"
-            src="https://www.youtube.com/embed/RiXdDGk_XCU"
-            title="How to use Classified Listing WordPress Plugin by RadiusTheme"
+            src={videoUrl}
+            title="Service Video"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"

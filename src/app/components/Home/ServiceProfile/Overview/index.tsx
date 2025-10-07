@@ -2,49 +2,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Stars } from "@/utils/Icons";
 import React from "react";
 
-const hotels = [
-  {
-    name: "Grand Royale Hotel",
-    location: "New York City",
-    rating: 4.2,
-    price: 240,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-  {
-    name: "Beachfront Paradise",
-    location: "Miami Beach",
-    rating: 4.7,
-    price: 320,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-  {
-    name: "Mountain View Resort",
-    location: "Aspen, Colorado",
-    rating: 4.5,
-    price: 280,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-];
+interface OverviewProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
 
-const cardDetails = [
-  { rating: hotels[0].rating, label: "Very Good", reviews: true },
-  { icon: <Stars height={30} width={30} color="#C2410C" />, label: "New Park" },
-  {
-    icon: <Stars height={30} width={30} color="#C2410C" />,
-    label: "Near nightlife",
-  },
-  {
-    icon: <Stars height={30} width={30} color="#C2410C" />,
-    label: "Near theater",
-  },
-  {
-    icon: <Stars height={30} width={30} color="#C2410C" />,
-    label: "Clean Hotel",
-  },
-];
-
-
-const Overview = () => {
+const Overview = ({ serviceData, serviceType }: OverviewProps) => {
+  const description = serviceType === 'farmhouse'
+    ? serviceData?.description || 'Beautiful farmhouse property with amazing amenities.'
+    : serviceData?.description || serviceData?.packageDescription || 'Premium service package with excellent features.';
+  
+  const rating = serviceData?.rating || 4.0;
+  const reviewCount = serviceData?.reviewCount || 0;
+  
+  const cardDetails = [
+    { rating: rating, label: rating >= 4.5 ? 'Excellent' : rating >= 4.0 ? 'Very Good' : 'Good', reviews: true },
+    { icon: <Stars height={30} width={30} color="#C2410C" />, label: serviceType === 'farmhouse' ? 'Farmhouse' : 'Catering' },
+    {
+      icon: <Stars height={30} width={30} color="#C2410C" />,
+      label: serviceData?.isActive ? "Available" : "Unavailable",
+    },
+    {
+      icon: <Stars height={30} width={30} color="#C2410C" />,
+      label: "High Quality",
+    },
+    {
+      icon: <Stars height={30} width={30} color="#C2410C" />,
+      label: "Clean Service",
+    },
+  ];
   return (
     <section className=" bg-white rounded-lg px-4 lg:px-6">
       <h2 className="py-6 text-xl font-bold">Overview</h2>
@@ -52,18 +38,7 @@ const Overview = () => {
         <div className="absolute h-[2px] bg-orange-600 w-1/12 -top-[1px]" />
        <div className="space-y-6">
        <p className="text-sm leading-relaxed">
-          Located in Taksim Gmsuyu, the heart of Istanbul, the CVK Park
-          Bosphorus Hotel Istanbul has risen from the ashes of the historic Park
-          Hotel, which also served as Foreign Affairs Palace 120 years ago and
-          is hosting its guests by assuming this hospitality mission. With its
-          452 luxurious rooms and suites, 8500 m2 SPA and fitness area, 18
-          meeting rooms including 4 dividable ones and 3 terraces with Bosphorus
-          view, Istanbul's largest terrace with Bosphorus view (4500 m2) and
-          latest technology infrastructure, CVK Park Bosphorus Hotel Istanbul is
-          destined to be the popular attraction point of the city. Room and
-          suite categories at various sizes with city and Bosphorus view, as
-          well as 68 separate luxury suites, are offered to its special guests
-          as a wide variety of selection.
+          {description}
         </p>
         <div className="w-full max-w-2xl flex flex-wrap justify-around sm:justify-start gap-3">
           {cardDetails.map((card, index) => (
@@ -83,7 +58,7 @@ const Overview = () => {
                         {card.reviews && (
                           <p className="font-semibold text-[8px]">
                             <span className="text-[10px]">
-                              ({Math.floor(Math.random() * 500) + 100} reviews)
+                              ({reviewCount} reviews)
                             </span>
                           </p>
                         )}

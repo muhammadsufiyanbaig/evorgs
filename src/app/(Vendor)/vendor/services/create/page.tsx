@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useVendorCatering } from "@/hooks/useGraphQLServices"
+import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/useAuth"
 import { Badge } from "@/components/ui/badge"
@@ -59,10 +60,16 @@ export default function CreateServicePage() {
   const [formData, setFormData] = useState({
     name: "",
     location: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
     serviceArea: "",
     description: "",
     price: "",
     perNightPrice: "",
+    perDayPrice: "",
     pricePerPerson: "",
     packagePrice: "",
     minPersonLimit: "",
@@ -76,6 +83,11 @@ export default function CreateServicePage() {
     photographerCount: "",
     tags: "",
     amenities: "",
+    activities: "",
+    numberOfRooms: "",
+    numberOfBathrooms: "",
+    maxOccupancy: "",
+    farmHouseType: "",
     menuItems: "",
     dietaryOptions: "",
     deliverables: "",
@@ -84,8 +96,9 @@ export default function CreateServicePage() {
 
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   
-  // GraphQL Hook for Catering
+  // GraphQL Hooks for Catering and Farmhouse
   const { createPackage, loading: cateringLoading } = useVendorCatering()
+  const { createFarmhouse, loading: farmhouseLoading } = useVendorFarmhouse()
 
   // Mock hook for other service types (kept for future implementation)
   const { createService, isLoading, error, clearError } = useServiceCreation({
@@ -215,7 +228,8 @@ export default function CreateServicePage() {
 
         console.log("Creating catering package with GraphQL:", cateringInput)
         const result = await createPackage(cateringInput)
-        
+        // GraphQL data will be loaded from useUserCatering hook
+
         if (result) {
           toast({
             title: "Success!",
@@ -223,8 +237,70 @@ export default function CreateServicePage() {
           })
           router.push("/vendor/services")
         }
+      } else if (serviceType === 'farmhouse') {
+        // Validate required fields for farmhouse
+        if (uploadedImages.length === 0) {
+          toast({
+            title: "Validation Error",
+            description: "Please upload at least one image for your farmhouse.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        if (!formData.city) {
+          toast({
+            title: "Validation Error",
+            description: "Please provide city for your farmhouse.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        if (!formData.perNightPrice) {
+          toast({
+            title: "Validation Error",
+            description: "Please provide per night price for your farmhouse.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        if (!formData.maxOccupancy) {
+          toast({
+            title: "Validation Error",
+            description: "Please provide max occupancy (required by backend).",
+            variant: "destructive",
+          })
+          return
+        }
+
+        // Use GraphQL for farmhouse - Match backend schema requirements
+        // Backend expects: name, description, location, perNightPrice, maxGuests (REQUIRED), imageUrl (optional), amenities (optional)
+        const farmhouseInput = {
+          name: formData.name, // Changed from farmHouseName
+          description: formData.description || "Beautiful farmhouse property",
+          location: `${formData.city}${formData.state ? ', ' + formData.state : ''}${formData.country ? ', ' + formData.country : ''}`,
+          perNightPrice: parseFloat(formData.perNightPrice) || 1000,
+          maxGuests: parseInt(formData.maxOccupancy) || 10, // REQUIRED by backend
+          imageUrl: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+          amenities: formData.amenities 
+            ? formData.amenities.split(',').map(item => item.trim()) 
+            : undefined,
+        }
+
+        console.log("Creating farmhouse with GraphQL:", farmhouseInput)
+        const result = await createFarmhouse(farmhouseInput)
+        
+        if (result) {
+          toast({
+            title: "Success!",
+            description: "Farmhouse created successfully.",
+          })
+          router.push("/vendor/services")
+        }
       } else {
-        // Use mock implementation for other service types
+        // Use mock implementation for other service types (venue, photography)
         let transformedData
         switch (serviceType) {
           case 'venue':
@@ -232,9 +308,6 @@ export default function CreateServicePage() {
             break
           case 'photography':
             transformedData = transformPhotographyData(formData)
-            break
-          case 'farmhouse':
-            transformedData = transformFarmhouseData(formData)
             break
           default:
             throw new Error('Invalid service type')
@@ -494,6 +567,212 @@ export default function CreateServicePage() {
               </Card>
             )}
 
+            {/* Farmhouse-Specific Fields */}
+            {serviceType === "farmhouse" && (
+              <Card className="border-orange-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="text-gray-900">Farmhouse Details</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Provide specific details about your farmhouse property
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Location Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address" className="text-gray-700">
+                        Address *
+                      </Label>
+                      <Input
+                        id="address"
+                        placeholder="Street address"
+                        value={formData.address}
+                        onChange={(e) => handleInputChange("address", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className="text-gray-700">
+                        City *
+                      </Label>
+                      <Input
+                        id="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange("city", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className="text-gray-700">
+                        State/Province
+                      </Label>
+                      <Input
+                        id="state"
+                        placeholder="State"
+                        value={formData.state}
+                        onChange={(e) => handleInputChange("state", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zipCode" className="text-gray-700">
+                        Zip Code
+                      </Label>
+                      <Input
+                        id="zipCode"
+                        placeholder="12345"
+                        value={formData.zipCode}
+                        onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className="text-gray-700">
+                        Country
+                      </Label>
+                      <Input
+                        id="country"
+                        placeholder="Pakistan"
+                        value={formData.country}
+                        onChange={(e) => handleInputChange("country", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Property Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfRooms" className="text-gray-700">
+                        Number of Rooms
+                      </Label>
+                      <Input
+                        id="numberOfRooms"
+                        type="number"
+                        placeholder="3"
+                        value={formData.numberOfRooms}
+                        onChange={(e) => handleInputChange("numberOfRooms", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfBathrooms" className="text-gray-700">
+                        Number of Bathrooms
+                      </Label>
+                      <Input
+                        id="numberOfBathrooms"
+                        type="number"
+                        placeholder="2"
+                        value={formData.numberOfBathrooms}
+                        onChange={(e) => handleInputChange("numberOfBathrooms", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxOccupancy" className="text-gray-700">
+                        Max Occupancy *
+                      </Label>
+                      <Input
+                        id="maxOccupancy"
+                        type="number"
+                        placeholder="10"
+                        value={formData.maxOccupancy}
+                        onChange={(e) => handleInputChange("maxOccupancy", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pricing */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="perNightPrice" className="text-gray-700">
+                        Price per Night ($) *
+                      </Label>
+                      <Input
+                        id="perNightPrice"
+                        type="number"
+                        placeholder="1000"
+                        value={formData.perNightPrice}
+                        onChange={(e) => handleInputChange("perNightPrice", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="perDayPrice" className="text-gray-700">
+                        Price per Day ($)
+                      </Label>
+                      <Input
+                        id="perDayPrice"
+                        type="number"
+                        placeholder="800"
+                        value={formData.perDayPrice}
+                        onChange={(e) => handleInputChange("perDayPrice", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="minNights" className="text-gray-700">
+                        Minimum Stay (nights)
+                      </Label>
+                      <Input
+                        id="minNights"
+                        type="number"
+                        placeholder="1"
+                        value={formData.minNights}
+                        onChange={(e) => handleInputChange("minNights", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="farmHouseType" className="text-gray-700">
+                      Farmhouse Type
+                    </Label>
+                    <Input
+                      id="farmHouseType"
+                      placeholder="VILLA, COTTAGE, BUNGALOW, etc."
+                      value={formData.farmHouseType}
+                      onChange={(e) => handleInputChange("farmHouseType", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="amenities" className="text-gray-700">
+                      Amenities
+                    </Label>
+                    <Textarea
+                      id="amenities"
+                      placeholder="WIFI, PARKING, POOL, BBQ (comma separated)"
+                      rows={3}
+                      value={formData.amenities}
+                      onChange={(e) => handleInputChange("amenities", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="activities" className="text-gray-700">
+                      Outdoor Activities
+                    </Label>
+                    <Input
+                      id="activities"
+                      placeholder="SWIMMING, HIKING, FISHING (comma separated)"
+                      value={formData.activities}
+                      onChange={(e) => handleInputChange("activities", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Image Upload */}
             <Card className="border-orange-200 bg-white">
               <CardHeader>
@@ -615,15 +894,15 @@ export default function CreateServicePage() {
                 )}
                 <Button 
                   onClick={handleSubmit} 
-                  disabled={isLoading || cateringLoading}
+                  disabled={isLoading || cateringLoading || farmhouseLoading}
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50"
                 >
-                  {(isLoading || cateringLoading) ? "Creating..." : "Create Service"}
+                  {(isLoading || cateringLoading || farmhouseLoading) ? "Creating..." : "Create Service"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/vendor/services")}
-                  disabled={isLoading || cateringLoading}
+                  disabled={isLoading || cateringLoading || farmhouseLoading}
                   className="w-full border-orange-200 text-orange-700 hover:bg-orange-50"
                 >
                   Cancel

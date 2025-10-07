@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Service } from "../../Service"
 import { useUserCatering } from "@/hooks/useGraphQLServices"
+import { useUserFarmhouse } from "@/hooks/useGraphQLFarmhouse"
 
 type Category = keyof typeof categoryConfig;
 
@@ -49,9 +50,13 @@ interface GridProps {
 const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) => {
   const [likedServices, setLikedServices] = useState<Set<string>>(new Set())
   
-  // GraphQL Hook Integration
-  const { getCateringPackages, searchCateringPackages, loading, data } = useUserCatering()
+  // GraphQL Hook Integration for Catering
+  const { getCateringPackages, searchCateringPackages, loading: cateringLoading, data: cateringData } = useUserCatering()
   const [cateringPackages, setCateringPackages] = useState<any[]>([])
+
+  // GraphQL Hook Integration for Farmhouse
+  const { getFarmhouses, searchFarmhouses, getFeaturedFarmhouses, loading: farmhouseLoading, data: farmhouseData } = useUserFarmhouse()
+  const [farmhouses, setFarmhouses] = useState<any[]>([])
 
   // Load catering packages on component mount or when category changes
   useEffect(() => {
@@ -75,13 +80,46 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
     }
   }, [selectedCategory, searchQuery])
 
+  // Load farmhouses on component mount or when category changes
+  useEffect(() => {
+    if (selectedCategory === 'farmhouse' || selectedCategory === '' || selectedCategory === 'all') {
+      console.log('🏡 Loading farmhouses...')
+      
+      // If there's a search query, use search, otherwise get all/featured
+      if (searchQuery && searchQuery.trim() !== '') {
+        searchFarmhouses(
+          searchQuery,
+          {},
+          { page: 1, limit: 20 }
+        )
+      } else {
+        getFarmhouses(
+          {},
+          { page: 1, limit: 20 },
+          { field: 'rating', direction: 'DESC' }
+        )
+      }
+    }
+  }, [selectedCategory, searchQuery, selectedLocation])
+
   // Update local state when GraphQL data changes
   useEffect(() => {
-    if (data?.packages) {
-      console.log('✅ Catering packages loaded:', data.packages.length)
-      setCateringPackages(data.packages)
+    if (cateringData?.packages) {
+      console.log('✅ Catering packages loaded:', cateringData.packages.length)
+      setCateringPackages(cateringData.packages)
     }
-  }, [data])
+  }, [cateringData])
+
+  // Update farmhouse local state when GraphQL data changes
+  useEffect(() => {
+    if (farmhouseData?.farmHouses) {
+      console.log('✅ Farmhouses loaded:', farmhouseData.farmHouses.length)
+      setFarmhouses(farmhouseData.farmHouses)
+    } else if (farmhouseData?.vendorFarmHouses) {
+      console.log('✅ Vendor farmhouses loaded:', farmhouseData.vendorFarmHouses.length)
+      setFarmhouses(farmhouseData.vendorFarmHouses)
+    }
+  }, [farmhouseData])
 
   // Convert GraphQL catering packages to Service format
   const cateringServices: (Service & { category: Category })[] = useMemo(() => {
@@ -90,13 +128,28 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
       name: pkg.packageName,
       location: pkg.vendor?.vendorAddress || 'Location not specified',
       rating: pkg.rating || 0,
-      price: pkg.pricePerPerson,
-      imageUrl: pkg.images?.[0] || '/placeholder.svg',
+      price: pkg.price || pkg.pricePerPerson || 0,
+      imageUrl: pkg.imageUrl?.[0] || pkg.images?.[0] || '/placeholder.svg',
       category: 'catering' as Category,
       description: pkg.description || 'Delicious catering package',
       reviews: pkg.reviewCount || 0,
     }))
   }, [cateringPackages])
+
+  // Convert GraphQL farmhouses to Service format
+  const farmhouseServices: (Service & { category: Category })[] = useMemo(() => {
+    return farmhouses.map((farmhouse: any) => ({
+      id: farmhouse.id,
+      name: farmhouse.farmHouseName,
+      location: `${farmhouse.address}, ${farmhouse.city}${farmhouse.state ? ', ' + farmhouse.state : ''}`,
+      rating: farmhouse.rating || 0,
+      price: farmhouse.perNightPrice || farmhouse.perDayPrice || 0,
+      imageUrl: farmhouse.images?.[0] || '/placeholder.svg',
+      category: 'farmhouse' as Category,
+      description: farmhouse.description || `Beautiful ${farmhouse.farmHouseType} with ${farmhouse.numberOfRooms} rooms`,
+      reviews: farmhouse.reviewCount || 0,
+    }))
+  }, [farmhouses])
 
   const toggleLike = (serviceId: string) => {
     setLikedServices((prev) => {
@@ -110,12 +163,15 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
     })
   }
 
-  // Combine services (for now just catering, can add other services later)
+  // Combine services from all integrated sources
   const allServices = useMemo(() => {
-    // For now, we only have catering data from GraphQL
-    // TODO: Add photography, venue, farmhouse when their hooks are ready
-    return [...cateringServices]
-  }, [cateringServices])
+    // Combine catering and farmhouse services
+    // TODO: Add photography, venue when their hooks are ready
+    return [...cateringServices, ...farmhouseServices]
+  }, [cateringServices, farmhouseServices])
+
+  // Combined loading state
+  const loading = cateringLoading || farmhouseLoading
 
   const filteredServices = useMemo(() => {
     return allServices.filter((service) => {
@@ -134,13 +190,13 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
   }, [allServices, selectedCategory, searchQuery, selectedLocation])
 
   // Show loading state
-  if (loading && cateringPackages.length === 0) {
+  if (loading && cateringPackages.length === 0 && farmhouses.length === 0) {
     return (
       <div className="w-full">
         <div className="flex justify-center items-center py-20">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading catering packages...</p>
+            <p className="text-gray-600">Loading services...</p>
           </div>
         </div>
       </div>

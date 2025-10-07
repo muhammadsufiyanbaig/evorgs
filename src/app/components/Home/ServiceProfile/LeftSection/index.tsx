@@ -5,14 +5,19 @@ import Map from "../Map";
 import Video from "../Video";
 import Rating from "../Rating";
 
-const LeftSection = () => {
+interface LeftSectionProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
+
+const LeftSection = ({ serviceData, serviceType }: LeftSectionProps) => {
   return (
     <div className="space-y-6 w-full lg:w-[70%]">
-      <Overview />
-      <Amenities />
-      <Map />
-      <Video />
-      <Rating />
+      <Overview serviceData={serviceData} serviceType={serviceType} />
+      <Amenities serviceData={serviceData} serviceType={serviceType} />
+      <Map serviceData={serviceData} serviceType={serviceType} />
+      <Video serviceData={serviceData} serviceType={serviceType} />
+      <Rating serviceData={serviceData} serviceType={serviceType} />
     </div>
   );
 };

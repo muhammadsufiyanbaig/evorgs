@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
+import { useVendorCatering } from "@/hooks/useGraphQLServices"
+import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
+import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,32 +12,131 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, Building, Upload, X, Save } from "lucide-react"
+import { ArrowLeft, Building, Upload, X, Save, Loader2 } from "lucide-react"
 
-// TODO: Replace with GraphQL data from useQuery based on service ID
-const mockServiceData: any = null
+type ServiceType = "catering" | "farmhouse"
 
 export default function EditServicePage() {
   const router = useRouter()
   const params = useParams()
-  const serviceId = params.id as string
+  const serviceId = params.service as string
+  const { toast } = useToast()
 
+  const [serviceType, setServiceType] = useState<ServiceType | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     location: "",
+    address: "",
+    city: "",
+    state: "",
     description: "",
     price: "",
+    perNightPrice: "",
+    perDayPrice: "",
+    minGuests: "",
+    maxGuests: "",
     minPersonLimit: "",
     maxPersonLimit: "",
+    numberOfRooms: "",
+    numberOfBathrooms: "",
+    maxOccupancy: "",
     tags: "",
     amenities: "",
-    isAvailable: false,
+    menuItems: "",
+    dietaryOptions: "",
+    serviceArea: "",
+    isAvailable: true,
   })
 
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  const [isLoadingData, setIsLoadingData] = useState(true)
 
-  // TODO: Replace with GraphQL query to fetch service data based on serviceId
-  // Then populate the form data with the fetched service data
+  // GraphQL Hooks
+  const { 
+    getPackageDetails: getCateringDetails, 
+    updatePackage: updateCatering, 
+    loading: cateringLoading,
+    data: cateringData 
+  } = useVendorCatering()
+  
+  const { 
+    getFarmhouseDetails, 
+    updateFarmhouse, 
+    loading: farmhouseLoading,
+    data: farmhouseData 
+  } = useVendorFarmhouse()
+
+  // Fetch service data on mount
+  useEffect(() => {
+    if (serviceId) {
+      // Try loading as both types - the backend will determine which exists
+      getCateringDetails(serviceId)
+      getFarmhouseDetails(serviceId)
+    }
+  }, [serviceId])
+
+  // Populate form when data is loaded
+  useEffect(() => {
+    if (cateringData?.cateringPackage) {
+      const pkg = cateringData.cateringPackage
+      setServiceType('catering')
+      setFormData({
+        name: pkg.packageName || "",
+        location: pkg.location || "",
+        address: "",
+        city: "",
+        state: "",
+        description: pkg.description || "",
+        price: pkg.price?.toString() || "",
+        perNightPrice: "",
+        perDayPrice: "",
+        minGuests: pkg.minGuests?.toString() || "",
+        maxGuests: pkg.maxGuests?.toString() || "",
+        minPersonLimit: "",
+        maxPersonLimit: "",
+        numberOfRooms: "",
+        numberOfBathrooms: "",
+        maxOccupancy: "",
+        tags: "",
+        amenities: pkg.amenities?.join(', ') || "",
+        menuItems: pkg.menuItems?.join(', ') || "",
+        dietaryOptions: pkg.dietaryOptions?.join(', ') || "",
+        serviceArea: pkg.serviceArea?.join(', ') || "",
+        isAvailable: pkg.isActive !== false,
+      })
+      setUploadedImages(pkg.imageUrl || [])
+      setIsLoadingData(false)
+    } else if (farmhouseData?.farmhouse) {
+      const house = farmhouseData.farmhouse
+      setServiceType('farmhouse')
+      setFormData({
+        name: house.farmHouseName || "",
+        location: house.location || "",
+        address: house.address || "",
+        city: house.city || "",
+        state: house.state || "",
+        description: house.description || "",
+        price: "",
+        perNightPrice: house.perNightPrice?.toString() || "",
+        perDayPrice: house.perDayPrice?.toString() || "",
+        minGuests: "",
+        maxGuests: "",
+        minPersonLimit: "",
+        maxPersonLimit: "",
+        numberOfRooms: house.numberOfRooms?.toString() || "",
+        numberOfBathrooms: house.numberOfBathrooms?.toString() || "",
+        maxOccupancy: house.capacity?.toString() || "",
+        tags: "",
+        amenities: house.amenities?.join(', ') || "",
+        menuItems: "",
+        dietaryOptions: "",
+        serviceArea: "",
+        isAvailable: house.isActive !== false,
+      })
+      setUploadedImages(house.images || [])
+      setIsLoadingData(false)
+    }
+  }, [cateringData, farmhouseData])
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -49,9 +151,96 @@ export default function EditServicePage() {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSave = () => {
-    console.log("Saving service:", { serviceId, formData, uploadedImages })
-    router.push(`/vendor/services/${serviceId}`)
+  const handleSave = async () => {
+    try {
+      if (!serviceType) {
+        toast({
+          title: "Error",
+          description: "Service type not determined",
+          variant: "destructive",
+        })
+        return
+      }
+
+      if (serviceType === 'catering') {
+        const updateInput = {
+          packageName: formData.name || undefined,
+          description: formData.description || undefined,
+          price: formData.price ? parseFloat(formData.price) : undefined,
+          minGuests: formData.minGuests ? parseInt(formData.minGuests) : undefined,
+          maxGuests: formData.maxGuests ? parseInt(formData.maxGuests) : undefined,
+          imageUrl: uploadedImages.length > 0 ? uploadedImages : undefined,
+          menuItems: formData.menuItems ? formData.menuItems.split(',').map(item => item.trim()) : undefined,
+          dietaryOptions: formData.dietaryOptions ? formData.dietaryOptions.split(',').map(item => item.trim()) : undefined,
+          serviceArea: formData.serviceArea ? formData.serviceArea.split(',').map(item => item.trim()) : undefined,
+          amenities: formData.amenities ? formData.amenities.split(',').map(item => item.trim()) : undefined,
+        }
+
+        const result = await updateCatering(serviceId, updateInput)
+        if (result) {
+          toast({
+            title: "Success!",
+            description: "Catering package updated successfully.",
+          })
+          router.push("/vendor/services")
+        }
+      } else if (serviceType === 'farmhouse') {
+        const updateInput = {
+          farmHouseName: formData.name || undefined,
+          description: formData.description || undefined,
+          address: formData.address || undefined,
+          city: formData.city || undefined,
+          state: formData.state || undefined,
+          location: formData.location || undefined,
+          perNightPrice: formData.perNightPrice ? parseFloat(formData.perNightPrice) : undefined,
+          perDayPrice: formData.perDayPrice ? parseFloat(formData.perDayPrice) : undefined,
+          numberOfRooms: formData.numberOfRooms ? parseInt(formData.numberOfRooms) : undefined,
+          numberOfBathrooms: formData.numberOfBathrooms ? parseInt(formData.numberOfBathrooms) : undefined,
+          capacity: formData.maxOccupancy ? parseInt(formData.maxOccupancy) : undefined,
+          amenities: formData.amenities ? formData.amenities.split(',').map(item => item.trim() as any) : undefined,
+        }
+
+        const result = await updateFarmhouse(serviceId, updateInput)
+        if (result) {
+          toast({
+            title: "Success!",
+            description: "Farmhouse updated successfully.",
+          })
+          router.push("/vendor/services")
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save service:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update service",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen bg-orange-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-orange-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading service details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!serviceType) {
+    return (
+      <div className="min-h-screen bg-orange-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Service not found</p>
+          <Button onClick={() => router.push("/vendor/services")} className="bg-orange-600 hover:bg-orange-700">
+            Back to Services
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -63,11 +252,11 @@ export default function EditServicePage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => router.push(`/vendor/services/${serviceId}`)}
+              onClick={() => router.push("/vendor/services")}
               className="border-orange-200 text-orange-700 hover:bg-orange-50"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Service
+              Back to Services
             </Button>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center text-white">
@@ -75,13 +264,26 @@ export default function EditServicePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Edit Service</h1>
-                <p className="text-orange-600">Venue Service</p>
+                <p className="text-orange-600 capitalize">{serviceType} Service</p>
               </div>
             </div>
           </div>
-          <Button onClick={handleSave} className="bg-orange-600 hover:bg-orange-700 text-white">
-            <Save className="w-4 h-4 mr-2" />
-            Save Changes
+          <Button 
+            onClick={handleSave} 
+            disabled={cateringLoading || farmhouseLoading}
+            className="bg-orange-600 hover:bg-orange-700 text-white"
+          >
+            {(cateringLoading || farmhouseLoading) ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
 

@@ -1,5 +1,11 @@
-export default function Map() {
+interface MapProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
 
+export default function Map({ serviceData, serviceType }: MapProps) {
+  // You can use serviceData to get coordinates or address for the map
+  // For now, using default location
   return (
     <section className="bg-white rounded-lg px-6">
           <h2 className="py-6 text-xl font-bold">Location/Map</h2>

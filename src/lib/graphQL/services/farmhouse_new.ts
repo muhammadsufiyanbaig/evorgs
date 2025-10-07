@@ -92,7 +92,7 @@ export const TOGGLE_FARMHOUSE_STATUS = gql`
   }
 `;
 
-// ============== ADDITIONAL QUERIES (placeholders or aliased) ==============
+// ============== PLACEHOLDER QUERIES (to be implemented) ==============
 
 export const SEARCH_FARMHOUSES = GET_FARMHOUSES;
 export const GET_FARMHOUSES_BY_LOCATION = GET_FARMHOUSES;
@@ -109,8 +109,6 @@ export const GET_FARMHOUSE_AVAILABILITY = gql`
 `;
 export const GET_FARMHOUSES_BY_AMENITIES = GET_FARMHOUSES;
 export const GET_FARMHOUSES_BY_ACTIVITIES = GET_FARMHOUSES;
-
-// ============== ADDITIONAL MUTATIONS ==============
 
 export const UPLOAD_FARMHOUSE_IMAGES = gql`
   mutation UploadFarmhouseImages($farmhouseId: ID!, $images: [Upload!]!) {
@@ -196,7 +194,6 @@ export interface CreateFarmHouseInput {
   description?: string;
   location: string;
   perNightPrice: number;
-  maxGuests: number; // REQUIRED by backend
   imageUrl?: string;
   amenities?: string[];
 }

@@ -19,30 +19,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-const hotels = [
-  {
-    name: "Grand Royale Hotel",
-    location: "New York City",
-    rating: 4.2,
-    price: 240,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-  {
-    name: "Beachfront Paradise",
-    location: "Miami Beach",
-    rating: 4.7,
-    price: 320,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-  {
-    name: "Mountain View Resort",
-    location: "Aspen, Colorado",
-    rating: 4.5,
-    price: 280,
-    imageUrl: "https://via.placeholder.com/400x300",
-  },
-];
-
 const renderStars = (rating: number) => {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 !== 0;
@@ -66,7 +42,33 @@ const renderStars = (rating: number) => {
   );
 };
 
-const Gallery = () => {
+interface GalleryProps {
+  serviceData?: any;
+  serviceType?: 'catering' | 'farmhouse' | null;
+}
+
+const Gallery = ({ serviceData, serviceType }: GalleryProps) => {
+  // Extract data based on service type
+  const serviceName = serviceType === 'farmhouse' 
+    ? serviceData?.farmHouseName 
+    : serviceData?.packageName || 'Service Name';
+  
+  const location = serviceType === 'farmhouse'
+    ? `${serviceData?.address}, ${serviceData?.city}${serviceData?.state ? ', ' + serviceData?.state : ''}`
+    : serviceData?.location || 'Location';
+  
+  const rating = serviceData?.rating || 4.0;
+  const price = serviceType === 'farmhouse'
+    ? (serviceData?.perNightPrice || serviceData?.perDayPrice || 0)
+    : (serviceData?.price || 0);
+  
+  const images = serviceData?.images || [];
+  const vendorName = serviceData?.vendorId?.name || serviceData?.vendor?.name || 'Vendor';
+  const reviewCount = serviceData?.reviewCount || 0;
+  
+  const priceLabel = serviceType === 'farmhouse' 
+    ? (serviceData?.perNightPrice ? 'night' : 'day')
+    : 'package';
   const handleShare = () => {
     const url = window.location.href; // Get the current page URL
     navigator.clipboard
@@ -85,15 +87,15 @@ const Gallery = () => {
         <div className="flex items-center gap-4 mb-4">
           <Link href={"/vendor/profile"} className="rounded-full aspect-square h-24 sm:h-28 overflow-hidden p-1  bg-white">
             <Image
-              src={"/pic-4.jpg"}
-              alt=""
+              src={serviceData?.vendorId?.profileImage || serviceData?.vendor?.profileImage || "/pic-4.jpg"}
+              alt={vendorName}
               height={1000}
               width={1000}
               className="h-full w-full object-cover rounded-full"
             />
           </Link>
           <div>
-            <Link href={"/vendor/profile"} className="text-2xl sm:text-3xl font-bold">John Doe</Link>
+            <Link href={"/vendor/profile"} className="text-2xl sm:text-3xl font-bold">{vendorName}</Link>
           </div>
         </div>
 
@@ -120,33 +122,35 @@ const Gallery = () => {
             </div>
 
             <div className="title flex flex-wrap gap-4">
-              <h2 className="text-2xl font-bold">{hotels[0].name}</h2>
+              <h2 className="text-2xl font-bold">{serviceName}</h2>
               <div className="flex items-center justify-center sm:justify-start space-x-2">
                 <span className="text-orange-500 text-xl flex items-center">
-                  {renderStars(hotels[0].rating)}
+                  {renderStars(rating)}
                 </span>
               </div>
             </div>
 
             <div className="location flex gap-2 items-center">
               <LocationIcon height={15} width={15} />
-              {hotels[0].location}
+              {location}
             </div>
 
             <div className="reviews flex items-center gap-2">
               <p className="border border-orange-600 px-2 py-1 rounded-lg">
                 {" "}
-                {hotels[0].rating}
+                {rating.toFixed(1)}
               </p>
-              <strong className="text-xs">Very Good</strong>
+              <strong className="text-xs">
+                {rating >= 4.5 ? 'Excellent' : rating >= 4.0 ? 'Very Good' : rating >= 3.5 ? 'Good' : 'Average'}
+              </strong>
               <span className="text-gray-500 text-sm">
-                ({Math.floor(Math.random() * 500) + 100} reviews)
+                ({reviewCount} reviews)
               </span>
             </div>
           </div>
           <div className="space-y-3">
             <h2 className="text-2xl font-bold text-end text-orange-600">
-              ${hotels[0].price}/<span className="text-sm">night</span>
+              ${price}/<span className="text-sm">{priceLabel}</span>
             </h2>
 
             <div className="btns flex gap-2 items-center ">
@@ -170,51 +174,44 @@ const Gallery = () => {
           <div className="grid grid-cols-1 grid-rows-2 md:grid-rows-1 md:grid-cols-2 gap-2 rounded-xl overflow-hidden">
             <div>
               <Image
-                src={"https://via.placeholder.com/400x300"}
-                alt=""
+                src={images[0] || "https://via.placeholder.com/400x300"}
+                alt={serviceName}
                 width={1000}
                 height={1000}
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="grid grid-cols-2 gap-2 grid-flow-row">
-              <div>
-                <Image
-                  src={"https://via.placeholder.com/400x300"}
-                  alt=""
-                  width={1000}
-                  height={1000}
-                />
-              </div>
-              <div>
-                <Image
-                  src={"https://via.placeholder.com/400x300"}
-                  alt=""
-                  width={1000}
-                  height={1000}
-                />
-              </div>
-              <div>
-                <Image
-                  src={"https://via.placeholder.com/400x300"}
-                  alt=""
-                  width={1000}
-                  height={1000}
-                />
-              </div>
-              <div>
-                <Image
-                  src={"https://via.placeholder.com/400x300"}
-                  alt=""
-                  width={1000}
-                  height={1000}
-                />
-              </div>
+              {images.slice(1, 5).map((image: string, index: number) => (
+                <div key={index}>
+                  <Image
+                    src={image || "https://via.placeholder.com/400x300"}
+                    alt={`${serviceName} ${index + 2}`}
+                    width={1000}
+                    height={1000}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+              {images.length < 5 && Array.from({ length: 5 - images.length }).map((_, index) => (
+                <div key={`placeholder-${index}`}>
+                  <Image
+                    src="https://via.placeholder.com/400x300"
+                    alt="Placeholder"
+                    width={1000}
+                    height={1000}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
-          <button className="px-4 py-2 text-sm w-fit bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 absolute bottom-2 right-2">
-            View Place
-          </button>
+          {images.length > 5 && (
+            <button className="px-4 py-2 text-sm w-fit bg-orange-600 text-white text-center rounded-md hover:bg-orange-700 transition-colors duration-300 absolute bottom-2 right-2">
+              View All {images.length} Photos
+            </button>
+          )}
         </div>
       </div>
     </section>
