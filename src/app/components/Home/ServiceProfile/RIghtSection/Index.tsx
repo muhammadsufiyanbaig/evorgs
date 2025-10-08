@@ -25,7 +25,7 @@ import Calendar from "../../Calender/calender";
 
 interface RightSectionProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 const RightSection = ({ serviceData, serviceType }: RightSectionProps) => {

@@ -5,46 +5,61 @@ import { useParams } from 'next/navigation';
 import ServiceProfileComponent from "@/app/components/Home/ServiceProfile";
 import { useUserCatering } from '@/hooks/useGraphQLServices';
 import { useUserFarmhouse } from '@/hooks/useGraphQLFarmhouse';
+import { useUserVenue } from '@/hooks/useGraphQLVenue';
 
 const ServiceProfile = () => {
   const params = useParams();
   const serviceId = params.service as string;
   
-  const [serviceType, setServiceType] = useState<'catering' | 'farmhouse' | null>(null);
+  const [serviceType, setServiceType] = useState<'catering' | 'farmhouse' | 'venue' | null>(null);
   const [error, setError] = useState<string | null>(null);
   
   const { getCateringPackage, loading: cateringLoading, data: cateringData } = useUserCatering();
   const { getFarmhouse, loading: farmhouseLoading, data: farmhouseData } = useUserFarmhouse();
+  const { getVenue, loading: venueLoading, data: venueData } = useUserVenue();
   
   useEffect(() => {
     if (!serviceId) return;
     
-    // Determine service type from URL pattern or try both
-    // For now, we'll try to load farmhouse first, then catering
-    
+    // Determine service type from URL pattern or try loading all types
     const loadService = async () => {
       try {
-        // Try farmhouse first
-        await getFarmhouse(serviceId);
+        // Try venue first
+        await getVenue(serviceId);
         
         // Give it a moment to update the data state
         setTimeout(() => {
-          if (farmhouseData?.farmhouse) {
-            setServiceType('farmhouse');
+          const vData = venueData as any;
+          if (vData?.venue) {
+            setServiceType('venue');
           } else {
-            // Try catering if farmhouse didn't work
-            getCateringPackage(serviceId);
-            setServiceType('catering');
+            // Try farmhouse
+            getFarmhouse(serviceId);
+            setTimeout(() => {
+              const fData = farmhouseData as any;
+              if (fData?.farmhouse) {
+                setServiceType('farmhouse');
+              } else {
+                // Try catering as last option
+                getCateringPackage(serviceId);
+                setServiceType('catering');
+              }
+            }, 300);
           }
         }, 300);
         
       } catch (err) {
         console.error('Error loading service:', err);
-        // Try catering as fallback
+        // Try fallbacks
         try {
-          await getCateringPackage(serviceId);
-          setServiceType('catering');
-        } catch (cateringErr) {
+          await getFarmhouse(serviceId);
+          if (farmhouseData?.farmhouse) {
+            setServiceType('farmhouse');
+          } else {
+            await getCateringPackage(serviceId);
+            setServiceType('catering');
+          }
+        } catch (fallbackErr) {
           setError('Service not found');
         }
       }
@@ -54,11 +69,12 @@ const ServiceProfile = () => {
   }, [serviceId]);
   
   // Determine which data to use
-  const serviceData = serviceType === 'farmhouse' 
-    ? farmhouseData?.farmhouse 
-    : cateringData?.cateringPackage;
+  const serviceData = 
+    serviceType === 'venue' ? (venueData as any)?.venue :
+    serviceType === 'farmhouse' ? (farmhouseData as any)?.farmhouse : 
+    (cateringData as any)?.cateringPackage;
   
-  const loading = cateringLoading || farmhouseLoading;
+  const loading = cateringLoading || farmhouseLoading || venueLoading;
   
   if (loading && !serviceData) {
     return (

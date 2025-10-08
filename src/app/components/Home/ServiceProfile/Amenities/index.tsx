@@ -4,7 +4,7 @@ import { SquareCheckBig } from "lucide-react";
 
 interface AmenitiesProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 export default function Amenities({ serviceData, serviceType }: AmenitiesProps) {

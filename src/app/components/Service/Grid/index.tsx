@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { Service } from "../../Service"
 import { useUserCatering } from "@/hooks/useGraphQLServices"
 import { useUserFarmhouse } from "@/hooks/useGraphQLFarmhouse"
+import { useUserVenue } from "@/hooks/useGraphQLVenue"
 
 type Category = keyof typeof categoryConfig;
 
@@ -58,6 +59,10 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
   const { getFarmhouses, searchFarmhouses, getFeaturedFarmhouses, loading: farmhouseLoading, data: farmhouseData } = useUserFarmhouse()
   const [farmhouses, setFarmhouses] = useState<any[]>([])
 
+  // GraphQL Hook Integration for Venue
+  const { getVenues, searchVenues, getFeaturedVenues, loading: venueLoading, data: venueData } = useUserVenue()
+  const [venues, setVenues] = useState<any[]>([])
+
   // Load catering packages on component mount or when category changes
   useEffect(() => {
     if (selectedCategory === 'catering' || selectedCategory === '' || selectedCategory === 'all') {
@@ -102,6 +107,28 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
     }
   }, [selectedCategory, searchQuery, selectedLocation])
 
+  // Load venues on component mount or when category changes
+  useEffect(() => {
+    if (selectedCategory === 'venue' || selectedCategory === '' || selectedCategory === 'all') {
+      console.log('🏛️ Loading venues...')
+      
+      // If there's a search query, use search, otherwise get all/featured
+      if (searchQuery && searchQuery.trim() !== '') {
+        searchVenues(
+          searchQuery,
+          {},
+          { page: 1, limit: 20 }
+        )
+      } else {
+        getVenues(
+          {},
+          { page: 1, limit: 20 },
+          { field: 'rating', direction: 'DESC' }
+        )
+      }
+    }
+  }, [selectedCategory, searchQuery, selectedLocation])
+
   // Update local state when GraphQL data changes
   useEffect(() => {
     if (cateringData?.packages) {
@@ -120,6 +147,18 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
       setFarmhouses(farmhouseData.vendorFarmHouses)
     }
   }, [farmhouseData])
+
+  // Update venue local state when GraphQL data changes
+  useEffect(() => {
+    const data = venueData as any;
+    if (data?.venues?.venues) {
+      console.log('✅ Venues loaded:', data.venues.venues.length)
+      setVenues(data.venues.venues)
+    } else if (data?.venue) {
+      console.log('✅ Single venue loaded')
+      setVenues([data.venue])
+    }
+  }, [venueData])
 
   // Convert GraphQL catering packages to Service format
   const cateringServices: (Service & { category: Category })[] = useMemo(() => {
@@ -151,6 +190,21 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
     }))
   }, [farmhouses])
 
+  // Convert GraphQL venues to Service format
+  const venueServices: (Service & { category: Category })[] = useMemo(() => {
+    return venues.map((venue: any) => ({
+      id: venue.id,
+      name: venue.venueName,
+      location: `${venue.address}, ${venue.city}${venue.state ? ', ' + venue.state : ''}`,
+      rating: venue.rating || 0,
+      price: venue.pricePerHour || venue.pricePerDay || venue.pricePerEvent || 0,
+      imageUrl: venue.images?.[0] || '/placeholder.svg',
+      category: 'venue' as Category,
+      description: venue.description || `${venue.venueType} venue with capacity of ${venue.capacity} guests`,
+      reviews: venue.reviewCount || 0,
+    }))
+  }, [venues])
+
   const toggleLike = (serviceId: string) => {
     setLikedServices((prev) => {
       const newSet = new Set(prev)
@@ -165,13 +219,13 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
 
   // Combine services from all integrated sources
   const allServices = useMemo(() => {
-    // Combine catering and farmhouse services
-    // TODO: Add photography, venue when their hooks are ready
-    return [...cateringServices, ...farmhouseServices]
-  }, [cateringServices, farmhouseServices])
+    // Combine catering, farmhouse, and venue services
+    // TODO: Add photography when its hook is ready
+    return [...cateringServices, ...farmhouseServices, ...venueServices]
+  }, [cateringServices, farmhouseServices, venueServices])
 
   // Combined loading state
-  const loading = cateringLoading || farmhouseLoading
+  const loading = cateringLoading || farmhouseLoading || venueLoading
 
   const filteredServices = useMemo(() => {
     return allServices.filter((service) => {
@@ -190,7 +244,7 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
   }, [allServices, selectedCategory, searchQuery, selectedLocation])
 
   // Show loading state
-  if (loading && cateringPackages.length === 0 && farmhouses.length === 0) {
+  if (loading && cateringPackages.length === 0 && farmhouses.length === 0 && venues.length === 0) {
     return (
       <div className="w-full">
         <div className="flex justify-center items-center py-20">

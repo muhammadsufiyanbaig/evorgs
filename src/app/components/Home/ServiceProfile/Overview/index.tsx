@@ -4,7 +4,7 @@ import React from "react";
 
 interface OverviewProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 const Overview = ({ serviceData, serviceType }: OverviewProps) => {

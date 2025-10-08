@@ -55,8 +55,22 @@ export const GET_VENDOR_VENUES = gql`
 // Create venue (vendor only)
 export const CREATE_VENUE = gql`
   ${VENUE_FRAGMENT}
-  mutation CreateVenue($input: VenueInput!) {
-    createVenue(input: $input) {
+  mutation CreateVenue(
+    $name: String!
+    $description: String!
+    $location: String!
+    $price: Float!
+    $imageUrl: String
+    $amenities: [String!]
+  ) {
+    createVenue(
+      name: $name
+      description: $description
+      location: $location
+      price: $price
+      imageUrl: $imageUrl
+      amenities: $amenities
+    ) {
       ...VenueFragment
     }
   }
@@ -65,8 +79,24 @@ export const CREATE_VENUE = gql`
 // Update venue (vendor only)
 export const UPDATE_VENUE = gql`
   ${VENUE_FRAGMENT}
-  mutation UpdateVenue($id: ID!, $input: VenueInput!) {
-    updateVenue(id: $id, input: $input) {
+  mutation UpdateVenue(
+    $id: ID!
+    $name: String
+    $description: String
+    $location: String
+    $price: Float
+    $imageUrl: String
+    $amenities: [String!]
+  ) {
+    updateVenue(
+      id: $id
+      name: $name
+      description: $description
+      location: $location
+      price: $price
+      imageUrl: $imageUrl
+      amenities: $amenities
+    ) {
       ...VenueFragment
     }
   }

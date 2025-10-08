@@ -1,6 +1,6 @@
 interface VideoProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 export default function Video({ serviceData, serviceType }: VideoProps) {

@@ -44,7 +44,7 @@ const renderStars = (rating: number) => {
 
 interface GalleryProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 const Gallery = ({ serviceData, serviceType }: GalleryProps) => {

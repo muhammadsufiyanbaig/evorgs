@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useVendorCatering } from "@/hooks/useGraphQLServices"
 import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
+import { useVendorVenue } from "@/hooks/useGraphQLVenue"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -96,10 +97,19 @@ export default function VendorServicesPage() {
     data: farmhouseData 
   } = useVendorFarmhouse()
 
+  const { 
+    getMyVenues, 
+    deleteVenue,
+    toggleVenueStatus,
+    loading: venueLoading,
+    data: venueData 
+  } = useVendorVenue()
+
   // Fetch services on mount
   useEffect(() => {
     getMyPackages()
     getMyFarmhouses()
+    getMyVenues()
   }, [])
 
   // Update services when data changes
@@ -142,8 +152,27 @@ export default function VendorServicesPage() {
       allServices.push(...farmhouseServices)
     }
 
+    // Add venues
+    const vData = venueData as any;
+    if (vData?.vendorVenues?.venues) {
+      const venueServices = vData.vendorVenues.venues.map((venue: any) => ({
+        id: venue.id,
+        name: venue.venueName,
+        type: 'venue' as ServiceType,
+        location: `${venue.city}, ${venue.state || ''}`.trim(),
+        price: venue.pricePerHour || venue.pricePerDay || venue.pricePerEvent || 0,
+        imageUrl: venue.images?.[0] || '/placeholder.svg',
+        isActive: venue.isActive !== false,
+        rating: venue.rating || 0,
+        reviewCount: venue.reviewCount || 0,
+        bookings: 0, // TODO: Add booking count when available
+        capacity: venue.capacity || 0,
+      }))
+      allServices.push(...venueServices)
+    }
+
     setServices(allServices)
-  }, [cateringData, farmhouseData])
+  }, [cateringData, farmhouseData, venueData])
 
   // Filter services
   const filteredServices = services.filter(service => {
@@ -183,11 +212,14 @@ export default function VendorServicesPage() {
         await deleteCateringPackage(serviceToDelete.id)
       } else if (serviceToDelete.type === 'farmhouse') {
         await deleteFarmhouse(serviceToDelete.id)
+      } else if (serviceToDelete.type === 'venue') {
+        await deleteVenue(serviceToDelete.id)
       }
       
       // Refresh data
       getMyPackages()
       getMyFarmhouses()
+      getMyVenues()
       
       setDeleteDialogOpen(false)
       setServiceToDelete(null)
@@ -203,17 +235,20 @@ export default function VendorServicesPage() {
         await toggleCateringStatus(service.id)
       } else if (service.type === 'farmhouse') {
         await toggleFarmhouseStatus(service.id)
+      } else if (service.type === 'venue') {
+        await toggleVenueStatus(service.id)
       }
       
       // Refresh data
       getMyPackages()
       getMyFarmhouses()
+      getMyVenues()
     } catch (error) {
       console.error('Toggle status failed:', error)
     }
   }
 
-  const loading = cateringLoading || farmhouseLoading
+  const loading = cateringLoading || farmhouseLoading || venueLoading
 
   // Stats calculation
   const stats = {

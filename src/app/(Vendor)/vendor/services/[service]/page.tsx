@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch"
 import { useEffect } from "react"
 import { useVendorCatering } from "@/hooks/useGraphQLServices"
+import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
+import { useVendorVenue } from "@/hooks/useGraphQLVenue"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -38,68 +40,109 @@ export default function ServiceDetailPage() {
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const [serviceType, setServiceType] = useState<'catering' | 'farmhouse' | 'venue' | null>(null)
   
-  // GraphQL Hook Integration
-  const { getPackageDetails, togglePackageStatus, deletePackage, loading, data } = useVendorCatering()
-  const [cateringPackage, setCateringPackage] = useState<any>(null)
+  // GraphQL Hook Integration for all service types
+  const { getPackageDetails, togglePackageStatus, deletePackage, loading: cateringLoading, data: cateringData } = useVendorCatering()
+  const { getFarmhouseDetails, toggleFarmhouseStatus, deleteFarmhouse, loading: farmhouseLoading, data: farmhouseData } = useVendorFarmhouse()
+  const { getVenueDetails, toggleVenueStatus, deleteVenue, loading: venueLoading, data: venueData } = useVendorVenue()
+  
+  const [serviceData, setServiceData] = useState<any>(null)
 
-  // Load package details on mount
+  // Load service details on mount - try all types
   useEffect(() => {
     if (serviceId) {
-      console.log('🔄 Loading package details for ID:', serviceId)
+      console.log('🔄 Loading service details for ID:', serviceId)
+      // Try loading as catering first
       getPackageDetails(serviceId)
+      // Try as farmhouse
+      getFarmhouseDetails(serviceId)
+      // Try as venue
+      getVenueDetails(serviceId)
     }
   }, [serviceId])
 
-  // Update local state when GraphQL data changes
+  // Update local state when GraphQL data changes - detect service type
   useEffect(() => {
-    if (data?.package) {
-      console.log('✅ Package details loaded:', data.package)
-      setCateringPackage(data.package)
+    const cData = cateringData as any;
+    const fData = farmhouseData as any;
+    const vData = venueData as any;
+    
+    if (cData?.package) {
+      console.log('✅ Catering package details loaded:', cData.package)
+      setServiceData(cData.package)
+      setServiceType('catering')
+    } else if (fData?.farmhouse) {
+      console.log('✅ Farmhouse details loaded:', fData.farmhouse)
+      setServiceData(fData.farmhouse)
+      setServiceType('farmhouse')
+    } else if (vData?.venue) {
+      console.log('✅ Venue details loaded:', vData.venue)
+      setServiceData(vData.venue)
+      setServiceType('venue')
     }
-  }, [data])
+  }, [cateringData, farmhouseData, venueData])
 
-  // Handle toggle status
+  // Handle toggle status for all service types
   const handleToggleStatus = async () => {
     try {
-      await togglePackageStatus(serviceId)
+      if (serviceType === 'catering') {
+        await togglePackageStatus(serviceId)
+      } else if (serviceType === 'farmhouse') {
+        await toggleFarmhouseStatus(serviceId)
+      } else if (serviceType === 'venue') {
+        await toggleVenueStatus(serviceId)
+      }
+      
       toast({
         title: "Success",
-        description: "Package status updated successfully",
+        description: "Service status updated successfully",
       })
-      // Reload package details
-      getPackageDetails(serviceId)
+      
+      // Reload service details
+      if (serviceType === 'catering') getPackageDetails(serviceId)
+      else if (serviceType === 'farmhouse') getFarmhouseDetails(serviceId)
+      else if (serviceType === 'venue') getVenueDetails(serviceId)
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update package status",
+        description: "Failed to update service status",
         variant: "destructive",
       })
     }
   }
 
-  // Handle delete
+  // Handle delete for all service types
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this package?")) return
+    if (!confirm("Are you sure you want to delete this service?")) return
     
     try {
-      await deletePackage(serviceId)
+      if (serviceType === 'catering') {
+        await deletePackage(serviceId)
+      } else if (serviceType === 'farmhouse') {
+        await deleteFarmhouse(serviceId)
+      } else if (serviceType === 'venue') {
+        await deleteVenue(serviceId)
+      }
+      
       toast({
         title: "Success",
-        description: "Package deleted successfully",
+        description: "Service deleted successfully",
       })
       router.push("/vendor/services")
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete package",
+        description: "Failed to delete service",
         variant: "destructive",
       })
     }
   }
 
+  const loading = cateringLoading || farmhouseLoading || venueLoading
+
   // Show loading state
-  if (loading && !cateringPackage) {
+  if (loading && !serviceData) {
     return (
       <div className="min-h-screen bg-orange-50 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -126,7 +169,7 @@ export default function ServiceDetailPage() {
   }
 
   // Show not found state
-  if (!loading && !cateringPackage) {
+  if (!loading && !serviceData) {
     return (
       <div className="min-h-screen bg-orange-50 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -143,7 +186,7 @@ export default function ServiceDetailPage() {
           </div>
           <Card className="border-orange-200 bg-white">
             <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Package not found.</p>
+              <p className="text-gray-600">Service not found.</p>
             </CardContent>
           </Card>
         </div>
@@ -151,22 +194,30 @@ export default function ServiceDetailPage() {
     )
   }
 
-  // Transform package data for display
-  const mockService = cateringPackage ? {
-    type: 'catering',
-    name: cateringPackage.packageName,
-    description: cateringPackage.description,
-    imageUrl: cateringPackage.images || ['/placeholder.svg'],
-    isAvailable: cateringPackage.isActive,
-    rating: cateringPackage.rating || 0,
-    reviewCount: cateringPackage.reviewCount || 0,
-    price: cateringPackage.pricePerPerson,
-    minGuests: cateringPackage.minGuests,
-    maxGuests: cateringPackage.maxGuests,
-    menuItems: cateringPackage.menuItems || [],
-    dietaryOptions: cateringPackage.dietaryOptions || [],
-    serviceArea: cateringPackage.serviceArea || [],
-    amenities: cateringPackage.amenities || [],
+  // Transform service data for display based on type
+  const mockService = serviceData ? {
+    type: serviceType,
+    name: serviceType === 'venue' ? serviceData.venueName : 
+          serviceType === 'farmhouse' ? serviceData.farmHouseName :
+          serviceData.packageName,
+    description: serviceData.description,
+    imageUrl: serviceType === 'venue' ? serviceData.images || ['/placeholder.svg'] :
+               serviceType === 'farmhouse' ? serviceData.images || ['/placeholder.svg'] :
+               serviceData.images || ['/placeholder.svg'],
+    isAvailable: serviceData.isActive,
+    rating: serviceData.rating || 0,
+    reviewCount: serviceData.reviewCount || 0,
+    price: serviceType === 'venue' ? (serviceData.pricePerHour || serviceData.pricePerDay || serviceData.pricePerEvent) :
+           serviceType === 'farmhouse' ? (serviceData.perNightPrice || serviceData.perDayPrice) :
+           serviceData.pricePerPerson,
+    minGuests: serviceType === 'catering' ? serviceData.minGuests : 0,
+    maxGuests: serviceType === 'venue' ? serviceData.capacity :
+               serviceType === 'farmhouse' ? serviceData.capacity :
+               serviceData.maxGuests,
+    menuItems: serviceType === 'catering' ? (serviceData.menuItems || []) : [],
+    dietaryOptions: serviceType === 'catering' ? (serviceData.dietaryOptions || []) : [],
+    serviceArea: serviceType === 'catering' ? (serviceData.serviceArea || []) : [],
+    amenities: serviceData.amenities || serviceData.availableAmenities || [],
     tags: [], // Not in GraphQL schema yet
   } : null
 
@@ -224,7 +275,7 @@ export default function ServiceDetailPage() {
           </Button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center text-white">
-              {getServiceIcon(mockService.type)}
+              {getServiceIcon(mockService.type || 'catering')}
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{mockService.name}</h1>
@@ -334,7 +385,7 @@ export default function ServiceDetailPage() {
                         />
                       </div>
                       <div className="text-xs text-gray-500">
-                        Last updated: {cateringPackage.updatedAt ? new Date(cateringPackage.updatedAt).toLocaleDateString() : 'N/A'}
+                        Last updated: {serviceData?.updatedAt ? new Date(serviceData.updatedAt).toLocaleDateString() : 'N/A'}
                       </div>
                     </div>
                   </div>

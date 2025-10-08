@@ -12,7 +12,7 @@ import { useState } from "react";
 
 interface RatingProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 export default function Rating({ serviceData, serviceType }: RatingProps) {

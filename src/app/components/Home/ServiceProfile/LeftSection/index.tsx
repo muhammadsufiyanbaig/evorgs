@@ -7,7 +7,7 @@ import Rating from "../Rating";
 
 interface LeftSectionProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
 }
 
 const LeftSection = ({ serviceData, serviceType }: LeftSectionProps) => {
