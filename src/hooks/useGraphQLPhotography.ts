@@ -142,12 +142,18 @@ export const useVendorPhotography = () => {
       });
       
       if (result.data) {
+        console.log('📸 Photography packages fetched:', result.data);
         setData(result.data);
-        return (result.data as any).vendorPhotographyPackages;
+        return (result.data as any).vendorPhotographPackages;
       }
     } catch (err: any) {
       setError(err.message);
-      console.error('Error fetching vendor photography packages:', err);
+      console.error('❌ Error fetching vendor photography packages:', err);
+      toast({
+        title: "Error",
+        description: err.message || "Failed to fetch photography packages",
+        variant: "destructive",
+      });
       throw err;
     }
   };

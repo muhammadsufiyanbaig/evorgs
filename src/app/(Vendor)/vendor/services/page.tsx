@@ -191,10 +191,10 @@ export default function VendorServicesPage() {
       allServices.push(...venueServices)
     }
 
-    // Add photography packages
+    // Add photography packages (direct array, not paginated)
     const pData = photographyData as any;
-    if (pData?.vendorPhotographyPackages?.packages) {
-      const photographyServices = pData.vendorPhotographyPackages.packages.map((pkg: any) => ({
+    if (pData?.vendorPhotographPackages && Array.isArray(pData.vendorPhotographPackages)) {
+      const photographyServices = pData.vendorPhotographPackages.map((pkg: any) => ({
         id: pkg.id,
         name: pkg.packageName,
         type: 'photography' as ServiceType,

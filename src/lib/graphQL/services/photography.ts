@@ -82,21 +82,12 @@ export const GET_PHOTOGRAPHY_PACKAGE = gql`
   }
 `;
 
-// Get vendor's photography packages
+// Get vendor's photography packages (simplified - matches backend schema)
 export const GET_VENDOR_PHOTOGRAPHY_PACKAGES = gql`
   ${PHOTOGRAPHY_PACKAGE_FRAGMENT}
-  query GetVendorPhotographyPackages(
-    $filters: PhotographyPackageFiltersInput
-    $pagination: PaginationInput
-  ) {
-    vendorPhotographyPackages(filters: $filters, pagination: $pagination) {
-      packages {
-        ...PhotographyPackageFragment
-      }
-      totalCount
-      hasMore
-      currentPage
-      totalPages
+  query GetVendorPhotographyPackages {
+    vendorPhotographPackages {
+      ...PhotographyPackageFragment
     }
   }
 `;
