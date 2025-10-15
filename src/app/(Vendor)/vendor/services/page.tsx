@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useVendorCatering } from "@/hooks/useGraphQLServices"
 import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
 import { useVendorVenue } from "@/hooks/useGraphQLVenue"
+import { useVendorPhotography } from "@/hooks/useGraphQLPhotography"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -105,16 +106,32 @@ export default function VendorServicesPage() {
     data: venueData 
   } = useVendorVenue()
 
+  const {
+    getMyPhotographyPackages,
+    deletePhotographyPackage,
+    togglePhotographyPackageStatus,
+    createLoading: photographyLoading,
+    data: photographyData
+  } = useVendorPhotography()
+
   // Fetch services on mount
   useEffect(() => {
     getMyPackages()
     getMyFarmhouses()
     getMyVenues()
+    getMyPhotographyPackages()
   }, [])
 
   // Update services when data changes
   useEffect(() => {
     const allServices: Service[] = []
+
+    console.log('📊 All Service Data:', {
+      catering: cateringData,
+      farmhouse: farmhouseData,
+      venue: venueData,
+      photography: photographyData
+    })
 
     // Add catering packages
     if (cateringData?.vendorCateringPackages) {
@@ -131,48 +148,72 @@ export default function VendorServicesPage() {
         bookings: pkg.bookingCount || 0,
         capacity: pkg.maxGuests || 0,
       }))
+      console.log('🍽️ Catering services:', cateringServices.length)
       allServices.push(...cateringServices)
     }
 
     // Add farmhouses
-    if (farmhouseData?.vendorFarmHouses) {
-      const farmhouseServices = farmhouseData.vendorFarmHouses.map((house: any) => ({
+    if (farmhouseData?.vendorFarmhouses) {
+      const farmhouseServices = farmhouseData.vendorFarmhouses.map((house: any) => ({
         id: house.id,
-        name: house.farmHouseName,
+        name: house.name,
         type: 'farmhouse' as ServiceType,
-        location: `${house.city}, ${house.state || ''}`.trim(),
-        price: house.perNightPrice || house.perDayPrice || 0,
-        imageUrl: house.images?.[0] || '/placeholder.svg',
+        location: house.location || 'Location not specified',
+        price: house.perNightPrice || 0,
+        imageUrl: house.imageUrl || '/placeholder.svg',
         isActive: house.isActive !== false,
         rating: house.rating || 0,
         reviewCount: house.reviewCount || 0,
         bookings: house.bookingCount || 0,
-        capacity: house.capacity || 0,
+        capacity: house.maxGuests || 0,
       }))
+      console.log('🏡 Farmhouse services:', farmhouseServices.length)
       allServices.push(...farmhouseServices)
     }
 
     // Add venues
     const vData = venueData as any;
-    if (vData?.vendorVenues?.venues) {
-      const venueServices = vData.vendorVenues.venues.map((venue: any) => ({
+    if (vData?.vendorVenues) {
+      const venueServices = vData.vendorVenues.map((venue: any) => ({
         id: venue.id,
-        name: venue.venueName,
+        name: venue.name,
         type: 'venue' as ServiceType,
-        location: `${venue.city}, ${venue.state || ''}`.trim(),
-        price: venue.pricePerHour || venue.pricePerDay || venue.pricePerEvent || 0,
-        imageUrl: venue.images?.[0] || '/placeholder.svg',
+        location: venue.location || 'Location not specified',
+        price: parseFloat(venue.price) || 0,
+        imageUrl: venue.imageUrl || '/placeholder.svg',
         isActive: venue.isActive !== false,
         rating: venue.rating || 0,
         reviewCount: venue.reviewCount || 0,
-        bookings: 0, // TODO: Add booking count when available
-        capacity: venue.capacity || 0,
+        bookings: 0,
+        capacity: venue.maxPersonLimit || 0,
       }))
+      console.log('🏛️ Venue services:', venueServices.length)
       allServices.push(...venueServices)
     }
 
+    // Add photography packages
+    const pData = photographyData as any;
+    if (pData?.vendorPhotographyPackages?.packages) {
+      const photographyServices = pData.vendorPhotographyPackages.packages.map((pkg: any) => ({
+        id: pkg.id,
+        name: pkg.packageName,
+        type: 'photography' as ServiceType,
+        location: 'Photography Service',
+        price: pkg.price || 0,
+        imageUrl: pkg.imageUrl?.[0] || '/placeholder.svg',
+        isActive: pkg.isActive !== false,
+        rating: pkg.rating || 0,
+        reviewCount: pkg.reviewCount || 0,
+        bookings: pkg.bookingCount || 0,
+        capacity: pkg.duration ? `${pkg.duration}hrs` : 0,
+      }))
+      console.log('📸 Photography services:', photographyServices.length)
+      allServices.push(...photographyServices)
+    }
+
+    console.log('✅ Total merged services:', allServices.length)
     setServices(allServices)
-  }, [cateringData, farmhouseData, venueData])
+  }, [cateringData, farmhouseData, venueData, photographyData])
 
   // Filter services
   const filteredServices = services.filter(service => {
@@ -214,17 +255,30 @@ export default function VendorServicesPage() {
         await deleteFarmhouse(serviceToDelete.id)
       } else if (serviceToDelete.type === 'venue') {
         await deleteVenue(serviceToDelete.id)
+      } else if (serviceToDelete.type === 'photography') {
+        await deletePhotographyPackage(serviceToDelete.id)
       }
       
       // Refresh data
       getMyPackages()
       getMyFarmhouses()
       getMyVenues()
+      getMyPhotographyPackages()
       
       setDeleteDialogOpen(false)
       setServiceToDelete(null)
+      
+      toast({
+        title: "Success",
+        description: `${serviceToDelete.type} service deleted successfully`,
+      })
     } catch (error) {
       console.error('Delete failed:', error)
+      toast({
+        title: "Error",
+        description: "Failed to delete service",
+        variant: "destructive",
+      })
     }
   }
 
@@ -237,14 +291,27 @@ export default function VendorServicesPage() {
         await toggleFarmhouseStatus(service.id)
       } else if (service.type === 'venue') {
         await toggleVenueStatus(service.id)
+      } else if (service.type === 'photography') {
+        await togglePhotographyPackageStatus(service.id)
       }
       
       // Refresh data
       getMyPackages()
       getMyFarmhouses()
       getMyVenues()
+      getMyPhotographyPackages()
+      
+      toast({
+        title: "Success",
+        description: `Service status updated successfully`,
+      })
     } catch (error) {
       console.error('Toggle status failed:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update service status",
+        variant: "destructive",
+      })
     }
   }
 

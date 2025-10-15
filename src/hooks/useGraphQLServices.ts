@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client/react';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -98,6 +98,26 @@ export const useGraphQLServices = (): UseGraphQLServicesReturn => {
   const [getPackagesByLocationQuery, { loading: getPackagesByLocationLoading, data: locationPackagesData }] = useLazyQuery(GET_CATERING_PACKAGES_BY_LOCATION);
   const [getFeaturedPackagesQuery, { loading: getFeaturedPackagesLoading, data: featuredPackagesData }] = useLazyQuery(GET_FEATURED_CATERING_PACKAGES);
   const [getPopularPackagesQuery, { loading: getPopularPackagesLoading, data: popularPackagesData }] = useLazyQuery(GET_POPULAR_CATERING_PACKAGES);
+
+  // ============== SYNC QUERY DATA TO STATE ==============
+  
+  // Update currentData when vendor packages are fetched
+  useEffect(() => {
+    if (vendorPackagesData) {
+      console.log('🍽️ Catering vendor data updated:', vendorPackagesData);
+      setCurrentData(vendorPackagesData);
+    }
+  }, [vendorPackagesData]);
+  
+  // Update currentData for other queries
+  useEffect(() => {
+    if (cateringPackagesData) setCurrentData(cateringPackagesData);
+    else if (cateringPackageData) setCurrentData(cateringPackageData);
+    else if (searchPackagesData) setCurrentData(searchPackagesData);
+    else if (locationPackagesData) setCurrentData(locationPackagesData);
+    else if (featuredPackagesData) setCurrentData(featuredPackagesData);
+    else if (popularPackagesData) setCurrentData(popularPackagesData);
+  }, [cateringPackagesData, cateringPackageData, searchPackagesData, locationPackagesData, featuredPackagesData, popularPackagesData]);
 
   // ============== MUTATIONS ==============
 

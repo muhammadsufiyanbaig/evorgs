@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useVendorCatering } from "@/hooks/useGraphQLServices"
 import { useVendorFarmhouse } from "@/hooks/useGraphQLFarmhouse"
 import { useVendorVenue } from "@/hooks/useGraphQLVenue"
+import { useVendorPhotography } from "@/hooks/useGraphQLPhotography"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/useAuth"
 import { Badge } from "@/components/ui/badge"
@@ -92,17 +93,31 @@ export default function CreateServicePage() {
     menuItems: "",
     dietaryOptions: "",
     deliverables: "",
+    // Photography-specific fields
+    shootingStyle: "",
+    packageType: "",
+    deliveryTimeframe: "",
+    numberOfPhotographers: "",
+    numberOfEditedPhotos: "",
+    numberOfRawPhotos: "",
+    includesVideo: false,
+    videoDuration: "",
+    equipment: "",
+    travelCharges: "",
+    cancellationPolicy: "",
+    features: "",
     isAvailable: true,
   })
 
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   
-  // GraphQL Hooks for Catering, Farmhouse, and Venue
+  // GraphQL Hooks for All Service Types
   const { createPackage, loading: cateringLoading } = useVendorCatering()
   const { createFarmhouse, loading: farmhouseLoading } = useVendorFarmhouse()
   const { createVenue, loading: venueLoading } = useVendorVenue()
+  const { createPhotographyPackage, createLoading: photographyLoading } = useVendorPhotography()
 
-  // Mock hook for other service types (kept for future implementation)
+  // Mock hook for future service types
   const { createService, isLoading, error, clearError } = useServiceCreation({
     serviceType,
     onSuccess: () => {
@@ -140,8 +155,9 @@ export default function CreateServicePage() {
   }
 
   const handleImageUpload = () => {
-    // Simulate image upload
-    const newImage = `/placeholder.svg?height=200&width=300&text=Service+Image+${uploadedImages.length + 1}`
+    // Simulate image upload with a real URL for testing
+    // TODO: Replace with actual image upload to your storage service
+    const newImage = `https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&h=300&fit=crop&q=80`
     setUploadedImages((prev) => [...prev, newImage])
   }
 
@@ -410,19 +426,65 @@ export default function CreateServicePage() {
             variant: "destructive",
           })
         }
-      } else {
-        // Use mock implementation for photography service
-        let transformedData
-        switch (serviceType) {
-          case 'photography':
-            transformedData = transformPhotographyData(formData)
-            break
-          default:
-            throw new Error('Invalid service type')
+      } else if (serviceType === 'photography') {
+        // Validate required fields for photography
+        if (uploadedImages.length === 0) {
+          toast({
+            title: "Validation Error",
+            description: "Please upload at least one image for your photography package.",
+            variant: "destructive",
+          })
+          return
         }
 
-        console.log("Creating service:", { serviceType, transformedData, uploadedImages })
-        await createService(transformedData)
+        if (!formData.price) {
+          toast({
+            title: "Validation Error",
+            description: "Please provide pricing for your photography package.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        if (!formData.duration) {
+          toast({
+            title: "Validation Error",
+            description: "Please provide duration in hours for your photography package.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        // Use GraphQL for photography package creation - EXACTLY like catering
+        // Backend schema is IDENTICAL to catering: imageUrl is REQUIRED ARRAY!
+        
+        // Filter out placeholder URLs and ensure we have an array
+        const validImages = uploadedImages.filter(img => !img.includes('placeholder.svg'));
+        
+        const photographyInput = {
+          packageName: formData.name,
+          description: formData.description || "Professional photography service",
+          price: parseFloat(formData.price) || 5000,
+          duration: parseInt(formData.duration) || 4, // hours
+          imageUrl: validImages.length > 0 ? validImages : ["https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400"], // REQUIRED ARRAY!
+          serviceArea: formData.serviceArea 
+            ? formData.serviceArea.split(',').map(item => item.trim()).filter(item => item.length > 0)
+            : ["Local"], // REQUIRED - default to "Local" if not provided
+          amenities: formData.features 
+            ? formData.features.split(',').map(item => item.trim()).filter(item => item.length > 0)
+            : ["Digital Photos"], // REQUIRED - default to basic amenity if not provided
+        };
+
+        console.log("📸 Creating photography package with GraphQL:", photographyInput)
+        const result = await createPhotographyPackage(photographyInput)
+        
+        if (result) {
+          toast({
+            title: "Success!",
+            description: "Photography package created successfully.",
+          })
+          router.push("/vendor/services")
+        }
       }
     } catch (err) {
       console.error("Failed to submit service:", err)
@@ -1061,6 +1123,231 @@ export default function CreateServicePage() {
               </Card>
             )}
 
+            {/* Photography-Specific Fields */}
+            {serviceType === "photography" && (
+              <Card className="border-orange-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="text-gray-900">Photography Details</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Provide specific details about your photography package
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="price" className="text-gray-700">
+                        Package Price ($) *
+                      </Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        placeholder="5000"
+                        value={formData.price}
+                        onChange={(e) => handleInputChange("price", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="duration" className="text-gray-700">
+                        Duration (Hours) *
+                      </Label>
+                      <Input
+                        id="duration"
+                        type="number"
+                        placeholder="4"
+                        value={formData.duration}
+                        onChange={(e) => handleInputChange("duration", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="deliveryTimeframe" className="text-gray-700">
+                        Delivery (Days) *
+                      </Label>
+                      <Input
+                        id="deliveryTimeframe"
+                        type="number"
+                        placeholder="30"
+                        value={formData.deliveryTimeframe}
+                        onChange={(e) => handleInputChange("deliveryTimeframe", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="shootingStyle" className="text-gray-700">
+                        Shooting Styles * (e.g., Candid, Traditional)
+                      </Label>
+                      <Input
+                        id="shootingStyle"
+                        placeholder="Candid, Traditional, Artistic (comma separated)"
+                        value={formData.shootingStyle}
+                        onChange={(e) => handleInputChange("shootingStyle", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="packageType" className="text-gray-700">
+                        Package Type * (e.g., Wedding, Corporate)
+                      </Label>
+                      <Input
+                        id="packageType"
+                        placeholder="Wedding, Engagement, Birthday, etc."
+                        value={formData.packageType}
+                        onChange={(e) => handleInputChange("packageType", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfPhotographers" className="text-gray-700">
+                        Number of Photographers *
+                      </Label>
+                      <Input
+                        id="numberOfPhotographers"
+                        type="number"
+                        placeholder="1"
+                        value={formData.numberOfPhotographers}
+                        onChange={(e) => handleInputChange("numberOfPhotographers", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfEditedPhotos" className="text-gray-700">
+                        Edited Photos *
+                      </Label>
+                      <Input
+                        id="numberOfEditedPhotos"
+                        type="number"
+                        placeholder="200"
+                        value={formData.numberOfEditedPhotos}
+                        onChange={(e) => handleInputChange("numberOfEditedPhotos", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfRawPhotos" className="text-gray-700">
+                        Raw Photos (Optional)
+                      </Label>
+                      <Input
+                        id="numberOfRawPhotos"
+                        type="number"
+                        placeholder="500"
+                        value={formData.numberOfRawPhotos}
+                        onChange={(e) => handleInputChange("numberOfRawPhotos", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="includesVideo"
+                          checked={formData.includesVideo}
+                          onCheckedChange={(checked) => handleInputChange("includesVideo", checked)}
+                          className="data-[state=checked]:bg-orange-600"
+                        />
+                        <Label htmlFor="includesVideo" className="text-gray-700">
+                          Includes Video
+                        </Label>
+                      </div>
+                    </div>
+                    {formData.includesVideo && (
+                      <div className="space-y-2">
+                        <Label htmlFor="videoDuration" className="text-gray-700">
+                          Video Duration (Minutes)
+                        </Label>
+                        <Input
+                          id="videoDuration"
+                          type="number"
+                          placeholder="60"
+                          value={formData.videoDuration}
+                          onChange={(e) => handleInputChange("videoDuration", e.target.value)}
+                          className="border-orange-200 focus:border-orange-400"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="equipment" className="text-gray-700">
+                      Equipment
+                    </Label>
+                    <Textarea
+                      id="equipment"
+                      placeholder="DSLR, Drone, Lighting, Lenses (comma separated)"
+                      rows={2}
+                      value={formData.equipment}
+                      onChange={(e) => handleInputChange("equipment", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="location" className="text-gray-700">
+                        Service Locations
+                      </Label>
+                      <Input
+                        id="location"
+                        placeholder="Studio, Outdoor, Indoor (comma separated)"
+                        value={formData.location}
+                        onChange={(e) => handleInputChange("location", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="travelCharges" className="text-gray-700">
+                        Travel Charges ($)
+                      </Label>
+                      <Input
+                        id="travelCharges"
+                        type="number"
+                        placeholder="500"
+                        value={formData.travelCharges}
+                        onChange={(e) => handleInputChange("travelCharges", e.target.value)}
+                        className="border-orange-200 focus:border-orange-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="features" className="text-gray-700">
+                      Package Features
+                    </Label>
+                    <Textarea
+                      id="features"
+                      placeholder="Album, Prints, Digital Copies, Online Gallery (comma separated)"
+                      rows={2}
+                      value={formData.features}
+                      onChange={(e) => handleInputChange("features", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="cancellationPolicy" className="text-gray-700">
+                      Cancellation Policy
+                    </Label>
+                    <Textarea
+                      id="cancellationPolicy"
+                      placeholder="Describe your cancellation and refund policy"
+                      rows={3}
+                      value={formData.cancellationPolicy}
+                      onChange={(e) => handleInputChange("cancellationPolicy", e.target.value)}
+                      className="border-orange-200 focus:border-orange-400"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Image Upload */}
             <Card className="border-orange-200 bg-white">
               <CardHeader>
@@ -1182,19 +1469,19 @@ export default function CreateServicePage() {
                 )}
                 <Button 
                   onClick={() => {
-                    console.log('🎯 BUTTON CLICKED!', { serviceType, loading: { isLoading, cateringLoading, farmhouseLoading, venueLoading } })
+                    console.log('🎯 BUTTON CLICKED!', { serviceType, loading: { isLoading, cateringLoading, farmhouseLoading, venueLoading, photographyLoading } })
                     handleSubmit()
                   }} 
-                  disabled={isLoading || cateringLoading || farmhouseLoading || venueLoading}
+                  disabled={isLoading || cateringLoading || farmhouseLoading || venueLoading || photographyLoading}
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:opacity-50"
                   type="button"
                 >
-                  {(isLoading || cateringLoading || farmhouseLoading || venueLoading) ? "Creating..." : "Create Service"}
+                  {(isLoading || cateringLoading || farmhouseLoading || venueLoading || photographyLoading) ? "Creating..." : "Create Service"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/vendor/services")}
-                  disabled={isLoading || cateringLoading || farmhouseLoading || venueLoading}
+                  disabled={isLoading || cateringLoading || farmhouseLoading || venueLoading || photographyLoading}
                   className="w-full border-orange-200 text-orange-700 hover:bg-orange-50"
                 >
                   Cancel

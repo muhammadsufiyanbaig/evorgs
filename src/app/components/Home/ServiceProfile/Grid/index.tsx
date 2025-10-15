@@ -5,7 +5,7 @@ import RightSection from '../RIghtSection/Index'
 interface GridProps {
   serviceId?: string;
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | 'photography' | null;
 }
 
 const Grid = ({ serviceId, serviceData, serviceType }: GridProps) => {

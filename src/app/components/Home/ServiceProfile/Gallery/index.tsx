@@ -44,17 +44,21 @@ const renderStars = (rating: number) => {
 
 interface GalleryProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | 'photography' | null;
 }
 
 const Gallery = ({ serviceData, serviceType }: GalleryProps) => {
   // Extract data based on service type
   const serviceName = serviceType === 'farmhouse' 
     ? serviceData?.farmHouseName 
-    : serviceData?.packageName || 'Service Name';
+    : serviceType === 'photography'
+    ? serviceData?.packageName
+    : serviceData?.packageName || serviceData?.name || 'Service Name';
   
   const location = serviceType === 'farmhouse'
     ? `${serviceData?.address}, ${serviceData?.city}${serviceData?.state ? ', ' + serviceData?.state : ''}`
+    : serviceType === 'photography'
+    ? serviceData?.location || 'Various Locations'
     : serviceData?.location || 'Location';
   
   const rating = serviceData?.rating || 4.0;
@@ -63,11 +67,13 @@ const Gallery = ({ serviceData, serviceType }: GalleryProps) => {
     : (serviceData?.price || 0);
   
   const images = serviceData?.images || [];
-  const vendorName = serviceData?.vendorId?.name || serviceData?.vendor?.name || 'Vendor';
+  const vendorName = serviceData?.vendorId?.name || serviceData?.vendor?.vendorName || serviceData?.vendor?.name || 'Vendor';
   const reviewCount = serviceData?.reviewCount || 0;
   
   const priceLabel = serviceType === 'farmhouse' 
     ? (serviceData?.perNightPrice ? 'night' : 'day')
+    : serviceType === 'photography'
+    ? `${serviceData?.duration || 1} hour${serviceData?.duration > 1 ? 's' : ''}`
     : 'package';
   const handleShare = () => {
     const url = window.location.href; // Get the current page URL

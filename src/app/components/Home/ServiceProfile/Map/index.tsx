@@ -1,6 +1,6 @@
 interface MapProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | 'photography' | null;
 }
 
 export default function Map({ serviceData, serviceType }: MapProps) {

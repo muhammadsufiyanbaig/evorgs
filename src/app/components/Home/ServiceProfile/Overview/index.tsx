@@ -4,20 +4,28 @@ import React from "react";
 
 interface OverviewProps {
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | 'photography' | null;
 }
 
 const Overview = ({ serviceData, serviceType }: OverviewProps) => {
   const description = serviceType === 'farmhouse'
     ? serviceData?.description || 'Beautiful farmhouse property with amazing amenities.'
+    : serviceType === 'photography'
+    ? serviceData?.description || 'Professional photography service with creative excellence.'
     : serviceData?.description || serviceData?.packageDescription || 'Premium service package with excellent features.';
   
   const rating = serviceData?.rating || 4.0;
   const reviewCount = serviceData?.reviewCount || 0;
   
+  const serviceLabel = 
+    serviceType === 'farmhouse' ? 'Farmhouse' :
+    serviceType === 'photography' ? 'Photography' :
+    serviceType === 'venue' ? 'Venue' :
+    'Catering';
+  
   const cardDetails = [
     { rating: rating, label: rating >= 4.5 ? 'Excellent' : rating >= 4.0 ? 'Very Good' : 'Good', reviews: true },
-    { icon: <Stars height={30} width={30} color="#C2410C" />, label: serviceType === 'farmhouse' ? 'Farmhouse' : 'Catering' },
+    { icon: <Stars height={30} width={30} color="#C2410C" />, label: serviceLabel },
     {
       icon: <Stars height={30} width={30} color="#C2410C" />,
       label: serviceData?.isActive ? "Available" : "Unavailable",

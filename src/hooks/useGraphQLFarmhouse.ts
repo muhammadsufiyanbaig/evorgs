@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client/react';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -134,6 +134,30 @@ export const useGraphQLFarmhouse = (): UseGraphQLFarmhouseReturn => {
   const [getFarmhouseAvailabilityQuery, { loading: getFarmhouseAvailabilityLoading, data: availabilityData }] = useLazyQuery(GET_FARMHOUSE_AVAILABILITY);
   const [getFarmhousesByAmenitiesQuery, { loading: getFarmhousesByAmenitiesLoading, data: amenitiesFarmhousesData }] = useLazyQuery(GET_FARMHOUSES_BY_AMENITIES);
   const [getFarmhousesByActivitiesQuery, { loading: getFarmhousesByActivitiesLoading, data: activitiesFarmhousesData }] = useLazyQuery(GET_FARMHOUSES_BY_ACTIVITIES);
+
+  // ============== SYNC QUERY DATA TO STATE ==============
+  
+  // Update currentData when vendor farmhouses are fetched
+  useEffect(() => {
+    if (vendorFarmhousesData) {
+      console.log('🏡 Farmhouse vendor data updated:', vendorFarmhousesData);
+      setCurrentData(vendorFarmhousesData);
+    }
+  }, [vendorFarmhousesData]);
+  
+  // Update currentData for other queries
+  useEffect(() => {
+    if (farmhousesData) setCurrentData(farmhousesData);
+    else if (farmhouseData) setCurrentData(farmhouseData);
+    else if (searchFarmhousesData) setCurrentData(searchFarmhousesData);
+    else if (locationFarmhousesData) setCurrentData(locationFarmhousesData);
+    else if (coordinatesFarmhousesData) setCurrentData(coordinatesFarmhousesData);
+    else if (featuredFarmhousesData) setCurrentData(featuredFarmhousesData);
+    else if (popularFarmhousesData) setCurrentData(popularFarmhousesData);
+    else if (availabilityData) setCurrentData(availabilityData);
+    else if (amenitiesFarmhousesData) setCurrentData(amenitiesFarmhousesData);
+    else if (activitiesFarmhousesData) setCurrentData(activitiesFarmhousesData);
+  }, [farmhousesData, farmhouseData, searchFarmhousesData, locationFarmhousesData, coordinatesFarmhousesData, featuredFarmhousesData, popularFarmhousesData, availabilityData, amenitiesFarmhousesData, activitiesFarmhousesData]);
 
   // ============== MUTATIONS ==============
   

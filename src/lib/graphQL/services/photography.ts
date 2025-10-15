@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 
 // ============== FRAGMENTS ==============
 
+// Simplified fragment matching actual backend schema
 export const PHOTOGRAPHY_PACKAGE_FRAGMENT = gql`
   fragment PhotographyPackageFragment on PhotographyPackage {
     id
@@ -12,38 +13,11 @@ export const PHOTOGRAPHY_PACKAGE_FRAGMENT = gql`
     description
     price
     duration
-    shootingStyle
-    packageType
-    deliveryTimeframe
-    numberOfPhotographers
-    numberOfEditedPhotos
-    numberOfRawPhotos
-    includesVideo
-    videoDuration
-    equipment
-    location
-    travelCharges
-    cancellationPolicy
-    features
-    images
-    portfolio
+    imageUrl
     rating
     reviewCount
-    availabilityStatus
-    isActive
     createdAt
     updatedAt
-    vendor {
-      id
-      vendorName
-      vendorEmail
-      vendorPhone
-      vendorAddress
-      vendorType
-      vendorStatus
-      rating
-      reviewCount
-    }
   }
 `;
 
@@ -55,21 +29,9 @@ export const PHOTOGRAPHY_PACKAGE_SUMMARY_FRAGMENT = gql`
     description
     price
     duration
-    shootingStyle
-    packageType
-    numberOfPhotographers
-    numberOfEditedPhotos
-    includesVideo
+    imageUrl
     rating
     reviewCount
-    images
-    availabilityStatus
-    vendor {
-      id
-      vendorName
-      vendorAddress
-      rating
-    }
   }
 `;
 
@@ -234,7 +196,7 @@ export const GET_PHOTOGRAPHER_PORTFOLIO = gql`
 export const CREATE_PHOTOGRAPHY_PACKAGE = gql`
   ${PHOTOGRAPHY_PACKAGE_FRAGMENT}
   mutation CreatePhotographyPackage($input: CreatePhotographyPackageInput!) {
-    createPhotographyPackage(input: $input) {
+    createPhotographPackage(input: $input) {
       ...PhotographyPackageFragment
     }
   }
@@ -244,7 +206,7 @@ export const CREATE_PHOTOGRAPHY_PACKAGE = gql`
 export const UPDATE_PHOTOGRAPHY_PACKAGE = gql`
   ${PHOTOGRAPHY_PACKAGE_FRAGMENT}
   mutation UpdatePhotographyPackage($id: ID!, $input: UpdatePhotographyPackageInput!) {
-    updatePhotographyPackage(id: $id, input: $input) {
+    updatePhotographPackage(id: $id, input: $input) {
       ...PhotographyPackageFragment
     }
   }
@@ -253,7 +215,7 @@ export const UPDATE_PHOTOGRAPHY_PACKAGE = gql`
 // Delete photography package (vendor only)
 export const DELETE_PHOTOGRAPHY_PACKAGE = gql`
   mutation DeletePhotographyPackage($id: ID!) {
-    deletePhotographyPackage(id: $id) {
+    deletePhotographPackage(id: $id) {
       success
       message
     }
@@ -264,7 +226,7 @@ export const DELETE_PHOTOGRAPHY_PACKAGE = gql`
 export const TOGGLE_PHOTOGRAPHY_PACKAGE_STATUS = gql`
   ${PHOTOGRAPHY_PACKAGE_FRAGMENT}
   mutation TogglePhotographyPackageStatus($id: ID!) {
-    togglePhotographyPackageStatus(id: $id) {
+    togglePhotographPackageStatus(id: $id) {
       ...PhotographyPackageFragment
     }
   }
@@ -273,9 +235,9 @@ export const TOGGLE_PHOTOGRAPHY_PACKAGE_STATUS = gql`
 // Upload photography package images (vendor only)
 export const UPLOAD_PHOTOGRAPHY_PACKAGE_IMAGES = gql`
   mutation UploadPhotographyPackageImages($packageId: ID!, $images: [Upload!]!) {
-    uploadPhotographyPackageImages(packageId: $packageId, images: $images) {
+    uploadPhotographPackageImages(packageId: $packageId, images: $images) {
       id
-      images
+      imageUrl
     }
   }
 `;
@@ -285,7 +247,7 @@ export const UPLOAD_PORTFOLIO_IMAGES = gql`
   mutation UploadPortfolioImages($packageId: ID!, $portfolio: [Upload!]!) {
     uploadPortfolioImages(packageId: $packageId, portfolio: $portfolio) {
       id
-      portfolio
+      imageUrl
     }
   }
 `;
@@ -412,6 +374,7 @@ export const RESPOND_TO_PHOTOGRAPHY_QUOTE = gql`
 
 // ============== TYPESCRIPT INTERFACES ==============
 
+// Simplified interface matching actual backend schema
 export interface PhotographyPackage {
   id: string;
   vendorId: string;
@@ -419,70 +382,34 @@ export interface PhotographyPackage {
   description?: string;
   price: number;
   duration: number; // in hours
-  shootingStyle: ShootingStyle[];
-  packageType: PackageType;
-  deliveryTimeframe: number; // in days
-  numberOfPhotographers: number;
-  numberOfEditedPhotos: number;
-  numberOfRawPhotos?: number;
-  includesVideo: boolean;
-  videoDuration?: number; // in minutes
-  equipment?: string[];
-  location?: Location[];
-  travelCharges?: number;
-  cancellationPolicy?: string;
-  features?: string[];
-  images?: string[];
-  portfolio?: string[];
+  imageUrl?: string;
   rating?: number;
   reviewCount?: number;
-  availabilityStatus: AvailabilityStatus;
-  isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  vendor?: Vendor;
-  reviews?: Review[];
-  distance?: number;
+  distance?: number; // For location-based queries
 }
 
+// Interface matching actual backend schema (EXACTLY like catering)
 export interface CreatePhotographyPackageInput {
   packageName: string;
   description?: string;
   price: number;
   duration: number;
-  shootingStyle: ShootingStyle[];
-  packageType: PackageType;
-  deliveryTimeframe: number;
-  numberOfPhotographers: number;
-  numberOfEditedPhotos: number;
-  numberOfRawPhotos?: number;
-  includesVideo?: boolean;
-  videoDuration?: number;
-  equipment?: string[];
-  location?: Location[];
-  travelCharges?: number;
-  cancellationPolicy?: string;
-  features?: string[];
+  imageUrl: string[]; // REQUIRED - array of image URLs (just like catering!)
+  serviceArea: string[]; // REQUIRED - array of service areas
+  amenities: string[]; // REQUIRED - array of amenities/features
 }
 
+// Interface matching actual backend schema (similar to catering)
 export interface UpdatePhotographyPackageInput {
   packageName?: string;
   description?: string;
   price?: number;
   duration?: number;
-  shootingStyle?: ShootingStyle[];
-  packageType?: PackageType;
-  deliveryTimeframe?: number;
-  numberOfPhotographers?: number;
-  numberOfEditedPhotos?: number;
-  numberOfRawPhotos?: number;
-  includesVideo?: boolean;
-  videoDuration?: number;
-  equipment?: string[];
-  location?: Location[];
-  travelCharges?: number;
-  cancellationPolicy?: string;
-  features?: string[];
+  imageUrl?: string;
+  serviceArea?: string[];
+  amenities?: string[];
 }
 
 export interface PhotographyPackageFiltersInput {

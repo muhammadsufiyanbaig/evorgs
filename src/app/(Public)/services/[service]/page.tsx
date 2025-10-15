@@ -6,17 +6,19 @@ import ServiceProfileComponent from "@/app/components/Home/ServiceProfile";
 import { useUserCatering } from '@/hooks/useGraphQLServices';
 import { useUserFarmhouse } from '@/hooks/useGraphQLFarmhouse';
 import { useUserVenue } from '@/hooks/useGraphQLVenue';
+import { useUserPhotography } from '@/hooks/useGraphQLPhotography';
 
 const ServiceProfile = () => {
   const params = useParams();
   const serviceId = params.service as string;
   
-  const [serviceType, setServiceType] = useState<'catering' | 'farmhouse' | 'venue' | null>(null);
+  const [serviceType, setServiceType] = useState<'catering' | 'farmhouse' | 'venue' | 'photography' | null>(null);
   const [error, setError] = useState<string | null>(null);
   
   const { getCateringPackage, loading: cateringLoading, data: cateringData } = useUserCatering();
   const { getFarmhouse, loading: farmhouseLoading, data: farmhouseData } = useUserFarmhouse();
   const { getVenue, loading: venueLoading, data: venueData } = useUserVenue();
+  const { getPhotographyPackage, loading: photographyLoading, data: photographyData } = useUserPhotography();
   
   useEffect(() => {
     if (!serviceId) return;
@@ -33,16 +35,25 @@ const ServiceProfile = () => {
           if (vData?.venue) {
             setServiceType('venue');
           } else {
-            // Try farmhouse
-            getFarmhouse(serviceId);
+            // Try photography
+            getPhotographyPackage(serviceId);
             setTimeout(() => {
-              const fData = farmhouseData as any;
-              if (fData?.farmhouse) {
-                setServiceType('farmhouse');
+              const pData = photographyData as any;
+              if (pData?.photographyPackage) {
+                setServiceType('photography');
               } else {
-                // Try catering as last option
-                getCateringPackage(serviceId);
-                setServiceType('catering');
+                // Try farmhouse
+                getFarmhouse(serviceId);
+                setTimeout(() => {
+                  const fData = farmhouseData as any;
+                  if (fData?.farmhouse) {
+                    setServiceType('farmhouse');
+                  } else {
+                    // Try catering as last option
+                    getCateringPackage(serviceId);
+                    setServiceType('catering');
+                  }
+                }, 300);
               }
             }, 300);
           }
@@ -52,12 +63,17 @@ const ServiceProfile = () => {
         console.error('Error loading service:', err);
         // Try fallbacks
         try {
-          await getFarmhouse(serviceId);
-          if (farmhouseData?.farmhouse) {
-            setServiceType('farmhouse');
+          await getPhotographyPackage(serviceId);
+          if (photographyData?.photographyPackage) {
+            setServiceType('photography');
           } else {
-            await getCateringPackage(serviceId);
-            setServiceType('catering');
+            await getFarmhouse(serviceId);
+            if (farmhouseData?.farmhouse) {
+              setServiceType('farmhouse');
+            } else {
+              await getCateringPackage(serviceId);
+              setServiceType('catering');
+            }
           }
         } catch (fallbackErr) {
           setError('Service not found');
@@ -71,10 +87,11 @@ const ServiceProfile = () => {
   // Determine which data to use
   const serviceData = 
     serviceType === 'venue' ? (venueData as any)?.venue :
+    serviceType === 'photography' ? (photographyData as any)?.photographyPackage :
     serviceType === 'farmhouse' ? (farmhouseData as any)?.farmhouse : 
     (cateringData as any)?.cateringPackage;
   
-  const loading = cateringLoading || farmhouseLoading || venueLoading;
+  const loading = cateringLoading || farmhouseLoading || venueLoading || photographyLoading;
   
   if (loading && !serviceData) {
     return (

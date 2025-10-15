@@ -10,7 +10,7 @@ import Grid from "./Grid";
 interface ServiceProfileProps {
   serviceId?: string;
   serviceData?: any;
-  serviceType?: 'catering' | 'farmhouse' | 'venue' | null;
+  serviceType?: 'catering' | 'farmhouse' | 'venue' | 'photography' | null;
 }
 
 const Details = ({ serviceId, serviceData, serviceType }: ServiceProfileProps) => {
