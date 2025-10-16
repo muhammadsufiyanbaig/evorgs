@@ -144,7 +144,14 @@ export const useGraphQLServices = (): UseGraphQLServicesReturn => {
     pagination?: PaginationInput,
     sortBy?: CateringPackageSortInput
   ) => {
-    getCateringPackagesQuery({ variables: { filters, pagination, sortBy } });
+    // Backend uses searchCateringPackages with empty string to get all
+    getCateringPackagesQuery({ 
+      variables: { 
+        searchTerm: "",
+        limit: pagination?.limit || 20,
+        skip: pagination?.page ? (pagination.page - 1) * (pagination.limit || 20) : 0
+      } 
+    });
   }, [getCateringPackagesQuery]);
 
   const getCateringPackage = useCallback((id: string) => {
@@ -156,7 +163,13 @@ export const useGraphQLServices = (): UseGraphQLServicesReturn => {
     filters?: CateringPackageFiltersInput,
     pagination?: PaginationInput
   ) => {
-    searchPackagesQuery({ variables: { searchTerm, filters, pagination } });
+    searchPackagesQuery({ 
+      variables: { 
+        searchTerm,
+        limit: pagination?.limit || 20,
+        skip: pagination?.page ? (pagination.page - 1) * (pagination.limit || 20) : 0
+      } 
+    });
   }, [searchPackagesQuery]);
 
   const getCateringPackagesByLocation = useCallback((

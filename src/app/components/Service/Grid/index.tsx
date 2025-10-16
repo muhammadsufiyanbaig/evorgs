@@ -7,9 +7,7 @@ import { useMemo, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Service } from "../../Service"
-import { useUserCatering } from "@/hooks/useGraphQLServices"
-import { useUserFarmhouse } from "@/hooks/useGraphQLFarmhouse"
-import { useUserVenue } from "@/hooks/useGraphQLVenue"
+import { useAllCateringPackages, useAllFarmhouses, useAllVenues, useAllPhotography } from "@/hooks/useAllServices"
 
 type Category = keyof typeof categoryConfig;
 
@@ -51,159 +49,80 @@ interface GridProps {
 const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) => {
   const [likedServices, setLikedServices] = useState<Set<string>>(new Set())
   
-  // GraphQL Hook Integration for Catering
-  const { getCateringPackages, searchCateringPackages, loading: cateringLoading, data: cateringData } = useUserCatering()
-  const [cateringPackages, setCateringPackages] = useState<any[]>([])
+  // Simplified GraphQL Hook Integration - matches backend schema
+  const catering = useAllCateringPackages()
+  const farmhouse = useAllFarmhouses()
+  const venue = useAllVenues()
+  const photography = useAllPhotography()
 
-  // GraphQL Hook Integration for Farmhouse
-  const { getFarmhouses, searchFarmhouses, getFeaturedFarmhouses, loading: farmhouseLoading, data: farmhouseData } = useUserFarmhouse()
-  const [farmhouses, setFarmhouses] = useState<any[]>([])
-
-  // GraphQL Hook Integration for Venue
-  const { getVenues, searchVenues, getFeaturedVenues, loading: venueLoading, data: venueData } = useUserVenue()
-  const [venues, setVenues] = useState<any[]>([])
-
-  // Load catering packages on component mount or when category changes
+  // Load data on component mount or when category changes
   useEffect(() => {
+    console.log('🔄 Loading services for category:', selectedCategory)
+    
     if (selectedCategory === 'catering' || selectedCategory === '' || selectedCategory === 'all') {
-      console.log('🔄 Loading catering packages...')
-      
-      // If there's a search query, use search, otherwise get all packages
-      if (searchQuery && searchQuery.trim() !== '') {
-        searchCateringPackages(
-          searchQuery,
-          { isActive: true },
-          { page: 1, limit: 20 }
-        )
-      } else {
-        getCateringPackages(
-          { isActive: true },
-          { page: 1, limit: 20 },
-          { field: 'rating', direction: 'DESC' }
-        )
-      }
+      catering.refetch()
     }
-  }, [selectedCategory, searchQuery])
-
-  // Load farmhouses on component mount or when category changes
-  useEffect(() => {
     if (selectedCategory === 'farmhouse' || selectedCategory === '' || selectedCategory === 'all') {
-      console.log('🏡 Loading farmhouses...')
-      
-      // If there's a search query, use search, otherwise get all/featured
-      if (searchQuery && searchQuery.trim() !== '') {
-        searchFarmhouses(
-          searchQuery,
-          {},
-          { page: 1, limit: 20 }
-        )
-      } else {
-        getFarmhouses(
-          {},
-          { page: 1, limit: 20 },
-          { field: 'rating', direction: 'DESC' }
-        )
-      }
+      farmhouse.refetch()
     }
-  }, [selectedCategory, searchQuery, selectedLocation])
-
-  // Load venues on component mount or when category changes
-  useEffect(() => {
     if (selectedCategory === 'venue' || selectedCategory === '' || selectedCategory === 'all') {
-      console.log('🏛️ Loading venues...')
-      
-      // If there's a search query, use search, otherwise get all/featured
-      if (searchQuery && searchQuery.trim() !== '') {
-        searchVenues(
-          searchQuery,
-          {},
-          { page: 1, limit: 20 }
-        )
-      } else {
-        getVenues(
-          {},
-          { page: 1, limit: 20 },
-          { field: 'rating', direction: 'DESC' }
-        )
-      }
+      venue.refetch()
     }
-  }, [selectedCategory, searchQuery, selectedLocation])
-
-  // Update local state when GraphQL data changes
-  useEffect(() => {
-    if (cateringData?.packages) {
-      console.log('✅ Catering packages loaded:', cateringData.packages.length)
-      setCateringPackages(cateringData.packages)
+    if (selectedCategory === 'photography' || selectedCategory === '' || selectedCategory === 'all') {
+      photography.refetch()
     }
-  }, [cateringData])
+  }, [selectedCategory])
 
-  // Update farmhouse local state when GraphQL data changes
-  useEffect(() => {
-    if (farmhouseData?.farmHouses) {
-      console.log('✅ Farmhouses loaded:', farmhouseData.farmHouses.length)
-      setFarmhouses(farmhouseData.farmHouses)
-    } else if (farmhouseData?.vendorFarmHouses) {
-      console.log('✅ Vendor farmhouses loaded:', farmhouseData.vendorFarmHouses.length)
-      setFarmhouses(farmhouseData.vendorFarmHouses)
-    }
-  }, [farmhouseData])
-
-  // Update venue local state when GraphQL data changes
-  useEffect(() => {
-    const data = venueData as any;
-    if (data?.venues?.venues) {
-      console.log('✅ Venues loaded:', data.venues.venues.length)
-      setVenues(data.venues.venues)
-    } else if (data?.venue) {
-      console.log('✅ Single venue loaded')
-      setVenues([data.venue])
-    }
-  }, [venueData])
-
-  // Convert GraphQL catering packages to Service format
+    // Convert GraphQL catering packages to Service format
   const cateringServices: (Service & { category: Category })[] = useMemo(() => {
-    return cateringPackages.map((pkg: any) => ({
+    return catering.packages.map((pkg: any) => ({
       id: pkg.id,
       name: pkg.packageName,
       location: pkg.vendor?.vendorAddress || 'Location not specified',
       rating: pkg.rating || 0,
-      price: pkg.price || pkg.pricePerPerson || 0,
-      imageUrl: pkg.imageUrl?.[0] || pkg.images?.[0] || '/placeholder.svg',
-      category: 'catering' as Category,
-      description: pkg.description || 'Delicious catering package',
+      price: pkg.price || 0,
+      guests: `${pkg.minGuests}-${pkg.maxGuests} guests`,
+      imageUrl: pkg.imageUrl?.[0] || "/placeholder.jpg",
+      category: "catering" as Category,
+      badge: "",
+      description: pkg.description || "Delicious catering package",
       reviews: pkg.reviewCount || 0,
     }))
-  }, [cateringPackages])
+  }, [catering.packages])
 
   // Convert GraphQL farmhouses to Service format
   const farmhouseServices: (Service & { category: Category })[] = useMemo(() => {
-    return farmhouses.map((farmhouse: any) => ({
+    return farmhouse.farmhouses.map((farmhouse: any) => ({
       id: farmhouse.id,
-      name: farmhouse.farmHouseName,
-      location: `${farmhouse.address}, ${farmhouse.city}${farmhouse.state ? ', ' + farmhouse.state : ''}`,
+      name: farmhouse.farmHouseName || farmhouse.name,
+      location: farmhouse.location || 'Location not specified',
       rating: farmhouse.rating || 0,
-      price: farmhouse.perNightPrice || farmhouse.perDayPrice || 0,
-      imageUrl: farmhouse.images?.[0] || '/placeholder.svg',
-      category: 'farmhouse' as Category,
-      description: farmhouse.description || `Beautiful ${farmhouse.farmHouseType} with ${farmhouse.numberOfRooms} rooms`,
+      price: farmhouse.perNightPrice || farmhouse.price || 0,
+      guests: farmhouse.capacity ? `Up to ${farmhouse.capacity} guests` : 'Contact for capacity',
+      imageUrl: farmhouse.imageUrl?.[0] || "/placeholder.jpg",
+      category: "farmhouse" as Category,
+      badge: "",
+      description: farmhouse.description || "Beautiful farmhouse",
       reviews: farmhouse.reviewCount || 0,
     }))
-  }, [farmhouses])
+  }, [farmhouse.farmhouses])
 
   // Convert GraphQL venues to Service format
   const venueServices: (Service & { category: Category })[] = useMemo(() => {
-    return venues.map((venue: any) => ({
+    return venue.venues.map((venue: any) => ({
       id: venue.id,
-      name: venue.venueName,
-      location: `${venue.address}, ${venue.city}${venue.state ? ', ' + venue.state : ''}`,
+      name: venue.venueName || venue.name,
+      location: venue.location || 'Location not specified',
       rating: venue.rating || 0,
-      price: venue.pricePerHour || venue.pricePerDay || venue.pricePerEvent || 0,
-      imageUrl: venue.images?.[0] || '/placeholder.svg',
-      category: 'venue' as Category,
-      description: venue.description || `${venue.venueType} venue with capacity of ${venue.capacity} guests`,
+      price: venue.price || 0,
+      guests: venue.capacity ? `Up to ${venue.capacity} guests` : 'Contact for capacity',
+      imageUrl: venue.imageUrl?.[0] || "/placeholder.jpg",
+      category: "venue" as Category,
+      badge: "",
+      description: venue.description || "Beautiful venue",
       reviews: venue.reviewCount || 0,
     }))
-  }, [venues])
+  }, [venue.venues])
 
   const toggleLike = (serviceId: string) => {
     setLikedServices((prev) => {
@@ -225,7 +144,7 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
   }, [cateringServices, farmhouseServices, venueServices])
 
   // Combined loading state
-  const loading = cateringLoading || farmhouseLoading || venueLoading
+  const loading = catering.loading || farmhouse.loading || venue.loading || photography.loading
 
   const filteredServices = useMemo(() => {
     return allServices.filter((service) => {
@@ -244,7 +163,7 @@ const Grid = ({ selectedCategory, searchQuery, selectedLocation }: GridProps) =>
   }, [allServices, selectedCategory, searchQuery, selectedLocation])
 
   // Show loading state
-  if (loading && cateringPackages.length === 0 && farmhouses.length === 0 && venues.length === 0) {
+  if (loading && catering.packages.length === 0 && farmhouse.farmhouses.length === 0 && venue.venues.length === 0) {
     return (
       <div className="w-full">
         <div className="flex justify-center items-center py-20">

@@ -89,7 +89,8 @@ const ServiceProfile = () => {
     serviceType === 'venue' ? (venueData as any)?.venue :
     serviceType === 'photography' ? (photographyData as any)?.photographyPackage :
     serviceType === 'farmhouse' ? (farmhouseData as any)?.farmhouse : 
-    (cateringData as any)?.cateringPackage;
+    serviceType === 'catering' ? (cateringData as any)?.cateringPackage : 
+    null;
   
   const loading = cateringLoading || farmhouseLoading || venueLoading || photographyLoading;
   

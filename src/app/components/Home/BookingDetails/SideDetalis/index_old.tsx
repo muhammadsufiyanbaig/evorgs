@@ -39,6 +39,8 @@ export default function SideDetails({
 }: SideDetailsProps) {
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState("full");
+  const [selectedCard, setSelectedCard] = useState("card1");
+  const [showCardSection, setShowCardSection] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // Booking form state
@@ -64,6 +66,7 @@ export default function SideDetails({
           const user = parsed?.state?.user;
           if (token && user) {
             setIsAuthenticated(true);
+            setShowCardSection(true);
           }
         }
       }
@@ -85,6 +88,14 @@ export default function SideDetails({
     }
 
     try {
+      const baseInput = {
+        serviceId: serviceId,
+        eventDate: bookingDetails.eventDate,
+        eventTime: bookingDetails.eventTime || "10:00",
+        eventLocation: bookingDetails.eventLocation || serviceData?.location || serviceData?.address || "TBD",
+        specialRequests: bookingDetails.specialRequests,
+      };
+
       let result;
 
       if (serviceType === 'venue') {
@@ -312,7 +323,6 @@ export default function SideDetails({
 
       {/* Payment Options */}
       <div className="flex flex-col gap-y-3 rounded-xl bg-white p-4 text-sm leading-normal drop-shadow-lg">
-        <h3 className="font-bold text-base">Payment Options</h3>
         <RadioGroup value={selectedOption} onValueChange={setSelectedOption}>
           <div
             className={`flex flex-row items-center justify-between gap-4 rounded-xl p-4 cursor-pointer ${
@@ -343,10 +353,12 @@ export default function SideDetails({
           >
             <div className="flex-grow">
               <Label htmlFor="partial" className="font-bold">
-                Pay advance (30%)
+                Pay part now, part later
               </Label>
               <p className="mt-2">
-                Pay 30% advance now, and the rest will be paid later before the event
+                Pay $207.43 now, and the rest ($207.43) will be automatically
+                charged to the same payment method on Nov 14, 2022. No extra
+                fees.
               </p>
             </div>
             <div className="w-6 h-6 flex items-center justify-center">
@@ -354,80 +366,89 @@ export default function SideDetails({
             </div>
           </div>
         </RadioGroup>
-        <div className="text-xs underline font-medium mt-2 cursor-pointer">More info</div>
+        <div className="text-xs underline font-medium mt-2">More info</div>
       </div>
 
       {/* Login section */}
-      {!isAuthenticated && (
+      {!showCardSection && (
         <div className="">
           <div className="flex flex-col gap-4 rounded-xl bg-white p-4 md:p-6 drop-shadow-lg">
             <div className="text-xl font-bold">Login or Sign up to book</div>
             <Input
               placeholder="Phone Number"
-              value={bookingDetails.phoneNumber}
-              onChange={(e) => setBookingDetails({...bookingDetails, phoneNumber: e.target.value})}
               className="py-3 shadow-none border-black"
             />
             <p className="text-xs">
-              We'll call or text you to confirm your number. Standard message and
+              We’ll call or text you to confirm your number. Standard message and
               data rates apply.{" "}
               <span className="font-medium underline">Privacy Policy</span>
             </p>
             <button
-              className="w-full py-3 text-center text-white bg-orange-700 rounded hover:bg-orange-800"
-              onClick={() => router.push(`/login?redirect=/services/${serviceId}/book`)}
+              className="w-full py-3 text-center text-white bg-orange-700 rounded"
+              onClick={() => setShowCardSection(true)}
             >
-              Continue to Login
+              Continue
             </button>
             <div className="flex items-center justify-center gap-x-2 text-sm">
               <span className="font-medium">Or</span>
             </div>
             <div className="flex gap-2">
-              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded hover:bg-orange-50">
+              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded">
                 <Facebook color="#4267B2" width="20px" height="20px" />
               </button>
-              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded hover:bg-orange-50">
+              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded">
                 <Google width={25} height={25} />
               </button>
-              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded hover:bg-orange-50">
+              <button className="flex items-center justify-center flex-1 border border-orange-700 py-2 rounded">
                 <Apple width={20} height={20} />
               </button>
             </div>
-            <button 
-              className="flex items-center justify-center gap-x-2 border border-orange-700 py-2 rounded mt-4 w-full hover:bg-orange-50"
-              onClick={() => router.push(`/register?redirect=/services/${serviceId}/book`)}
-            >
+            <button className="flex items-center justify-center gap-x-2 border border-orange-700 py-2 rounded mt-4 w-full">
               <Email color="#000000" />
-              <span>Sign up with email</span>
+              <span>Continue with email</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Booking Confirmation Section */}
-      {isAuthenticated && (
+      {/* Card Section */}
+      {showCardSection && (
         <div>
           <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-lg">
-            <div className="text-xl font-bold mb-2">Confirm Your Booking</div>
-            <p className="text-sm text-gray-600">
-              Review your booking details above and click below to confirm
-            </p>
-            
-            <button
-              className={`w-full py-3 text-center text-white rounded font-semibold ${
-                loading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-orange-700 hover:bg-orange-800'
+            {/* Card 1 */}
+            <div
+              className={`flex items-center justify-between gap-4 p-4 rounded-lg cursor-pointer ${
+                selectedCard === "card1"
+                  ? "bg-orange-700 text-white"
+                  : "bg-gray-100"
               }`}
-              onClick={handleBookingSubmit}
-              disabled={loading || !bookingDetails.eventDate}
+              onClick={() => setSelectedCard("card1")}
             >
-              {loading ? 'Creating Booking...' : 'Confirm Booking'}
-            </button>
+              <div className="flex items-center gap-4">
+                <div className="h-8 w-12 bg-gray-200 rounded"></div>{" "}
+                {/* VISA Logo */}
+                <div className="font-medium">
+                  <span className="mr-2">**** 4321</span>
+                  <span>02/27</span>
+                </div>
+              </div>
+              <div className="h-5 w-5 flex items-center justify-center border border-white rounded-full">
+                {selectedCard === "card1" && (
+                  <div className="h-3 w-3 bg-white rounded-full"></div>
+                )}
+              </div>
+            </div>
 
-            <p className="text-xs text-gray-500 text-center">
-              By confirming, you agree to our terms and conditions
-            </p>
+            {/* Add New Card */}
+            <div
+              className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-orange-700"
+              onClick={() => setSelectedCard("newCard")}
+            >
+              <div className="h-8 w-8 flex items-center justify-center rounded-full border border-gray-400 text-gray-500">
+                +
+              </div>
+              <div className="text-sm text-gray-500">Add a new card</div>
+            </div>
           </div>
         </div>
       )}
